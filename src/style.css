@@ -1,0 +1,24 @@
+@import url("https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css");
+@font-face {
+    font-family: 'KBO-Dia-Gothic_bold';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+
+html, body {
+    width: 100%;
+    height: 100vh;
+    margin: 0px;
+    padding: 0px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
