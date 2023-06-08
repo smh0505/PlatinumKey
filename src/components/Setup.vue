@@ -119,7 +119,7 @@ export default {
             if (this.themes.length < 14) {
                 window.alert('오류: 판때기의 주제가 최소 14개 있어야 정상작동합니다.')
             } else {
-                fetch("https://corsproxy.io/?https://toon.at/widget/alertbox/" + this.password)
+                fetch("https://cors-proxy.bloppyhb.workers.dev/https://toon.at/widget/alertbox/" + this.password)
                     .then(response => response.text())
                     .then(text => this.parse(text))
             }
