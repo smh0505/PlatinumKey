@@ -115,22 +115,23 @@ export default {
         },
 
         // saving
-        saveAll() {
+        async saveAll() {
             if (this.themes.length < 14) {
                 window.alert('오류: 판때기의 주제가 최소 14개 있어야 정상작동합니다.')
             } else {
-                fetch("https://cors-proxy.bloppyhb.workers.dev/https://toon.at/widget/alertbox/" + this.password)
-                    .then(response => response.text())
-                    .then(text => this.parse(text))
+                const response = await fetch("https://cors-proxy.bloppyhb.workers.dev/https://toon.at/widget/alertbox/" + this.password)
+                await this.parse(await response.text())
             }
         },
-        parse(data: string) {
+        async parse(data: string) {
             const regex = /"payload":"(?<payload>\w+)"/
             const payload = data.match(regex)?.groups?.payload
             if (payload) {
-                LocalForage.setItem('themes', JSON.parse(JSON.stringify(this.themes)))
-                LocalForage.setItem('items', JSON.parse(JSON.stringify(this.defaultKeys)))
-                LocalForage.setItem('toonation', this.password)
+                await Promise.all([
+                    LocalForage.setItem('themes', JSON.parse(JSON.stringify(this.themes))),
+                    LocalForage.setItem('items', JSON.parse(JSON.stringify(this.defaultKeys))),
+                    LocalForage.setItem('toonation', this.password)
+                ])
 
                 this.return()
                 this.$emit('close', payload)
