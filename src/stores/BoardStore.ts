@@ -29,7 +29,7 @@ export const useBoardStore = defineStore('board', {
                 const theme = themes[j].head + ':\n' + themes[j].tail
                 const color = colors[i]
 
-                if (!this.themes.map(x => x.theme).includes(theme)) {
+                if (!this.themes.find(x => x.theme === theme)) {
                     this.themes.push({ theme: theme, color: color })
                 }
             }
@@ -119,9 +119,8 @@ export const useBoardStore = defineStore('board', {
             const match = parsedMsg.text.match(/!픽 (?<index>\d+) (?<song>.+)/)
             if (match) {
                 const index = Number(match.groups?.index)
-                const map = [...Array(26).keys()]
-                    .filter(x => !this.goldenKeys.includes(x))
-                    .filter(x => ![7, 20].includes(x))
+                const excluded = [0, 13].concat(this.goldenKeys)
+                const map = [...Array(26).keys()].filter(x => !excluded.includes(x))
                 if (map.includes(index))
                 {
                     return {
@@ -162,8 +161,7 @@ export const useBoardStore = defineStore('board', {
                 if (this.checkTime(name, newVote.timestamp)) {
                     const group = this.pool.filter(x => x.name === name)
                     if (group.length === 3) {
-                        const idx = this.pool.indexOf(group[0])
-                        this.pool.splice(idx, 1)
+                        this.pool.splice(this.pool.indexOf(group[0]), 1)
                     }
                     this.pool.push(newVote)
                     return true
