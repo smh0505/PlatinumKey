@@ -26,12 +26,9 @@ export const useBoardStore = defineStore('board', {
             while (this.themes.length < 14) {
                 const i = this.themes.length
                 const j = Math.floor(Math.random() * themes.length)
-                const theme = themes[j].head + ':\n' + themes[j].tail
-                const color = colors[i]
 
-                if (!this.themes.find(x => x.theme === theme)) {
-                    this.themes.push({ theme: theme, color: color })
-                }
+                this.themes.push({ theme: themes[j].head + ':\n' + themes[j].tail, color: colors[i] })
+                themes.splice(j, 1)
             }
         },
         buildBoard() {
@@ -41,13 +38,13 @@ export const useBoardStore = defineStore('board', {
             this.goldenKeys.forEach(value => this.board[value] = '황금열쇠')
 
             // islands
+            const islands = ['디맥섬', '투온섬', '식스타섬', '뱅섬', '프세카섬']
+
             const island1 = Math.floor(Math.random() * 5)
             this.board[7] = islands[island1]
+            islands.splice(island1, 1)
 
-            let island2 = Math.floor(Math.random() * 5)
-            while (island2 === island1) {
-                island2 = Math.floor(Math.random() * 5)
-            }
+            const island2 = Math.floor(Math.random() * 4)
             this.board[20] = islands[island2]
 
             // other blocks
@@ -215,7 +212,6 @@ export interface vote {
 }
 
 // constants
-const islands = ['디맥섬', '투온섬', '식스타섬', '뱅섬', '프세카섬']
 const colors = [
     '#ffbfce', '#f17ef7', '#7bb2f2', '#f9bdf2', '#7cf4b4',
     '#c3fc85', '#ddbffc', '#bdccfc', '#bcfc9f', '#f6fc8a',

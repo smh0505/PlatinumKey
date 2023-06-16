@@ -158,7 +158,10 @@ export default {
             }
 
             this.socket.onclose = () => {
-                this.log.result(1, false)
+                const filtered = this.log.logs.filter(x => x.type === 1)
+                if (filtered.length === 0 || filtered.slice(-1)[0].positive) {
+                    this.log.result(1, false)
+                }
                 setTimeout(() => this.connect(), 1000)
             }
         },

@@ -91,7 +91,10 @@ export default {
             }
 
             this.socket.onclose = () => {
-                this.connection.result(0, false)
+                const filtered = this.connection.logs.filter(x => x.type === 0)
+                if (filtered.length === 0 || filtered.slice(-1)[0].positive) {
+                    this.connection.result(0, false)
+                }
                 setTimeout(() => this.connect(), 5000)
             }
         },
@@ -149,7 +152,7 @@ export default {
 
     .raffleList {
         border: 4px solid white;
-        background-color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(255, 255, 255, 0.8);
 
         display: grid;
         grid-template-rows: 3rem 1fr;
@@ -187,7 +190,7 @@ export default {
         }
 
         .raffleResult {
-            background-color: rgba(75, 75, 75, 0.5);
+            background-color: rgba(75, 75, 75, 0.8);
             color: white;
             padding: 8px 16px;
             font: 20px 'Galmuri14', sans-serif;
@@ -196,7 +199,7 @@ export default {
 
     .usedList {
         border: 4px solid white;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.8);
         color: white;
 
         padding: 4px 8px;
