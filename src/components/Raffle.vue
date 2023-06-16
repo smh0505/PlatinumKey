@@ -186,6 +186,7 @@ export default {
         .rafflePool {
             padding: 4px 8px;
             font: 16px 'Galmuri14', sans-serif;
+            height: 260px;
             overflow: hidden;
         }
 
@@ -203,6 +204,7 @@ export default {
         color: white;
 
         padding: 4px 8px;
+        height: 280px;
         font: 16px 'Galmuri14', sans-serif;
         overflow: hidden;
     }
