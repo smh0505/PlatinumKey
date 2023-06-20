@@ -104,10 +104,12 @@ export default {
     gap: 4px;
 
     // decoration
-    font-family: 'Novecento Sans Wide', sans-serif;
+    font-family: 'Novecento Sans Wide', 'novecento-sans-wide', 'Pretendard', 'Pretendard Variable', sans-serif;
     font-variant-numeric: tabular-nums;
     font-size: 26px;
     line-height: 36px;
+
+    user-select: none;
 
     background-color: #333d;
     color: #fff;

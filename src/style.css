@@ -33,3 +33,8 @@ button {
 
     user-select: none;
 }
+
+input, select {
+    font: inherit;
+    color: inherit;
+}

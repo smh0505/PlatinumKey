@@ -120,7 +120,7 @@ export default {
                 text-align: right;
                 font-size: 24px;
                 line-height: 32px;
-                font-family: 'Novecento Sans Wide', sans-serif;
+                font-family: 'Novecento Sans Wide', 'novecento-sans-wide', 'Pretendard', 'Pretendard Variable', sans-serif;
                 font-variant-numeric: lining-nums;
 
                 min-width: 64px;
