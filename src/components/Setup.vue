@@ -162,7 +162,6 @@ export default {
         }
     },
     mounted() {
-        window.LocalForage = LocalForage
         LocalForage.getItem('themes').then(value => {
             if (value !== null) {
                 const themes = value as { head: string, tail: string }[]
