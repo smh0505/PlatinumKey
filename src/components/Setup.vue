@@ -9,6 +9,9 @@
             </div>
             <div class="setupBody">
                 <div class="setup-board" v-show="state === 0">
+                    <p class="setup-comment">
+                        Enter로 주제를 추가합니다. Ctrl+Enter를 누르면 대주제를 복제하고, Shift+Enter를 누르면 윗 줄로 돌아갑니다.
+                    </p>
                     <BlocksList :list="themes" @addtheme="addTheme" @removetheme="removeTheme" />
                 </div>
                 <div class="setup-goldenkey" v-show="state === 1">
@@ -27,28 +30,29 @@
                             <input type="checkbox" v-model="options.useSceneSwitching" />
                         </dd>
                         <div :class="{ disabled: !options.useSceneSwitching }" v-if="controlLevel >= 4">
-                            <dt>플레이 중에 사용할 장면</dt>
+                            <dt>전환할 장면</dt>
                             <dd>
-                                <select v-if="scenes" v-model="options.scenePlaying" size="3">
+                                <select v-if="scenes" v-model="options.scenePlaying" size="5">
+                                    <option disabled>플레이 중일 때:</option>
+                                    <option value="">(전환하지 않음)</option>
                                     <option v-for="scene in scenes" :value="scene">{{ scene }}</option>
                                 </select>
                                 <input v-else type="text" v-model="options.scenePlaying" />
-                            </dd>
-                            <dt>플레이하고 있지 않을 때 사용할 장면</dt>
-                            <dd>
-                                <select v-if="scenes" v-model="options.sceneNotPlaying" size="3">
+
+                                <select v-if="scenes" v-model="options.sceneNotPlaying" size="5">
+                                    <option disabled>플레이 중이 아닐 때:</option>
+                                    <option value="">(전환하지 않음)</option>
                                     <option v-for="scene in scenes" :value="scene">{{ scene }}</option>
                                 </select>
-                                <input v-else type="text" v-model="options.sceneNotPlaying" />
                             </dd>
                         </div>
                     </div>
-                    <blockquote v-if="controlLevel < 0">
+                    <p class="setup-comment" v-if="controlLevel < 0">
                         해당 기능은 OBS에서만 쓸 수 있습니다.
-                    </blockquote>
-                    <blockquote v-else-if="controlLevel < 4">
+                    </p>
+                    <p class="setup-comment" v-else-if="controlLevel < 4">
                         해당 기능은 OBS의 브라우저 소스 속성 맨 아래의 <b>페이지 권한</b>이 <b>고급 접근 권한</b> 이상이여야 사용 가능합니다!
-                    </blockquote>
+                    </p>
                     <hr />
                     <dt>트위치 ID</dt>
                     <dd>https://twitch.tv/
@@ -242,7 +246,6 @@ export default {
             this.controlLevel = level
         })
         window.obsstudio?.getScenes((scenes) => {
-            console.log(scenes)
             this.scenes = scenes
         })
     }
@@ -311,15 +314,16 @@ export default {
             height: 400px;
             padding-bottom: 8px;
 
-            .setup-board {
-                max-height: 100%;
-                overflow: scroll;
+            max-height: 100%;
+            overflow-y: auto;
 
-                &::-webkit-scrollbar {
-                    background: transparent;
-                    width: 0px;
-                    height: 0px;
-                }
+            .setup-board {
+
+                // &::-webkit-scrollbar {
+                //     background: transparent;
+                //     width: 0px;
+                //     height: 0px;
+                // }
             }
 
             .setup-goldenkey {
@@ -359,7 +363,7 @@ export default {
                 select {
                     font-size: 18px;
                 }
-                input[type=text], input[type=password] {
+                input[type=text], input[type=password], select {
                     padding: 8px;
                     border: none;
                     width: 400px;
@@ -373,9 +377,13 @@ export default {
                     user-select: none;
                     text-align: right;
                     opacity: inherit;
+
+                    line-height: 40px;
+                    font-weight: bold;
                 }
                 dd {
                     opacity: inherit;
+                    margin: 0;
                 }
 
                 div {
@@ -386,10 +394,22 @@ export default {
                         user-select: none;
                     }
                 }
-                hr, blockquote {
+                hr {
                     grid-column: span 2;
                 }
+                .setup-comment {
+                    grid-column: 2 / -1;
+                    text-align: left;
+                    margin-top: 0;
+                    margin-bottom: 0;
+                }
             }
+
+        }
+
+        .setup-comment {
+            grid-column: 1 / -1;
+            text-align: center;
         }
 
         .setupFooter {
