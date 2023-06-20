@@ -20,7 +20,36 @@
                         <CustomKeys v-else :list="customKeys" />
                     </div>
                 </div>
-                <dl class="setup-toonation" v-show="state === 2">
+                <dl class="setup-options" v-show="state === 2">
+                    <div :class="{ disabled: controlLevel < 4 }">
+                        <dt>자동 장면 전환 사용</dt>
+                        <dd>
+                            <input type="checkbox" v-model="options.useSceneSwitching" />
+                        </dd>
+                        <div :class="{ disabled: !options.useSceneSwitching }" v-if="controlLevel >= 4">
+                            <dt>플레이 중에 사용할 장면</dt>
+                            <dd>
+                                <select v-if="scenes" v-model="options.scenePlaying" size="3">
+                                    <option v-for="scene in scenes" :value="scene">{{ scene }}</option>
+                                </select>
+                                <input v-else type="text" v-model="options.scenePlaying" />
+                            </dd>
+                            <dt>플레이하고 있지 않을 때 사용할 장면</dt>
+                            <dd>
+                                <select v-if="scenes" v-model="options.sceneNotPlaying" size="3">
+                                    <option v-for="scene in scenes" :value="scene">{{ scene }}</option>
+                                </select>
+                                <input v-else type="text" v-model="options.sceneNotPlaying" />
+                            </dd>
+                        </div>
+                    </div>
+                    <blockquote v-if="controlLevel < 0">
+                        해당 기능은 OBS에서만 쓸 수 있습니다.
+                    </blockquote>
+                    <blockquote v-else-if="controlLevel < 4">
+                        해당 기능은 OBS의 브라우저 소스 속성 맨 아래의 <b>페이지 권한</b>이 <b>고급 접근 권한</b> 이상이여야 사용 가능합니다!
+                    </blockquote>
+                    <hr />
                     <dt>트위치 ID</dt>
                     <dd>https://twitch.tv/
                         <input type="text" class="toonationPassword" v-model="options.channel">
@@ -75,8 +104,15 @@ export default {
             // options
             options: {
                 channel: 'arpa__',
-                password: ''
+                password: '',
+                useSceneSwitching: false,
+                scenePlaying: '',
+                sceneNotPlaying: ''
             },
+
+            // obs
+            controlLevel: -1, // 4 required for scene switching
+            scenes: null,
 
             // store
             wheel: useWheelStore()
@@ -201,6 +237,14 @@ export default {
                 }
             })
         })
+
+        window.obsstudio?.getControlLevel((level) => {
+            this.controlLevel = level
+        })
+        window.obsstudio?.getScenes((scenes) => {
+            console.log(scenes)
+            this.scenes = scenes
+        })
     }
 }
 </script>
@@ -304,26 +348,46 @@ export default {
                 }
             }
 
-            .setup-toonation {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
+            .setup-options {
+                display: grid;
+                grid-template-columns: 240px auto;
                 gap: 12px;
 
-                .toonationLabel {
-                    font: bold 20px sans-serif;
-                }
-
-                .toonationInput {
+                input {
                     font-size: 20px;
                 }
-
-                .toonationPassword {
-                    font-size: 20px;
+                select {
+                    font-size: 18px;
+                }
+                input[type=text], input[type=password] {
                     padding: 8px;
                     border: none;
-                    border-radius: 8px;
                     width: 400px;
+                }
+                input[type=checkbox] {
+                    width: 1em;
+                    height: 1em;
+                }
+
+                dt {
+                    user-select: none;
+                    text-align: right;
+                    opacity: inherit;
+                }
+                dd {
+                    opacity: inherit;
+                }
+
+                div {
+                    display: contents;
+                    &.disabled {
+                        opacity: 0.5;
+                        pointer-events: none;
+                        user-select: none;
+                    }
+                }
+                hr, blockquote {
+                    grid-column: span 2;
                 }
             }
         }

@@ -125,6 +125,9 @@ export default {
             started: false,
             options: {},
 
+            // obs
+            currentScene: null,
+
             // start
             showStart: false,
         }
@@ -198,6 +201,17 @@ export default {
             return {
                 "background-color": this.board.getColor(theme)
             }
+        },
+        async switchScene(playing: boolean) {
+            if (!this.options.useSceneSwitching) {
+                return
+            }
+            if (this.currentScene != null &&
+                this.currentScene !== this.options.sceneNotPlaying &&
+                this.currentScene !== this.options.scenePlaying) {
+                return
+            }
+            window.obsstudio?.setCurrentScene?.(playing? this.options.sceneNotPlaying : this.options.scenePlaying)
         }
     },
     mounted() {
@@ -209,6 +223,14 @@ export default {
                 backup: backupBoard
             })))
         })
+        window.addEventListener('obsSceneChanged', (event) => {
+            this.currentScene = event.detail.name
+        })
+    },
+    watch: {
+        state(to) {
+            this.switchScene(to < 0)
+        }
     }
 }
 </script>
