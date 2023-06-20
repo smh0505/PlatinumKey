@@ -11,8 +11,13 @@
             <!--right panel-->
             <div name="right-panel">
                 <Timer :clockwise="clockwise" @reverse="clockwise = !clockwise"></Timer>
-                <Inventory></Inventory>
-                <button class="setupButton centered" @click="showSetup = true">기본 설정</button>
+                <Inventory v-show="this.state >= 0"></Inventory>
+            </div>
+
+            <!--right-bottom buttons-->
+            <div class="static-menu" v-show="this.state >= 0">
+                <button @click="showSetup = true">기본 설정</button>
+                <button @click="showStart = true">판때기 메뉴</button>
             </div>
         </div>
 
@@ -36,7 +41,6 @@
 
             <!--start-->
             <div v-if="index === 0" style="width: 100%; height: 100%;">
-                <button class="blockButton centered" @click="showStart = true">출발</button>
                 <button class="blockButton centered" @click="closeAll">출발</button>
             </div>
 
@@ -164,6 +168,9 @@ export default {
             this.board.goldenKeys = [2, 5, 9, 11, 15, 18, 22, 24]
             this.showStart = false
         },
+        closeAll() {
+            this.state = -1
+        },
 
         // select
         select(index: number) {
@@ -279,22 +286,21 @@ export default {
         background-position: center;
         background-size: cover;
 
-        .setupButton {
+        .static-menu {
             position: absolute;
-            bottom: 8px;
             right: 8px;
-            width: 120px;
-            height: 30px;
+            bottom: 8px;
 
-            // decoration
-            font: 20px 'Galmuri14', sans-serif;
-            border: none;
-            border-radius: 8px;
-            background-color: rgba(174, 255, 108, 0.7);
-            transition: all 0.1s ease-out;
+            display: flex;
+            gap: 4px;
 
-            &:hover {
-                background-color: rgb(174, 255, 108)
+            font-size: 14px;
+            line-height: 28px;
+
+            > button {
+                width: 120px;
+                background-color: #333d;
+                color: #fff;
             }
         }
     }
