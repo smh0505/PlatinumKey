@@ -5,14 +5,14 @@
                 <span class="material-symbols-rounded">remove</span>
             </button>
             <span class="lapsCount" @wheel="seekLaps">
-                {{ laps[lapsIdx] }}바퀴째
+                {{ laps[lapsIdx] }}<small>바퀴째</small>
             </span>
             <button class="seekButton centered" @click="seekLaps(+1)">
                 <span class="material-symbols-rounded">add</span>
             </button>
         </div>
         <div class="clockwise" @click="$emit('reverse')">
-            <span class="material-symbols-rounded" :style="isClockwise">cycle</span>
+            <span class="material-symbols-rounded">{{ clockwise ? 'rotate_right' : 'rotate_left' }}</span>
             <span class="clockwiseLabel">{{ clockwise ? "시계" : "반시계" }}</span>
         </div>
         <div class="clock" :class="{ paused }" @click="startButton()">
