@@ -21,25 +21,25 @@
         <div v-for="(block, index) in blocks" class="block" :style="block.style" :class="blockType(index)">
             <!--number tags-->
             <div v-if="index !== 0 && index !== 13" class="blockNumber centered">{{ index }}</div>
-            
+
             <!--start-->
             <div v-if="index === 0" style="width: 100%; height: 100%;">
                 <button class="blockButton centered" @click="showStart = true">출발</button>
                 <teleport to="body">
-                    <StartMenu :show="showStart" @shuffle="shuffle()" @addkey="addKey()" 
+                    <StartMenu :show="showStart" @shuffle="shuffle()" @addkey="addKey()"
                         @reset="restore()" @close="showStart = false"></StartMenu>
                 </teleport>
             </div>
 
             <!--free-->
             <button v-else-if="index === 13" class="blockButton centered" @click="state = 0">뱅하싶</button>
-            
+
             <!--golden key-->
             <button v-else-if="board.isGoldenKey(index)" class="blockButton centered" @click="state = 1">황금열쇠</button>
-            
+
             <!--islands-->
             <button v-else-if="index === 7 || index === 20" class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
-            
+
             <!--other blocks-->
             <div v-else style="width: 100%; height: 100%;" :style="fillColor(index)">
                 <div class="blockDetail">{{ board.board[index] }}</div>
@@ -150,7 +150,7 @@ export default {
         },
         restore() {
             this.state = 0
-            this.boardIndex= 0
+            this.boardIndex = 0
             this.board.board = backupBoard
             this.board.goldenKeys = [2, 5, 9, 11, 15, 18, 22, 24]
             this.showStart = false

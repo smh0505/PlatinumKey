@@ -49,12 +49,6 @@ export default {
         }
     },
     computed: {
-        previous() {
-            return remainder(this.lapsIdx - 1, 4)
-        },
-        next() {
-            return remainder(this.lapsIdx + 1, 4)
-        },
         isClockwise() {
             return this.clockwise ? {} : { transform: 'scale(-1, 1)' }
         }
