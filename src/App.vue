@@ -4,7 +4,7 @@
             <!--left panel-->
             <div name="left-panel">
                 <Dice v-show="state === 0" />
-                <Wheel v-if="state === 1" :payload="payload"></Wheel>
+                <div v-show="state === 1" v-if="payload"><Wheel :payload="payload"></Wheel></div>
                 <Raffle v-show="state === 2" :begin="started" :index="boardIndex" @reset="boardIndex = 0"></Raffle>
             </div>
 

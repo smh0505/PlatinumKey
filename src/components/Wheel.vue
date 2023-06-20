@@ -140,6 +140,9 @@ export default {
 
         // websocket
         connect() {
+            if(!this.payload) {
+                return
+            }
             this.socket = new WebSocket('wss://toon.at:8071/' + this.payload)
 
             this.socket.onopen = () => {
