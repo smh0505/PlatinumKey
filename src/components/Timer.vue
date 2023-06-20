@@ -1,26 +1,28 @@
 <template>
     <div class="clockFrame">
         <div class="laps">
-            <button class="lapsButton centered" @click="lapsIdx = previous">
-                <span class="material-symbols-rounded">arrow_back</span>
-            </button>
-            <span class="lapsCount centered">{{ laps[lapsIdx] }}</span>
-            <button class="lapsButton centered" @click="lapsIdx = next">
-                <span class="material-symbols-rounded">arrow_forward</span>
-            </button>
-        </div>
-        <button class="clockwise" @click="$emit('reverse')">
-            <span class="material-symbols-rounded" :style="isClockwise">cycle</span>
-            <div class="clockwiseLabel">{{ clockwise ? "시계" : "반시계" }}</div>
-        </button>
-        <div class="clock">
-            <button class="clockButton centered" @click="subMin()">
+            <button class="seekButton centered" @click="seekLaps(-1)">
                 <span class="material-symbols-rounded">remove</span>
             </button>
-            <button class="clockFace centered" :class="{ red: paused, blue: !paused }" @click="startButton()">
-                {{ elapsed.toFormat('hh:mm:ss') }}
+            <span class="lapsCount" @wheel="seekLaps">
+                {{ laps[lapsIdx] }}바퀴째
+            </span>
+            <button class="seekButton centered" @click="seekLaps(+1)">
+                <span class="material-symbols-rounded">add</span>
             </button>
-            <button class="clockButton centered" @click="addMin()">
+        </div>
+        <div class="clockwise" @click="$emit('reverse')">
+            <span class="material-symbols-rounded" :style="isClockwise">cycle</span>
+            <span class="clockwiseLabel">{{ clockwise ? "시계" : "반시계" }}</span>
+        </div>
+        <div class="clock" :class="{ paused }" @click="startButton()">
+            <button class="seekButton centered" @click.stop="subMin()">
+                <span class="material-symbols-rounded">remove</span>
+            </button>
+            <span class="clockTime">
+                {{ elapsed.toFormat('hh:mm:ss') }}
+            </span>
+            <button class="seekButton centered" @click.stop="addMin()">
                 <span class="material-symbols-rounded">add</span>
             </button>
         </div>
@@ -58,6 +60,9 @@ export default {
         }
     },
     methods: {
+        seekLaps(direction: number): void {
+            this.lapsIdx = remainder(this.lapsIdx + direction, 4)
+        },
         startButton(): void {
             if (this.paused) {
                 this.paused = false
@@ -94,102 +99,83 @@ export default {
 <style lang="scss">
 @mixin borderless {
     border: none;
-    border-radius: 8px;
+    // border-radius: 8px;
 }
 
 .clockFrame {
-    display: grid;
+    display: flex;
     height: 48px;
     margin: 6px;
     padding: 4px;
     gap: 4px;
 
-    // grid
-    grid-template-columns: repeat(4, 1fr);
-
     // decoration
-    background-color: white;
+    font-family: 'Novecento Sans Wide', sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    line-height: 36px;
+
+    background-color: #333d;
+    color: #fff;
     @include borderless;
 
-    .laps {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+    > * {
+        flex-grow: 1;
+        text-align: center;
+    }
 
-        .lapsButton {
-            @include borderless;
-            background-color: rgba(255, 165, 0, 0.5);
-            transition: all 0.1s ease-out;
+    .laps, .clock {
+        position: relative;
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
 
-            &:hover {
-                background-color: orange;
+        .seekButton {
+            position: absolute;
+            height: 100%;
+            left: 0;
+
+            border: 0;
+            opacity: 0;
+            background: #fff6;
+            transition: opacity 0.2s ease-out;
+
+            &:active {
+                background-color: #9df6;
             }
         }
-
-        .lapsCount {
-            font-size: 24px;
+        .seekButton ~ .seekButton {
+            left: unset;
+            right: 0;
+        }
+        &:hover > .seekButton {
+            opacity: 1;
         }
     }
 
     .clockwise {
-        display: flex;
-        position: relative;
-        align-items: center;
-
         // decoration
         @include borderless;
-        background-color: rgba(0, 255, 0, 0.5);
-        transition: all 0.1s ease-out;
-
-        &:hover {
-            background-color: rgb(0, 200, 0);
-        }
+        background: none;
+        color: inherit;
+        font: inherit;
 
         .clockwiseLabel {
-            position: absolute;
-            font-size: 24px;
-            right: 4px;
+            margin-left: 8px;
         }
     }
 
     .clock {
-        grid-column: 3 / 5;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 4px;
+        transition: background 0.2s ease-out;
+        background: none;
 
-        .clockButton {
-            @include borderless;
-            background-color: rgba(150, 216, 241, 0.5);
-            transition: all 0.1s ease-out;
-
-            &:hover {
-                background-color: rgb(150, 216, 241);
-            }
-        }
-
-        .clockFace {
-            @include borderless;
-            grid-column: 2 / 5;
-            font-size: 24px;
-        }
-
-        .red {
+        &.paused {
             background-color: rgba(255, 0, 0, 0.5);
-            transition: all 0.1s ease-out;
-
-            &:hover {
-                background-color: red;
-            }
         }
+    }
 
-        .blue {
-            background-color: rgba(0, 162, 255, 0.5);
-            transition: all 0.1s ease-out;
-
-            &:hover {
-                background-color: rgb(0, 162, 255);
-            }
-        }
+    .material-symbols-rounded {
+        vertical-align: middle;
     }
 }
 </style>
