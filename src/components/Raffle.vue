@@ -37,7 +37,11 @@ import { remainder } from '../scripts/Calculate';
 export default {
     props: {
         begin: Boolean,
-        index: Number
+        index: Number,
+        channel: {
+            type: String,
+            default: 'arpa__'
+        }
     },
     data() {
         return {
@@ -75,7 +79,7 @@ export default {
             this.socket.onopen = () => {
                 this.socket?.send('CAP REQ :twitch.tv/commands twitch.tv/tags')
                 this.socket?.send('NICK justinfan9705')
-                this.socket?.send('JOIN #arpa__')
+                this.socket?.send('JOIN #' + this.channel)
                 this.connection.result(0, true)
             }
 

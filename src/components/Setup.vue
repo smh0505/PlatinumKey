@@ -20,12 +20,16 @@
                         <CustomKeys v-else :list="customKeys" />
                     </div>
                 </div>
-                <div class="setup-toonation" v-show="state === 2">
-                    <div class="toonationLabel">투네이션 통합 위젯 비밀키</div>
-                    <div class="toonationInput">https://toon.at/widget/alertbox/
-                        <input type="password" class="toonationPassword" v-model="password">
-                    </div>
-                </div>
+                <dl class="setup-toonation" v-show="state === 2">
+                    <dt>트위치 ID</dt>
+                    <dd>https://twitch.tv/
+                        <input type="text" class="toonationPassword" v-model="options.channel">
+                    </dd>
+                    <dt>투네이션 통합 위젯 비밀키</dt>
+                    <dd>https://toon.at/widget/alertbox/
+                        <input type="password" class="toonationPassword" v-model="options.password">
+                    </dd>
+                </dl>
             </div>
             <div class="setupFooter">
                 <button class="footButton" @click="saveAll()">시작하기</button>
@@ -66,8 +70,13 @@ export default {
             customKeys: [] as { key: string, count: number }[],
 
             // toonation
-            password: "",
             warning: false,
+
+            // options
+            options: {
+                channel: 'arpa__',
+                password: ''
+            },
 
             // store
             wheel: useWheelStore()
@@ -117,22 +126,27 @@ export default {
             if (this.themes.length < 14) {
                 window.alert('오류: 판때기의 주제가 최소 14개 있어야 정상작동합니다.')
             } else {
-                const response = await fetch("https://cors-proxy.bloppyhb.workers.dev/https://toon.at/widget/alertbox/" + this.password)
+                const response = await fetch("https://cors-proxy.bloppyhb.workers.dev/https://toon.at/widget/alertbox/" + this.options.password)
                 await this.parse(await response.text())
             }
         },
         async parse(data: string) {
+            // save options always, anyway
+            LocalForage.setItem('options', JSON.parse(JSON.stringify(this.options)))
+
             const regex = /"payload":"(?<payload>\w+)"/
             const payload = data.match(regex)?.groups?.payload
             if (payload) {
                 await Promise.all([
                     LocalForage.setItem('themes', JSON.parse(JSON.stringify(this.themes))),
                     LocalForage.setItem('items', JSON.parse(JSON.stringify(this.defaultKeys))),
-                    LocalForage.setItem('toonation', this.password)
                 ])
 
                 this.return()
-                this.$emit('close', payload)
+                this.$emit('close', {
+                    options: this.options,
+                    payload
+                })
             } else {
                 window.alert("오류: Payload를 불러오지 못했습니다.\n비밀키를 다시 확인해주세요.")
             }
@@ -148,6 +162,7 @@ export default {
         }
     },
     mounted() {
+        window.LocalForage = LocalForage
         LocalForage.getItem('themes').then(value => {
             if (value !== null) {
                 const themes = value as { head: string, tail: string }[]
@@ -162,10 +177,21 @@ export default {
                 items.forEach(x => this.defaultKeys.push(x))
             }
         })
-        LocalForage.getItem('toonation').then(value => {
-            if (value !== null) {
-                const password = value as string
-                this.password = password
+        LocalForage.getItem('options').then(async options => {
+            const password = await LocalForage.getItem('toonation')
+            if (password) {
+                LocalForage.removeItem('toonation')
+                // also works as migration flag; if they already have options, there's no need to update
+                if(!options)
+                    LocalForage.setItem('options', { password })
+            } else if (options == null) {
+                return
+            }
+            for (const key in options) {
+                this.options[key] = options[key]
+            }
+            if (password) {
+                this.options.password = password
             }
         })
         LocalForage.keys().then(list => {

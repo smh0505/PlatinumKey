@@ -5,7 +5,7 @@
             <div name="left-panel">
                 <Dice v-show="state === 0" />
                 <div v-show="state === 1" v-if="payload"><Wheel :payload="payload"></Wheel></div>
-                <Raffle v-show="state === 2" :begin="started" :index="boardIndex" @reset="boardIndex = 0"></Raffle>
+                <Raffle v-show="state === 2" :begin="started" :index="boardIndex" @reset="boardIndex = 0" :channel="options.channel"></Raffle>
             </div>
 
             <!--right panel-->
@@ -123,6 +123,7 @@ export default {
             // setup
             showSetup: true,
             started: false,
+            options: {},
 
             // start
             showStart: false,
@@ -133,8 +134,9 @@ export default {
     },
     methods: {
         // game setup
-        async beginGame(payload: string) {
+        async beginGame({ options, payload }) {
             this.showSetup = false
+            this.options = options
             if (!this.started) {
                 this.payload = payload
                 this.started = true;
