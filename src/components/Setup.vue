@@ -1,39 +1,37 @@
 <template>
-    <transition name="modal">
-        <div v-if="show" class="setupMask">
-            <div class="setupContainer">
-                <div class="setupHeader">기본 설정</div>
-                <div class="setupTabs">
-                    <button class="tabButton" :class="{ tabSelected: state === 0 }" @click="state = 0">판때기</button>
-                    <button class="tabButton" :class="{ tabSelected: state === 1 }" @click="state = 1">황금열쇠</button>
-                    <button class="tabButton" :class="{ tabSelected: state === 2 }" @click="state = 2">투네이션</button>
+    <div class="setupMask">
+        <div class="setupContainer">
+            <div class="setupHeader">기본 설정</div>
+            <div class="setupTabs">
+                <button class="tabButton" :class="{ tabSelected: state === 0 }" @click="state = 0">판때기</button>
+                <button class="tabButton" :class="{ tabSelected: state === 1 }" @click="state = 1">황금열쇠</button>
+                <button class="tabButton" :class="{ tabSelected: state === 2 }" @click="state = 2">투네이션</button>
+            </div>
+            <div class="setupBody">
+                <div class="setup-board" v-show="state === 0">
+                    <BlocksList :list="themes" @addtheme="addTheme" @removetheme="removeTheme" />
                 </div>
-                <div class="setupBody">
-                    <div class="setup-board" v-show="state === 0">
-                        <BlocksList :list="themes" @addtheme="addTheme" @removetheme="removeTheme" />
+                <div class="setup-goldenkey" v-show="state === 1">
+                    <div class="goldenkeyList">
+                        <KeysList :list="keyLogs" :selected="logSelected" @loadkeys="loadKey" @deletekeys="deleteKey" />
                     </div>
-                    <div class="setup-goldenkey" v-show="state === 1">
-                        <div class="goldenkeyList">
-                            <KeysList :list="keyLogs" :selected="logSelected" @loadkeys="loadKey" @deletekeys="deleteKey" />
-                        </div>
-                        <div class="goldenkeyList">
-                            <DefaultKeys v-if="logSelected === 0" :list="defaultKeys" @addkey="addKey" @removekey="removeKey" />
-                            <CustomKeys v-else :list="customKeys" />
-                        </div>
-                    </div>
-                    <div class="setup-toonation" v-show="state === 2">
-                        <div class="toonationLabel">투네이션 통합 위젯 비밀키</div>
-                        <div class="toonationInput">https://toon.at/widget/alertbox/ 
-                            <input type="password" class="toonationPassword" v-model="password">
-                        </div>
+                    <div class="goldenkeyList">
+                        <DefaultKeys v-if="logSelected === 0" :list="defaultKeys" @addkey="addKey" @removekey="removeKey" />
+                        <CustomKeys v-else :list="customKeys" />
                     </div>
                 </div>
-                <div class="setupFooter">
-                    <button class="footButton" @click="saveAll()">시작하기</button>
+                <div class="setup-toonation" v-show="state === 2">
+                    <div class="toonationLabel">투네이션 통합 위젯 비밀키</div>
+                    <div class="toonationInput">https://toon.at/widget/alertbox/
+                        <input type="password" class="toonationPassword" v-model="password">
+                    </div>
                 </div>
             </div>
+            <div class="setupFooter">
+                <button class="footButton" @click="saveAll()">시작하기</button>
+            </div>
         </div>
-    </transition>
+    </div>
 </template>
 
 <script lang="ts">
@@ -326,19 +324,4 @@ export default {
     }
 }
 
-.modal-enter-from {
-    opacity: 0;
-
-    .setupContainer {
-        transform: scale(1.1);
-    }
-}
-
-.modal-leave-to {
-    opacity: 0;
-
-    .setupContainer {
-        transform: scale(1.1);
-    }
-}
 </style>

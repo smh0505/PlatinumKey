@@ -3,9 +3,9 @@
         <div class="center block">
             <!--left panel-->
             <div name="left-panel">
-                <Dice :show="state === 0" />
-                <Wheel :show="state === 1" :payload="payload"></Wheel>
-                <Raffle :show="state === 2" :begin="started" :index="boardIndex" @reset="boardIndex = 0"></Raffle>
+                <Dice v-show="state === 0" />
+                <Wheel v-if="state === 1" :payload="payload"></Wheel>
+                <Raffle v-show="state === 2" :begin="started" :index="boardIndex" @reset="boardIndex = 0"></Raffle>
             </div>
 
             <!--right panel-->
@@ -13,11 +13,23 @@
                 <Timer :clockwise="clockwise" @reverse="clockwise = !clockwise"></Timer>
                 <Inventory></Inventory>
                 <button class="setupButton centered" @click="showSetup = true">기본 설정</button>
-                <teleport to="body">
-                    <Setup :show="showSetup" :hasBegun="started" @close="beginGame"></Setup>
-                </teleport>
             </div>
         </div>
+
+        <!--modals-->
+        <teleport to="body">
+            <transition name="modal">
+                <Setup v-if="showSetup" :hasBegun="started" @close="beginGame"></Setup>
+            </transition>
+        </teleport>
+
+        <teleport to="body">
+            <transition name="modal">
+                <StartMenu v-if="showStart" @shuffle="shuffle()" @addkey="addKey()"
+                    @reset="restore()" @close="showStart = false"></StartMenu>
+            </transition>
+        </teleport>
+
         <div v-for="(block, index) in blocks" class="block" :style="block.style" :class="blockType(index)">
             <!--number tags-->
             <div v-if="index !== 0 && index !== 13" class="blockNumber centered">{{ index }}</div>
@@ -25,10 +37,7 @@
             <!--start-->
             <div v-if="index === 0" style="width: 100%; height: 100%;">
                 <button class="blockButton centered" @click="showStart = true">출발</button>
-                <teleport to="body">
-                    <StartMenu :show="showStart" @shuffle="shuffle()" @addkey="addKey()"
-                        @reset="restore()" @close="showStart = false"></StartMenu>
-                </teleport>
+                <button class="blockButton centered" @click="closeAll">출발</button>
             </div>
 
             <!--free-->
@@ -354,4 +363,21 @@ export default {
         background-clip: border-box;
     }
 }
+
+.modal-enter-from {
+    opacity: 0;
+
+    .setupContainer {
+        transform: scale(1.1);
+    }
+}
+
+.modal-leave-to {
+    opacity: 0;
+
+    .setupContainer {
+        transform: scale(1.1);
+    }
+}
+
 </style>

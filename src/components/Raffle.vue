@@ -1,5 +1,5 @@
 <template>
-    <div v-show="show" class="raffleContainer">
+    <div class="raffleContainer">
         <div class="raffleList">
             <div class="raffleHeader" :style="color">
                 <div class="theme"><Marquee :text="theme"></Marquee></div>
@@ -37,7 +37,6 @@ import { remainder } from '../scripts/Calculate';
 export default {
     props: {
         begin: Boolean,
-        show: Boolean,
         index: Number
     },
     data() {

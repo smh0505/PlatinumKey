@@ -1,5 +1,5 @@
 <template>
-    <v-stage v-show="show" :config="{ width: 712, height: 712}">
+    <v-stage :config="{ width: 712, height: 712}">
         <v-layer>
             <v-wedge v-for="(item, index) in options.options" :config="sectorConfig(index, item)"></v-wedge>
             <v-text v-for="(item, index) in options.options" :config="textConfig(index, item)"></v-text>
@@ -30,7 +30,6 @@ interface option {
 
 export default {
     props: {
-        show: Boolean,
         payload: String,
     },
     data() {
@@ -75,10 +74,10 @@ export default {
             return output
         },
         showResult() {
-            return this.show && this.state === this.states.result
+            return this.state === this.states.result
         },
         showButton() {
-            return this.show && this.state !== this.states.stopping && this.options.options.length > 0
+            return this.state !== this.states.stopping && this.options.options.length > 0
         }
     },
     methods: {
