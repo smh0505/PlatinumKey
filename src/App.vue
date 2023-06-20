@@ -201,12 +201,12 @@ export default {
     height: 100vh;
 
     // grid
-    grid-template-columns: 320px repeat(6, 1fr) 320px;
-    grid-template-rows: 180px repeat(5, 1fr) 180px;
+    grid-template-columns: 316px repeat(6, 1fr) 316px;
+    grid-template-rows: 176px repeat(5, 1fr) 176px;
 
     // decoration
     border: 2px solid;
-    background-color: lightgray;
+    // background-color: lightgray;
 
     .block {
         border: 2px solid;
@@ -242,7 +242,7 @@ export default {
             height: 100%;
             position: absolute;
             top: 0px;
-            
+
             // content
             font: 40px "Galmuri14", sans-serif;
             white-space: pre-wrap;
@@ -266,7 +266,7 @@ export default {
         display: grid;
         grid-template-columns: 7fr 5fr;
 
-        background-image: url('./assets/RM2023SM.png');
+        // background-image: url('./assets/RM2023SM.png');
         background-position: center;
         background-size: cover;
 
