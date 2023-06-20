@@ -5,22 +5,26 @@
             <div v-for="(item, index) in inventory.pageView" class="row-item">
                 <div class="item-count" :class="typeConfig(index)">{{ item.count }}</div>
                 <div class="item-name" :key="index"><Marquee :text="item.key"></Marquee></div>
-                <button class="plus-button" v-if="item.type !== 2" @click="inventory.addOne(inventory.pageNum * 4 + index)">
-                    <span class="material-symbols-rounded">exposure_plus_1</span>
-                </button>
-                <button class="minus-button" @click="inventory.subOne(inventory.pageNum * 4 + index)">
-                    <span class="material-symbols-rounded">exposure_neg_1</span>
-                </button>
+                <div class="item-buttons">
+                    <div>
+                        <button v-if="item.type !== 2" @click="inventory.addOne(inventory.pageNum * ITEMS_PER_PAGE + index)">
+                            <span class="material-symbols-rounded">add</span>
+                        </button>
+                        <button @click="inventory.subOne(inventory.pageNum * ITEMS_PER_PAGE + index)">
+                            <span class="material-symbols-rounded">remove</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="inv-pages">
-                <button class="page-button" @click="inventory.prevPage()">
-                    <span class="material-symbols-rounded">first_page</span>
-                </button>
-                <div class="page-number">{{ inventory.pageNum + 1 }} / {{ inventory.maxPage }} 페이지</div>
-                <button class="page-button" @click="inventory.nextPage()">
-                    <span class="material-symbols-rounded">last_page</span>
-                </button>
-            </div>
+        </div>
+        <div class="inv-pages" v-if="inventory.items.length > ITEMS_PER_PAGE + 1">
+            <button class="page-button" @click="inventory.prevPage()">
+                <span class="material-symbols-rounded">first_page</span>
+            </button>
+            <div class="page-number">{{ inventory.pageNum + 1 }} / {{ inventory.maxPage }} 페이지</div>
+            <button class="page-button" @click="inventory.nextPage()">
+                <span class="material-symbols-rounded">last_page</span>
+            </button>
         </div>
         <div class="inv-buttons">
             <button class="dice-button" @click="inventory.removeAll(0)">턴 감소</button>
@@ -30,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { useItemStore, itemType } from '../stores/ItemStore';
+import { ITEMS_PER_PAGE, useItemStore, itemType } from '../stores/ItemStore';
 import Marquee from './Marquee.vue';
 import * as LocalForage from 'localforage'
 
@@ -38,6 +42,7 @@ export default {
     data() {
         return {
             inventory: useItemStore(),
+            ITEMS_PER_PAGE,
         }
     },
     components: {
@@ -60,143 +65,164 @@ export default {
 </script>
 
 <style lang="scss">
+
+@mixin transparent-button {
+    background-color: transparent;
+    transition: background-color 0.2s ease-out;
+
+    &:hover {
+        background-color: #8889;
+    }
+}
+
 .inv-bg {
-    display: grid;
-    grid-template-rows: 5fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 4px;
+
+    min-width: 0;
+    line-height: 36px;
+
+    background-color: #333d;
+    color: white;
 
     .inv-empty {
         display: flex;
         justify-content: center;
         align-items: center;
 
-        font: bold 36px 'Galmuri14', sans-serif;
-        background-color: purple;
-        color: white;
+        flex-grow: 1;
+
+        font-size: 36px;
     }
 
     .inv-items {
         display: grid;
-        grid-template-rows: repeat(5, 1fr);
+        min-width: 0;
+        gap: 4px;
+        padding: 4px;
 
-        background-color: purple;
-        color: white;
-        font: bold 16px 'Galmuri14', sans-serif;
+        grid-template-columns: min-content auto 0;
+
+        width: 100%;
+        margin-bottom: auto;
+
+        font-size: 20px;
 
         .row-item {
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr 1fr;
-            gap: 4px;
-            margin: 4px;
-            align-items: center;
-
-            .dice {
-                background-color: rgba(0, 255, 0, 0.75);
-                color: black;
-            }
-
-            .song {
-                background-color: rgba(255, 255, 0, 0.75);
-                color: black;
-            }
+            display: contents;
 
             .item-count {
-                display: flex;
-                justify-content: center;
-                border-radius: 8px;
-                font: bold 20px 'Galmuri14', sans-serif;
+                padding: 0 6px;
+                border-right: 4px solid rgba(255, 255, 255, 0.25);
+                vertical-align: top;
+
+                text-align: right;
+                font-size: 24px;
+                line-height: 32px;
+                font-family: 'Novecento Sans Wide', sans-serif;
+                font-variant-numeric: lining-nums;
+
+                min-width: 64px;
+
+                // this line giving their width to text.
+                word-break: keep-all;
+                white-space: nowrap;
+
+                &::after {
+                    display: inline-block;
+                    content: '개';
+
+                    font-size: 16px;
+                    margin-left: 2px;
+                }
+
+                &.dice {
+                    border-right: 4px solid rgba(0, 255, 0, 0.75);
+                    &::after {
+                        content: '턴'
+                    }
+                }
+
+                &.song {
+                    border-right: 4px solid rgba(255, 255, 0, 0.75);
+                    &::after {
+                        content: '곡'
+                    }
+                }
             }
 
             .item-name {
                 overflow-x: hidden;
                 white-space: nowrap;
-                font: 16px 'Galmuri14', sans-serif;
+                font-size: 20px;
+                text-indent: 4px;
             }
 
-            .plus-button {
-                grid-column: 3;
-                border: none;
-                border-radius: 8px;
-                background-color: transparent;
-                color: white;
-                transition: all 0.2s ease-out;
+            .item-buttons {
+                position: relative;
 
-                &:hover {
-                    background-color: white;
-                    color: black;
+                opacity: 0;
+                transition: opacity 0.2s ease-out;
+
+                > div {
+                    position: absolute;
+                    display: flex;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    margin: auto;
+                }
+
+                button {
+                    @include transparent-button;
+                    padding: 6px;
                 }
             }
 
-            .minus-button {
-                grid-column: 4;
-                border: none;
-                border-radius: 8px;
-                background-color: transparent;
-                color: white;
-                transition: all 0.2s ease-out;
-
-                &:hover {
-                    background-color: white;
-                    color: black;
-                }
+            &:hover .item-buttons {
+                opacity: 1;
             }
         }
+    }
 
-        .inv-pages {
-            grid-row: 5;
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr;
+    .inv-pages {
+        grid-row: 5;
+        display: flex;
 
-            .page-button {
-                margin: 4px;
-                border: none;
-                border-radius: 8px;
-                background-color: transparent;
-                color: white;
-                transition: all 0.2s ease-out;
+        .page-button {
+            @include transparent-button;
+            width: 32px;
+            margin: 4px;
+            vertical-align: top;
+        }
 
-                &:hover {
-                    background-color: white;
-                    color: black;
-                }
-            }
-
-            .page-number {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
+        .page-number {
+            flex-grow: 1;
+            text-align: center;
         }
     }
 
     .inv-buttons {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+        gap: 4px;
 
-        .dice-button {
-            font: bold 20px 'Galmuri14', sans-serif;
-            background-color: rgba(0, 255, 0, 0.5);
-            color: black;
-            border-radius: 8px;
-            transition: all 0.2s ease-out;
+        > button {
+            font-size: 16px;
+            line-height: 26px;
 
-            &:hover {
-                background-color: rgb(0, 255, 0);
+            .material-symbols-rounded {
+                vertical-align: middle;
             }
         }
-
+        .dice-button {
+            border-top: 4px solid rgba(0, 255, 0, 0.75);
+        }
         .song-button {
-            font: bold 20px 'Galmuri14', sans-serif;
-            background-color: rgba(255, 255, 0, 0.5);
-            color: black;
-            border-radius: 8px;
-            transition: all 0.2s ease-out;
-
-            &:hover {
-                background-color: rgb(255, 255, 0);
-            }
+            border-top: 4px solid rgba(255, 255, 0, 0.75);
         }
     }
+
 }
 </style>

@@ -11,6 +11,8 @@ html, body {
     height: 100vh;
     margin: 0px;
     padding: 0px;
+
+    font-family: 'Pretendard', 'Pretendard Variable', sans-serif;
 }
 
 * {
@@ -21,4 +23,13 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+button {
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+
+    user-select: none;
 }

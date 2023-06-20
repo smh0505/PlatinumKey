@@ -22,7 +22,6 @@ export default {
     grid-template-columns: 1fr 2fr;
 
     margin: 6px;
-    padding: 4px;
     gap: 4px;
     height: 240px;
 }

@@ -49,6 +49,7 @@ export default {
     display: grid;
     grid-template-rows: repeat(10, 1fr);
     font-weight: bold;
+    line-height: 24px;
 
     .twitch-conn {
         background-color: rgb(255, 0, 255);
