@@ -75,7 +75,7 @@ export default {
         justify-content: flex-end;
 
         padding: 0 4px;
-        background: linear-gradient(to right, transparent 50%, var(--color) 95%);
+        background: linear-gradient(to left, var(--color) 32px, transparent 160px);
 
         white-space: nowrap;
         word-break: keep-all;
