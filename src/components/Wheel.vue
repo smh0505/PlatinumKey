@@ -144,9 +144,16 @@ export default {
                 return
             }
             this.socket = new WebSocket('wss://toon.at:8071/' + this.payload)
+            this.log.result({
+                type: 'toonation',
+                status: 'connecting'
+            })
 
             this.socket.onopen = () => {
-                this.log.result(1, true)
+                this.log.result({
+                    type: 'toonation',
+                    status: 'connected'
+                })
             }
 
             this.socket.onmessage = msg => {
@@ -162,9 +169,12 @@ export default {
             this.socket.onclose = () => {
                 const filtered = this.log.logs.filter(x => x.type === 1)
                 if (filtered.length === 0 || filtered.slice(-1)[0].positive) {
-                    this.log.result(1, false)
+                    this.log.result({
+                        type: 'toonation',
+                        status: 'disconnected'
+                    })
                 }
-                setTimeout(() => this.connect(), 1000)
+                setTimeout(() => this.connect(), 10)
             }
         },
 

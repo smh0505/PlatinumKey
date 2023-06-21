@@ -75,12 +75,19 @@ export default {
     methods: {
         connect() {
             this.socket = new WebSocket('wss://irc-ws.chat.twitch.tv')
+            this.connection.result({
+                type: 'twitch',
+                status: 'connecting'
+            })
 
             this.socket.onopen = () => {
                 this.socket?.send('CAP REQ :twitch.tv/commands twitch.tv/tags')
                 this.socket?.send('NICK justinfan9705')
                 this.socket?.send('JOIN #' + this.channel)
-                this.connection.result(0, true)
+                this.connection.result({
+                    type: 'twitch',
+                    status: 'connected'
+                })
             }
 
             this.socket.onmessage = msg => {
@@ -88,8 +95,13 @@ export default {
                     this.socket?.send('PONG :tmi.twitch.tv')
                 }
                 if (this.begin && msg.data.includes('!픽')) {
-                    const result = this.board.parse(msg.data)
-                    this.connection.result(2, result.result, result.name)
+                    const { name, status } = this.board.parse(msg.data)
+
+                    this.connection.result({
+                        type: 'vote',
+                        status,
+                        detail: name
+                    })
                 }
             }
 
