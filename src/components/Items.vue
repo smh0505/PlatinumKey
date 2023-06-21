@@ -29,6 +29,7 @@
         <div class="inv-buttons">
             <button class="dice-button" @click="inventory.removeAll(0)">턴 감소</button>
             <button class="song-button" @click="inventory.removeAll(1)">곡 감소</button>
+            <button class="manual-button" @click="manualAdd">수기입력</button>
         </div>
     </div>
 </template>
@@ -54,6 +55,9 @@ export default {
                 "dice": this.inventory.items[index].type === itemType.dice,
                 "song": this.inventory.items[index].type === itemType.song
             }
+        },
+        manualAdd() {
+            this.inventory.addItem(prompt('황금열쇠의 이름을 정확히 입력해주세요.'))
         }
     },
     mounted() {
@@ -71,7 +75,7 @@ export default {
     transition: background-color 0.2s ease-out;
 
     &:hover {
-        background-color: #8889;
+        background-color: #8886;
     }
 }
 
@@ -205,10 +209,13 @@ export default {
 
     .inv-buttons {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 2fr 2fr 1fr;
         gap: 4px;
 
+        color: #fff8;
+
         > button {
+            @include transparent-button;
             font-size: 16px;
             line-height: 26px;
 
@@ -217,10 +224,13 @@ export default {
             }
         }
         .dice-button {
-            border-top: 4px solid rgba(0, 255, 0, 0.75);
+            border-top: 4px solid rgba(0, 255, 0, 0.5);
         }
         .song-button {
-            border-top: 4px solid rgba(255, 255, 0, 0.75);
+            border-top: 4px solid rgba(255, 255, 0, 0.5);
+        }
+        .manual-button {
+            border-top: 4px solid rgba(255, 255, 255, 0.25);
         }
     }
 
