@@ -37,6 +37,7 @@ export default {
             // websocket
             socket: ref<WebSocket | null>(null),
             log: useConnectStore(),
+            retryCount: 0,
 
             // wheel
             options: useWheelStore(),
@@ -154,6 +155,7 @@ export default {
                     type: 'toonation',
                     status: 'connected'
                 })
+                this.retryCount = 0
             }
 
             this.socket.onmessage = msg => {
@@ -174,7 +176,8 @@ export default {
                         status: 'disconnected'
                     })
                 }
-                setTimeout(() => this.connect(), 10)
+                setTimeout(() => this.connect(), this.retryCount > 0? 1000 : 10)
+                this.retryCount++
             }
         },
 
