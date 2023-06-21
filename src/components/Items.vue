@@ -7,10 +7,10 @@
                 <div class="item-name" :key="index"><Marquee :text="item.key"></Marquee></div>
                 <div class="item-buttons">
                     <div>
-                        <button v-if="item.type !== 2" @click="inventory.addOne(inventory.pageNum * ITEMS_PER_PAGE + index)">
+                        <button tabindex="-1" v-if="item.type !== 2" @click="inventory.addOne(inventory.pageNum * ITEMS_PER_PAGE + index)">
                             <span class="material-symbols-rounded">add</span>
                         </button>
-                        <button @click="inventory.subOne(inventory.pageNum * ITEMS_PER_PAGE + index)">
+                        <button tabindex="-1" @click="inventory.subOne(inventory.pageNum * ITEMS_PER_PAGE + index)">
                             <span class="material-symbols-rounded">remove</span>
                         </button>
                     </div>
@@ -18,18 +18,18 @@
             </div>
         </div>
         <div class="inv-pages" v-if="inventory.items.length > ITEMS_PER_PAGE + 1">
-            <button class="page-button" @click="inventory.prevPage()">
+            <button tabindex="-1" class="page-button" @click="inventory.prevPage()">
                 <span class="material-symbols-rounded">first_page</span>
             </button>
             <div class="page-number">{{ inventory.pageNum + 1 }} / {{ inventory.maxPage }} 페이지</div>
-            <button class="page-button" @click="inventory.nextPage()">
+            <button tabindex="-1" class="page-button" @click="inventory.nextPage()">
                 <span class="material-symbols-rounded">last_page</span>
             </button>
         </div>
         <div class="inv-buttons">
-            <button class="dice-button" @click="inventory.removeAll(0)">턴 감소</button>
-            <button class="song-button" @click="inventory.removeAll(1)">곡 감소</button>
-            <button class="manual-button" @click="manualAdd">수기입력</button>
+            <button tabindex="-1" class="dice-button" @click="inventory.removeAll(0)">턴 감소</button>
+            <button tabindex="-1" class="song-button" @click="inventory.removeAll(1)">곡 감소</button>
+            <button tabindex="-1" class="manual-button" @click="manualAdd">수기입력</button>
         </div>
     </div>
 </template>

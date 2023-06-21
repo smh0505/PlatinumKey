@@ -1,13 +1,13 @@
 <template>
     <div class="clockFrame">
         <div class="laps">
-            <button class="seekButton centered" @click="seekLaps(-1)">
+            <button tabindex="-1" class="seekButton centered" @click="seekLaps(-1)">
                 <span class="material-symbols-rounded">remove</span>
             </button>
             <span class="lapsCount" @wheel="seekLaps">
                 {{ laps[lapsIdx] }}<small>바퀴째</small>
             </span>
-            <button class="seekButton centered" @click="seekLaps(+1)">
+            <button tabindex="-1" class="seekButton centered" @click="seekLaps(+1)">
                 <span class="material-symbols-rounded">add</span>
             </button>
         </div>
@@ -16,13 +16,13 @@
             <span class="clockwiseLabel">{{ clockwise ? "시계" : "반시계" }}</span>
         </div>
         <div class="clock" :class="{ paused }" @click="startButton()">
-            <button class="seekButton centered" @click.stop="subMin()">
+            <button tabindex="-1" class="seekButton centered" @click.stop="subMin()">
                 <span class="material-symbols-rounded">remove</span>
             </button>
             <span class="clockTime">
                 {{ elapsed.toFormat('hh:mm:ss') }}
             </span>
-            <button class="seekButton centered" @click.stop="addMin()">
+            <button tabindex="-1" class="seekButton centered" @click.stop="addMin()">
                 <span class="material-symbols-rounded">add</span>
             </button>
         </div>
