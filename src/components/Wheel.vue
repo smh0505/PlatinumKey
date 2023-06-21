@@ -209,7 +209,7 @@ export default {
     // decoration
     border: none;
     border-radius: 8px;
-    font: 20px 'Galmuri14', sans-serif;
+    font-size: 20px;
     background-color: rgba(148, 255, 127, 0.75);
     transition: all 0.2s ease-out;
 
@@ -224,17 +224,17 @@ export default {
     height: 600px;
     left: 32px;
     top: 32px;
-    padding: 12px;
+    padding: 12px 16px;
 
     background-color: rgba(0, 0, 0, 0.75);
 
     .label {
-        font: 24px/1.33 'Galmuri14', sans-serif;
+        font-size: 24px;
         color: white;
     }
 
     .value {
-        font: 40px 'Galmuri14', sans-serif;
+        font-size: 40px;
         color: yellow;
     }
 }
