@@ -3,7 +3,7 @@
         <div class="raffleList">
             <div class="raffleHeader" :style="color">
                 <div class="theme"><Marquee :text="theme"></Marquee></div>
-                <button tabindex="-1" class="reset" @click="$emit('reset')">×{{ pool.length }}</button>
+                <button class="reset" @click="$emit('reset')">×{{ pool.length }}</button>
             </div>
             <div class="rafflePool" v-if="state === 0">
                 <Scroll :list="pool.map(x => x.song)"></Scroll>
@@ -18,9 +18,9 @@
             <Scroll :list="board.usedList.map(x => x.name + ' => ' + x.song)"></Scroll>
         </div>
         <div class="raffleButtons">
-            <button tabindex="-1" v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>
-            <button tabindex="-1" v-if="state === 2" @click="retry()">재추첨</button>
-            <button tabindex="-1" v-if="state === 2" @click="cancel()">추첨 취소</button>
+            <button v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>
+            <button v-if="state === 2" @click="retry()">재추첨</button>
+            <button v-if="state === 2" @click="cancel()">추첨 취소</button>
         </div>
     </div>
 </template>

@@ -10,7 +10,7 @@
         <div class="label">다음 황금열쇠는</div>
         <div class="value">{{ result }}</div>
     </div>
-    <button tabindex="-1" v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
+    <button v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
 </template>
 
 <script lang="ts">
