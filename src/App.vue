@@ -206,7 +206,7 @@ export default {
                 "background-color": this.board.getColor(theme)
             }
         },
-        async switchScene(toPlaying: boolean) {
+        switchScene(toPlaying: boolean) {
             if (!this.options.useSceneSwitching) {
                 return
             }
