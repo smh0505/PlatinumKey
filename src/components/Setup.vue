@@ -32,17 +32,16 @@
                         <div :class="{ disabled: !options.useSceneSwitching }" v-if="controlLevel >= 4">
                             <dt>전환할 장면</dt>
                             <dd>
-                                <select v-if="scenes" v-model="options.scenePlaying" size="5">
-                                    <option disabled>플레이 중일 때:</option>
+                                <select v-model="options.scenePlaying" size="5" multiple>
+                                    <option disabled>플레이 중일 때: Ctrl 키로 다중 선택</option>
                                     <option value="">(전환하지 않음)</option>
-                                    <option v-for="scene in scenes" :value="scene">{{ scene }}</option>
+                                    <option v-if="scenes" v-for="scene in scenes" :value="scene">{{ scene }}</option>
                                 </select>
-                                <input v-else type="text" v-model="options.scenePlaying" />
 
-                                <select v-if="scenes" v-model="options.sceneNotPlaying" size="5">
+                                <select v-model="options.sceneNotPlaying" size="5">
                                     <option disabled>플레이 중이 아닐 때:</option>
                                     <option value="">(전환하지 않음)</option>
-                                    <option v-for="scene in scenes" :value="scene">{{ scene }}</option>
+                                    <option v-if="scenes" v-for="scene in scenes" :value="scene">{{ scene }}</option>
                                 </select>
                             </dd>
                         </div>
@@ -110,7 +109,7 @@ export default {
                 channel: 'arpa__',
                 password: '',
                 useSceneSwitching: false,
-                scenePlaying: '',
+                scenePlaying: [],
                 sceneNotPlaying: ''
             },
 

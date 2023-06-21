@@ -41,7 +41,7 @@
 
             <!--start-->
             <div v-if="index === 0" style="width: 100%; height: 100%;">
-                <button class="blockButton centered" @click="closeAll">출발</button>
+                <button class="blockButton centered" @click="closeAll(); switchScene(true)">출발</button>
             </div>
 
             <!--free-->
@@ -202,16 +202,39 @@ export default {
                 "background-color": this.board.getColor(theme)
             }
         },
-        async switchScene(playing: boolean) {
+        async switchScene(toPlaying: boolean) {
             if (!this.options.useSceneSwitching) {
                 return
             }
-            if (this.currentScene != null &&
-                this.currentScene !== this.options.sceneNotPlaying &&
-                this.currentScene !== this.options.scenePlaying) {
-                return
+
+            const currentlyInPlayingScene = this.options.scenePlaying?.includes(this.currentScene)
+            const currentlyInNotPlayingScene = this.options.sceneNotPlaying === this.currentScene
+
+            const hasPlayingSceneConfigured = this.options.scenePlaying?.length > 0
+            const hasNotPlayingSceneConfigured = this.options.sceneNotPlaying != null
+
+            if (toPlaying) {
+                if (currentlyInPlayingScene && this.options.scenePlaying?.length > 1) {
+                    // already on any of playing scene?
+                    const currentIndex = this.options.scenePlaying.indexOf(this.currentScene)
+                    if (currentIndex < 0)
+                        return
+                    // then move to next scene
+                    const to = this.options.scenePlaying[currentIndex + 1] || this.options.scenePlaying[0]
+                    window.obsstudio?.setCurrentScene?.(to)
+
+                } else if (hasNotPlayingSceneConfigured? currentlyInNotPlayingScene : true) {
+                    // (currently in not-playing scene) or (not-playing scene not configured)
+                    // -> go to playing scene
+                    window.obsstudio?.setCurrentScene?.(this.options.scenePlaying[0])
+                }
+            } else {
+                if (hasPlayingSceneConfigured? currentlyInPlayingScene : true) {
+                    // (currently in playing scene) or (playing scene not configured)
+                    // -> go to not-playing scene
+                    window.obsstudio?.setCurrentScene?.(this.options.sceneNotPlaying)
+                }
             }
-            window.obsstudio?.setCurrentScene?.(playing? this.options.sceneNotPlaying : this.options.scenePlaying)
         }
     },
     mounted() {
@@ -226,10 +249,15 @@ export default {
         window.addEventListener('obsSceneChanged', (event) => {
             this.currentScene = event.detail.name
         })
+        window.obsstudio?.getCurrentScene((scene) => {
+            this.currentScene = scene.name
+        })
+
     },
     watch: {
         state(to) {
-            this.switchScene(to < 0)
+            if(to >= 0)
+                this.switchScene(false)
         }
     }
 }
