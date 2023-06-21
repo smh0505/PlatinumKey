@@ -5,7 +5,7 @@
             <div class="setupTabs">
                 <button class="tabButton" :class="{ tabSelected: state === 0 }" @click="state = 0">판때기</button>
                 <button class="tabButton" :class="{ tabSelected: state === 1 }" @click="state = 1">황금열쇠</button>
-                <button class="tabButton" :class="{ tabSelected: state === 2 }" @click="state = 2">투네이션</button>
+                <button class="tabButton" :class="{ tabSelected: state === 2 }" @click="state = 2">기타 설정</button>
             </div>
             <div class="setupBody">
                 <div class="setup-board" v-show="state === 0">
