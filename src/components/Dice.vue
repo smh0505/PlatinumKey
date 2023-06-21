@@ -1,14 +1,11 @@
 <template>
-    <div v-show="show" class="diceContainer">
+    <div class="diceContainer">
         <iframe class="dice" src="https://shepherdingsheep.github.io/hdwv_2"></iframe>
     </div>
 </template>
 
 <script lang="ts">
 export default {
-    props: {
-        show: Boolean
-    }
 }
 </script>
 

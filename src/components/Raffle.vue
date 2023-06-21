@@ -1,16 +1,16 @@
 <template>
-    <div v-show="show" class="raffleContainer">
+    <div class="raffleContainer">
         <div class="raffleList">
             <div class="raffleHeader" :style="color">
                 <div class="theme"><Marquee :text="theme"></Marquee></div>
-                <button class="reset" @click="$emit('reset')">{{ pool.length }}</button>
+                <button class="reset" @click="$emit('reset')">×{{ pool.length }}</button>
             </div>
             <div class="rafflePool" v-if="state === 0">
                 <Scroll :list="pool.map(x => x.song)"></Scroll>
             </div>
             <div class="raffleResult" v-if="state !== 0">
                 <span>다음 곡은</span><br>
-                <span style="color: yellow; font-size: 32px;">{{ temp[tempIdx].song }}</span><br>
+                <span style="color: yellow; font-size: 40px;">{{ temp[tempIdx].song }}</span><br>
                 <span>by {{ temp[tempIdx].name }}</span>
             </div>
         </div>
@@ -18,9 +18,9 @@
             <Scroll :list="board.usedList.map(x => x.name + ' => ' + x.song)"></Scroll>
         </div>
         <div class="raffleButtons">
-            <button v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>
-            <button v-if="state === 2" @click="retry()">재추첨</button>
-            <button v-if="state === 2" @click="cancel()">추첨 취소</button>
+            <button @keydown.prevent v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>
+            <button @keydown.prevent v-if="state === 2" @click="retry()">재추첨</button>
+            <button @keydown.prevent v-if="state === 2" @click="cancel()">추첨 취소</button>
         </div>
     </div>
 </template>
@@ -37,8 +37,11 @@ import { remainder } from '../scripts/Calculate';
 export default {
     props: {
         begin: Boolean,
-        show: Boolean,
-        index: Number
+        index: Number,
+        channel: {
+            type: String,
+            default: 'arpa__'
+        }
     },
     data() {
         return {
@@ -72,12 +75,19 @@ export default {
     methods: {
         connect() {
             this.socket = new WebSocket('wss://irc-ws.chat.twitch.tv')
+            this.connection.result({
+                type: 'twitch',
+                status: 'connecting'
+            })
 
             this.socket.onopen = () => {
                 this.socket?.send('CAP REQ :twitch.tv/commands twitch.tv/tags')
                 this.socket?.send('NICK justinfan9705')
-                this.socket?.send('JOIN #arpa__')
-                this.connection.result(0, true)
+                this.socket?.send('JOIN #' + this.channel)
+                this.connection.result({
+                    type: 'twitch',
+                    status: 'connected'
+                })
             }
 
             this.socket.onmessage = msg => {
@@ -85,8 +95,13 @@ export default {
                     this.socket?.send('PONG :tmi.twitch.tv')
                 }
                 if (this.begin && msg.data.includes('!픽')) {
-                    const result = this.board.parse(msg.data)
-                    this.connection.result(2, result.result, result.name)
+                    const { name, status } = this.board.parse(msg.data)
+
+                    this.connection.result({
+                        type: 'vote',
+                        status,
+                        detail: name
+                    })
                 }
             }
 
@@ -159,22 +174,28 @@ export default {
 
         .raffleHeader {
             display: grid;
-            grid-template-columns: 1fr 6rem;
+            grid-template-columns: auto min-content;
+
+            line-height: 32px;
+            padding-bottom: 4px;
 
             .theme {
                 display: flex;
-                font: 30px 'Galmuri14', sans-serif;
-                padding-inline: 8px;
+                font-size: 30px;
+                padding-inline: 14px;
                 align-items: center;
                 overflow: hidden;
             }
 
             .reset {
-                font: 30px 'Galmuri14', sans-serif;
+                font-size: 36px;
+                font-family: var(--font-numeric);
+                font-variant-numeric: tabular-nums;
                 background-color: transparent;
                 color: black;
                 border: none;
                 transition: all 0.2s ease-out;
+                padding: 0 20px;
 
                 &:hover {
                     background-color: black;
@@ -185,7 +206,7 @@ export default {
 
         .rafflePool {
             padding: 4px 8px;
-            font: 16px 'Galmuri14', sans-serif;
+            font-size: 16px;
             height: 260px;
             overflow: hidden;
         }
@@ -194,7 +215,7 @@ export default {
             background-color: rgba(75, 75, 75, 0.8);
             color: white;
             padding: 8px 16px;
-            font: 20px 'Galmuri14', sans-serif;
+            font-size: 24px;
         }
     }
 
@@ -205,7 +226,7 @@ export default {
 
         padding: 4px 8px;
         height: 280px;
-        font: 16px 'Galmuri14', sans-serif;
+        font-size: 16px;
         overflow: hidden;
     }
 
@@ -219,7 +240,7 @@ export default {
             border-radius: 8px;
             background-color: rgba(0, 0, 0, 0.7);
             color: white;
-            font: 20px 'Galmuri14', sans-serif;
+            font-size: 20px;
             transition: all 0.2s ease-out;
 
             &:hover {

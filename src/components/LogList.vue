@@ -1,44 +1,53 @@
 <template>
-    <div class="logSlots">
-        <div v-for="log in connection.output" :class="logConfig(log)">{{ logText(log) }}</div>
-    </div>
+    <ul class="logSlots">
+        <li
+            v-for="log in logs"
+            :class="[
+                'type-' + log.type,
+                'status-' + log.status
+            ]">{{ logText(log) }}</li>
+    </ul>
 </template>
 
 <script lang="ts">
+import type { ConnectionLog, Log } from '../stores/ConnectStore';
 import { useConnectStore } from '../stores/ConnectStore';
 
+const CONNECTION_LABEL_MAP: { [key in ConnectionLog['type']]: string } = {
+    twitch: '트위치',
+    toonation: '투네이션'
+}
+const CONNECTION_STATUS_MAP: { [key in ConnectionLog['status']]: string } = {
+    disconnected: '연결 끊김!',
+    connecting: '연결 중…',
+    connected: '연결됨!'
+}
+
 export default {
+    props: {
+        visibleCount: {
+            type: Number,
+            default: 10
+        }
+    },
     data() {
         return {
-            connection: useConnectStore()
+            connection: useConnectStore(),
         }
     },
     methods: {
-        logConfig(log: { type: number, positive: boolean, detail: string | null }) {
-            return {
-                "twitch-conn": log.type === 0 && log.positive === true,
-                "twitch-disc": log.type === 0 && log.positive === false,
-                "toon-conn": log.type === 1 && log.positive === true,
-                "toon-disc": log.type === 1 && log.positive === false,
-                "vote-succ": log.type === 2 && log.positive === true,
-                "vote-fail": log.type === 2 && log.positive === false
+        logText(log: Log) {
+            if (log.type in CONNECTION_LABEL_MAP) {
+                log = log as ConnectionLog
+                return CONNECTION_LABEL_MAP[log.type] + ' ' + CONNECTION_STATUS_MAP[log.status]
+            } else {
+                return log.detail
             }
-        },
-        logText(log: { type: number, positive: boolean, detail: string | null }) {
-            let output = ""
-            switch (log.type) {
-                case 0:
-                    if (log.positive) output = "트위치 챗 연결됨!"
-                    else output = "트위치 챗 연결중..."
-                    break
-                case 1:
-                    if (log.positive) output = "투네이션 연결됨!"
-                    else output = "투네이션 연결중..."
-                    break
-                case 2:
-                    output = String(log.detail)
-            }
-            return output
+        }
+    },
+    computed: {
+        logs() {
+            return this.connection.logs.slice(-this.visibleCount)
         }
     }
 }
@@ -48,36 +57,78 @@ export default {
 .logSlots {
     display: grid;
     grid-template-rows: repeat(10, 1fr);
-    font-weight: bold;
 
-    .twitch-conn {
-        background-color: rgb(255, 0, 255);
-        color: black;
+    margin: 0;
+    padding: 0;
+
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+
+    color: white;
+    text-shadow: 0 0 0.25em #000, 0 0 0.5em #000, 0 0 0.5em #000;
+
+    list-style: none;
+    user-select: none;
+
+    > li {
+        display: flex;
+        justify-content: flex-end;
+
+        padding: 0 4px;
+        background: linear-gradient(to left, var(--color) 32px, transparent 160px);
+
+        white-space: nowrap;
+        word-break: keep-all;
+        text-overflow: clip;
+        overflow: hidden;
     }
 
-    .twitch-disc {
-        background-color: rgb(102, 0, 102);
-        color: white;
+    .type {
+        &-twitch, &-toonation {
+            font-weight: 300;
+            color: #fffc;
+        }
+        &-twitch {
+            --color: #92f5;
+        }
+        &-toonation {
+            --color: #29f7;
+        }
+        &-vote::after {
+            display: inline-block;
+            margin-left: 3px;
+            font-family: 'Material Symbols Rounded';
+            font-weight: 400;
+            font-size: 16px;
+            vertical-align: top;
+        }
     }
-
-    .toon-conn {
-        background-color: rgb(157, 255, 0);
-        color: black;
-    }
-
-    .toon-disc {
-        background-color: rgb(81, 131, 0);
-        color: white;
-    }
-
-    .vote-succ {
-        background: blue;
-        color: white;
-    }
-
-    .vote-fail {
-        background-color: red;
-        color: white;
+    .status {
+        &-accepted {
+            --color: hsla(120, 80%, 50%, 0.5);
+            &::after {
+                content: 'done';
+            }
+        }
+        &-cooldown {
+            --color: hsla(32, 80%, 50%, 0.7);
+            &::after {
+                content: 'query_builder';
+            }
+        }
+        &-rejected {
+            --color: hsla(0, 80%, 50%, 0.6);
+            &::after {
+                content: 'block';
+            }
+        }
+        &-failed {
+            --color: hsla(0, 80%, 50%, 0.6);
+            &::after {
+                content: 'question_mark';
+            }
+        }
     }
 }
 </style>

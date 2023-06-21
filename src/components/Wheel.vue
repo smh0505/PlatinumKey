@@ -1,5 +1,5 @@
 <template>
-    <v-stage v-show="show" :config="{ width: 712, height: 712}">
+    <v-stage :config="{ width: 712, height: 712}">
         <v-layer>
             <v-wedge v-for="(item, index) in options.options" :config="sectorConfig(index, item)"></v-wedge>
             <v-text v-for="(item, index) in options.options" :config="textConfig(index, item)"></v-text>
@@ -10,7 +10,7 @@
         <div class="label">다음 황금열쇠는</div>
         <div class="value">{{ result }}</div>
     </div>
-    <button v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
+    <button @keydown.prevent v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
 </template>
 
 <script lang="ts">
@@ -30,7 +30,6 @@ interface option {
 
 export default {
     props: {
-        show: Boolean,
         payload: String,
     },
     data() {
@@ -38,6 +37,7 @@ export default {
             // websocket
             socket: ref<WebSocket | null>(null),
             log: useConnectStore(),
+            retryCount: 0,
 
             // wheel
             options: useWheelStore(),
@@ -75,10 +75,10 @@ export default {
             return output
         },
         showResult() {
-            return this.show && this.state === this.states.result
+            return this.state === this.states.result
         },
         showButton() {
-            return this.show && this.state !== this.states.stopping && this.options.options.length > 0
+            return this.state !== this.states.stopping && this.options.options.length > 0
         }
     },
     methods: {
@@ -141,10 +141,21 @@ export default {
 
         // websocket
         connect() {
+            if(!this.payload) {
+                return
+            }
             this.socket = new WebSocket('wss://toon.at:8071/' + this.payload)
+            this.log.result({
+                type: 'toonation',
+                status: 'connecting'
+            })
 
             this.socket.onopen = () => {
-                this.log.result(1, true)
+                this.log.result({
+                    type: 'toonation',
+                    status: 'connected'
+                })
+                this.retryCount = 0
             }
 
             this.socket.onmessage = msg => {
@@ -160,9 +171,13 @@ export default {
             this.socket.onclose = () => {
                 const filtered = this.log.logs.filter(x => x.type === 1)
                 if (filtered.length === 0 || filtered.slice(-1)[0].positive) {
-                    this.log.result(1, false)
+                    this.log.result({
+                        type: 'toonation',
+                        status: 'disconnected'
+                    })
                 }
-                setTimeout(() => this.connect(), 1000)
+                setTimeout(() => this.connect(), this.retryCount > 0? 1000 : 10)
+                this.retryCount++
             }
         },
 
@@ -194,7 +209,7 @@ export default {
     // decoration
     border: none;
     border-radius: 8px;
-    font: 20px 'Galmuri14', sans-serif;
+    font-size: 20px;
     background-color: rgba(148, 255, 127, 0.75);
     transition: all 0.2s ease-out;
 
@@ -209,17 +224,17 @@ export default {
     height: 600px;
     left: 32px;
     top: 32px;
-    padding: 12px;
+    padding: 12px 16px;
 
     background-color: rgba(0, 0, 0, 0.75);
 
     .label {
-        font: 24px/1.33 'Galmuri14', sans-serif;
+        font-size: 24px;
         color: white;
     }
 
     .value {
-        font: 40px 'Galmuri14', sans-serif;
+        font-size: 40px;
         color: yellow;
     }
 }

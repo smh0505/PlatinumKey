@@ -1,26 +1,21 @@
 <template>
-    <transition name="modal">
-        <div v-if="show" class="startMask">
-            <div class="startContainer">
-                <div class="startHeader">시작 메뉴</div>
-                <div class="startBody">
-                    <button class="startMenuButton" @click="$emit('shuffle')">판 섞기</button>
-                    <button class="startMenuButton" @click="$emit('addkey')">판 섞기 + 열쇠 추가</button>
-                    <button class="startMenuButton" @click="$emit('reset')">판 초기화</button>
-                </div>
-                <div class="startFooter">
-                    <button class="footButton" @click="$emit('close')">닫기</button>
-                </div>
+    <div class="startMask">
+        <div class="startContainer">
+            <div class="startHeader">판때기 메뉴</div>
+            <div class="startBody">
+                <button class="startMenuButton" @click="$emit('shuffle')">판 섞기</button>
+                <button class="startMenuButton" @click="$emit('addkey')">판 섞기 + 열쇠 추가</button>
+                <button class="startMenuButton" @click="$emit('reset')">판 초기화</button>
+            </div>
+            <div class="startFooter">
+                <button class="footButton" @click="$emit('close')">닫기</button>
             </div>
         </div>
-    </transition>
+    </div>
 </template>
 
 <script lang="ts">
 export default {
-    props: {
-        show: Boolean
-    },
     emits: ['shuffle', 'addkey', 'reset', 'close']
 }
 </script>
@@ -32,7 +27,7 @@ export default {
     top: 0;
     left: 0;
     z-index: 50;
-    
+
     width: 100%;
     height: 100%;
 

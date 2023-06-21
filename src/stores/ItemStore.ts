@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { remainder } from "../scripts/Calculate";
 
+export const ITEMS_PER_PAGE = 4
+
 export const useItemStore = defineStore('items', {
     state() {
         return {
@@ -10,10 +12,15 @@ export const useItemStore = defineStore('items', {
     },
     getters: {
         maxPage(state) {
-            return Math.ceil(state.items.length / 4)
+            return Math.ceil(state.items.length / ITEMS_PER_PAGE)
         },
         pageView(state) {
-            return state.items.slice(state.pageNum * 4, state.pageNum * 4 + 4)
+            // 5 items -or- 4 items + page indicators
+            if(state.items.length <= (ITEMS_PER_PAGE + 1)) {
+                return state.items
+            } else {
+                return state.items.slice(state.pageNum * ITEMS_PER_PAGE, (state.pageNum + 1) * ITEMS_PER_PAGE)
+            }
         }
     },
     actions: {

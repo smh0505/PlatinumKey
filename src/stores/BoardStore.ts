@@ -118,22 +118,22 @@ export const useBoardStore = defineStore('board', {
                 const index = Number(match.groups?.index)
                 const excluded = [0, 13].concat(this.goldenKeys)
                 const map = [...Array(26).keys()].filter(x => !excluded.includes(x))
-                if (map.includes(index))
-                {
+                if (map.includes(index)) {
+                    const result = this.insert(parsedMsg.name, Number(match.groups?.index), String(match.groups?.song))
                     return {
                         name: parsedMsg.name,
-                        result: this.insert(parsedMsg.name, Number(match.groups?.index), String(match.groups?.song))
+                        status: result? 'accepted' : 'cooldown'
                     }
                 } else {
                     return {
                         name: parsedMsg.name,
-                        result: false
+                        status: 'rejected'
                     }
                 }
             } else {
                 return {
                     name: parsedMsg.name,
-                    result: false
+                    status: 'failed'
                 }
             }
         },

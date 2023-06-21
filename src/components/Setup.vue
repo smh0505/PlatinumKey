@@ -1,39 +1,73 @@
 <template>
-    <transition name="modal">
-        <div v-if="show" class="setupMask">
-            <div class="setupContainer">
-                <div class="setupHeader">기본 설정</div>
-                <div class="setupTabs">
-                    <button class="tabButton" :class="{ tabSelected: state === 0 }" @click="state = 0">판때기</button>
-                    <button class="tabButton" :class="{ tabSelected: state === 1 }" @click="state = 1">황금열쇠</button>
-                    <button class="tabButton" :class="{ tabSelected: state === 2 }" @click="state = 2">투네이션</button>
+    <div class="setupMask">
+        <div class="setupContainer">
+            <div class="setupHeader">기본 설정</div>
+            <div class="setupTabs">
+                <button class="tabButton" :class="{ tabSelected: state === 0 }" @click="state = 0">판때기</button>
+                <button class="tabButton" :class="{ tabSelected: state === 1 }" @click="state = 1">황금열쇠</button>
+                <button class="tabButton" :class="{ tabSelected: state === 2 }" @click="state = 2">기타 설정</button>
+            </div>
+            <div class="setupBody">
+                <div class="setup-board" v-show="state === 0">
+                    <p class="setup-comment">
+                        Enter로 주제를 추가합니다. Ctrl+Enter를 누르면 대주제를 복제하고, Shift+Enter를 누르면 윗 줄로 돌아갑니다.
+                    </p>
+                    <BlocksList :list="themes" @addtheme="addTheme" @removetheme="removeTheme" />
                 </div>
-                <div class="setupBody">
-                    <div class="setup-board" v-show="state === 0">
-                        <BlocksList :list="themes" @addtheme="addTheme" @removetheme="removeTheme" />
+                <div class="setup-goldenkey" v-show="state === 1">
+                    <div class="goldenkeyList">
+                        <KeysList :list="keyLogs" :selected="logSelected" @loadkeys="loadKey" @deletekeys="deleteKey" />
                     </div>
-                    <div class="setup-goldenkey" v-show="state === 1">
-                        <div class="goldenkeyList">
-                            <KeysList :list="keyLogs" :selected="logSelected" @loadkeys="loadKey" @deletekeys="deleteKey" />
-                        </div>
-                        <div class="goldenkeyList">
-                            <DefaultKeys v-if="logSelected === 0" :list="defaultKeys" @addkey="addKey" @removekey="removeKey" />
-                            <CustomKeys v-else :list="customKeys" />
-                        </div>
-                    </div>
-                    <div class="setup-toonation" v-show="state === 2">
-                        <div class="toonationLabel">투네이션 통합 위젯 비밀키</div>
-                        <div class="toonationInput">https://toon.at/widget/alertbox/ 
-                            <input type="password" class="toonationPassword" v-model="password">
-                        </div>
+                    <div class="goldenkeyList">
+                        <DefaultKeys v-if="logSelected === 0" :list="defaultKeys" @addkey="addKey" @removekey="removeKey" />
+                        <CustomKeys v-else :list="customKeys" />
                     </div>
                 </div>
-                <div class="setupFooter">
-                    <button class="footButton" @click="saveAll()">시작하기</button>
-                </div>
+                <dl class="setup-options" v-show="state === 2">
+                    <div :class="{ disabled: controlLevel < 4 }">
+                        <dt>자동 장면 전환 사용</dt>
+                        <dd>
+                            <input type="checkbox" v-model="options.useSceneSwitching" />
+                        </dd>
+                        <div :class="{ disabled: !options.useSceneSwitching }" v-if="controlLevel >= 4">
+                            <dt>전환할 장면</dt>
+                            <dd>
+                                <select v-model="options.scenePlaying" size="5" multiple>
+                                    <option disabled>플레이 중일 때: Ctrl 키로 다중 선택</option>
+                                    <option value="">(전환하지 않음)</option>
+                                    <option v-if="scenes" v-for="scene in scenes" :value="scene">{{ scene }}</option>
+                                </select>
+
+                                <select v-model="options.sceneNotPlaying" size="5">
+                                    <option disabled>플레이 중이 아닐 때:</option>
+                                    <option value="">(전환하지 않음)</option>
+                                    <option v-if="scenes" v-for="scene in scenes" :value="scene">{{ scene }}</option>
+                                </select>
+                            </dd>
+                        </div>
+                    </div>
+                    <p class="setup-comment" v-if="controlLevel < 0">
+                        해당 기능은 OBS에서만 쓸 수 있습니다.
+                    </p>
+                    <p class="setup-comment" v-else-if="controlLevel < 4">
+                        해당 기능은 OBS의 브라우저 소스 속성 맨 아래의 <b>페이지 권한</b>이 <b>고급 접근 권한</b> 이상이여야 사용 가능합니다!
+                    </p>
+                    <hr />
+                    <dt>트위치 ID</dt>
+                    <dd>https://twitch.tv/
+                        <input type="text" class="toonationPassword" v-model="options.channel">
+                    </dd>
+                    <dt>투네이션 통합 위젯 비밀키</dt>
+                    <dd>https://toon.at/widget/alertbox/
+                        <input type="password" class="toonationPassword" v-model="options.password">
+                    </dd>
+                </dl>
+            </div>
+            <div class="setupFooter">
+                <button class="footButton" @click="saveAll()">시작하기</button>
             </div>
         </div>
-    </transition>
+    </div>
 </template>
 
 <script lang="ts">
@@ -68,8 +102,20 @@ export default {
             customKeys: [] as { key: string, count: number }[],
 
             // toonation
-            password: "",
             warning: false,
+
+            // options
+            options: {
+                channel: 'arpa__',
+                password: '',
+                useSceneSwitching: false,
+                scenePlaying: [],
+                sceneNotPlaying: ''
+            },
+
+            // obs
+            controlLevel: -1, // 4 required for scene switching
+            scenes: null,
 
             // store
             wheel: useWheelStore()
@@ -119,22 +165,27 @@ export default {
             if (this.themes.length < 14) {
                 window.alert('오류: 판때기의 주제가 최소 14개 있어야 정상작동합니다.')
             } else {
-                const response = await fetch("https://cors-proxy.bloppyhb.workers.dev/https://toon.at/widget/alertbox/" + this.password)
+                const response = await fetch("https://cors-proxy.bloppyhb.workers.dev/https://toon.at/widget/alertbox/" + this.options.password)
                 await this.parse(await response.text())
             }
         },
         async parse(data: string) {
+            // save options always, anyway
+            LocalForage.setItem('options', JSON.parse(JSON.stringify(this.options)))
+
             const regex = /"payload":"(?<payload>\w+)"/
             const payload = data.match(regex)?.groups?.payload
             if (payload) {
                 await Promise.all([
                     LocalForage.setItem('themes', JSON.parse(JSON.stringify(this.themes))),
                     LocalForage.setItem('items', JSON.parse(JSON.stringify(this.defaultKeys))),
-                    LocalForage.setItem('toonation', this.password)
                 ])
 
                 this.return()
-                this.$emit('close', payload)
+                this.$emit('close', {
+                    options: this.options,
+                    payload
+                })
             } else {
                 window.alert("오류: Payload를 불러오지 못했습니다.\n비밀키를 다시 확인해주세요.")
             }
@@ -164,10 +215,21 @@ export default {
                 items.forEach(x => this.defaultKeys.push(x))
             }
         })
-        LocalForage.getItem('toonation').then(value => {
-            if (value !== null) {
-                const password = value as string
-                this.password = password
+        LocalForage.getItem('options').then(async options => {
+            const password = await LocalForage.getItem('toonation')
+            if (password) {
+                LocalForage.removeItem('toonation')
+                // also works as migration flag; if they already have options, there's no need to update
+                if(!options)
+                    LocalForage.setItem('options', { password })
+            } else if (options == null) {
+                return
+            }
+            for (const key in options) {
+                this.options[key] = options[key]
+            }
+            if (password) {
+                this.options.password = password
             }
         })
         LocalForage.keys().then(list => {
@@ -177,6 +239,13 @@ export default {
                     this.keyFiles.push(x)
                 }
             })
+        })
+
+        window.obsstudio?.getControlLevel((level) => {
+            this.controlLevel = level
+        })
+        window.obsstudio?.getScenes((scenes) => {
+            this.scenes = scenes
         })
     }
 }
@@ -244,15 +313,16 @@ export default {
             height: 400px;
             padding-bottom: 8px;
 
-            .setup-board {
-                max-height: 100%;
-                overflow: scroll;
+            max-height: 100%;
+            overflow-y: auto;
 
-                &::-webkit-scrollbar {
-                    background: transparent;
-                    width: 0px;
-                    height: 0px;
-                }
+            .setup-board {
+
+                // &::-webkit-scrollbar {
+                //     background: transparent;
+                //     width: 0px;
+                //     height: 0px;
+                // }
             }
 
             .setup-goldenkey {
@@ -281,28 +351,64 @@ export default {
                 }
             }
 
-            .setup-toonation {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
+            .setup-options {
+                display: grid;
+                grid-template-columns: 240px auto;
                 gap: 12px;
 
-                .toonationLabel {
-                    font: bold 20px sans-serif;
-                }
-
-                .toonationInput {
+                input {
                     font-size: 20px;
                 }
-
-                .toonationPassword {
-                    font-size: 20px;
+                select {
+                    font-size: 18px;
+                }
+                input[type=text], input[type=password], select {
                     padding: 8px;
                     border: none;
-                    border-radius: 8px;
                     width: 400px;
                 }
+                input[type=checkbox] {
+                    width: 1em;
+                    height: 1em;
+                }
+
+                dt {
+                    user-select: none;
+                    text-align: right;
+                    opacity: inherit;
+
+                    line-height: 40px;
+                    font-weight: bold;
+                }
+                dd {
+                    opacity: inherit;
+                    margin: 0;
+                }
+
+                div {
+                    display: contents;
+                    &.disabled {
+                        opacity: 0.5;
+                        pointer-events: none;
+                        user-select: none;
+                    }
+                }
+                hr {
+                    grid-column: span 2;
+                }
+                .setup-comment {
+                    grid-column: 2 / -1;
+                    text-align: left;
+                    margin-top: 0;
+                    margin-bottom: 0;
+                }
             }
+
+        }
+
+        .setup-comment {
+            grid-column: 1 / -1;
+            text-align: center;
         }
 
         .setupFooter {
@@ -326,19 +432,4 @@ export default {
     }
 }
 
-.modal-enter-from {
-    opacity: 0;
-
-    .setupContainer {
-        transform: scale(1.1);
-    }
-}
-
-.modal-leave-to {
-    opacity: 0;
-
-    .setupContainer {
-        transform: scale(1.1);
-    }
-}
 </style>
