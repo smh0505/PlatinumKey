@@ -18,9 +18,9 @@
             <Scroll :list="board.usedList.map(x => x.name + ' => ' + x.song)"></Scroll>
         </div>
         <div class="raffleButtons">
-            <button v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>
-            <button v-if="state === 2" @click="retry()">재추첨</button>
-            <button v-if="state === 2" @click="cancel()">추첨 취소</button>
+            <button @keydown.prevent v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>
+            <button @keydown.prevent v-if="state === 2" @click="retry()">재추첨</button>
+            <button @keydown.prevent v-if="state === 2" @click="cancel()">추첨 취소</button>
         </div>
     </div>
 </template>

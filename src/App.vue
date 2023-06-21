@@ -19,8 +19,8 @@
 
             <!--right-bottom buttons-->
             <div class="static-menu" v-show="this.state >= 0">
-                <button @click="showSetup = true">기본 설정</button>
-                <button @click="showStart = true">판때기 메뉴</button>
+                <button @keydown.prevent @click="showSetup = true">기본 설정</button>
+                <button @keydown.prevent @click="showStart = true">판때기 메뉴</button>
             </div>
         </div>
 
@@ -44,22 +44,22 @@
 
             <!--start-->
             <div v-if="index === 0" style="width: 100%; height: 100%;">
-                <button class="blockButton centered" @click="closeAll(); switchScene(true)">출발</button>
+                <button @keydown.prevent class="blockButton centered" @click="closeAll(); switchScene(true)">출발</button>
             </div>
 
             <!--free-->
-            <button v-else-if="index === 13" class="blockButton centered" @click="state = 0">뱅하싶</button>
+            <button @keydown.prevent v-else-if="index === 13" class="blockButton centered" @click="state = 0">뱅하싶</button>
 
             <!--golden key-->
-            <button v-else-if="board.isGoldenKey(index)" class="blockButton centered" @click="state = 1">황금열쇠</button>
+            <button @keydown.prevent v-else-if="board.isGoldenKey(index)" class="blockButton centered" @click="state = 1">황금열쇠</button>
 
             <!--islands-->
-            <button v-else-if="index === 7 || index === 20" class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
+            <button @keydown.prevent v-else-if="index === 7 || index === 20" class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
 
             <!--other blocks-->
             <div v-else style="width: 100%; height: 100%;" :style="fillColor(index)">
                 <div class="blockDetail">{{ board.board[index] }}</div>
-                <button class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
+                <button @keydown.prevent class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
             </div>
         </div>
     </div>
