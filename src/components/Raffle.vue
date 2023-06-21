@@ -3,14 +3,14 @@
         <div class="raffleList">
             <div class="raffleHeader" :style="color">
                 <div class="theme"><Marquee :text="theme"></Marquee></div>
-                <button class="reset" @click="$emit('reset')">{{ pool.length }}</button>
+                <button class="reset" @click="$emit('reset')">×{{ pool.length }}</button>
             </div>
             <div class="rafflePool" v-if="state === 0">
                 <Scroll :list="pool.map(x => x.song)"></Scroll>
             </div>
             <div class="raffleResult" v-if="state !== 0">
                 <span>다음 곡은</span><br>
-                <span style="color: yellow; font-size: 32px;">{{ temp[tempIdx].song }}</span><br>
+                <span style="color: yellow; font-size: 40px;">{{ temp[tempIdx].song }}</span><br>
                 <span>by {{ temp[tempIdx].name }}</span>
             </div>
         </div>
@@ -174,22 +174,28 @@ export default {
 
         .raffleHeader {
             display: grid;
-            grid-template-columns: 1fr 6rem;
+            grid-template-columns: auto min-content;
+
+            line-height: 32px;
+            padding-bottom: 4px;
 
             .theme {
                 display: flex;
-                font: 30px 'Galmuri14', sans-serif;
-                padding-inline: 8px;
+                font-size: 30px;
+                padding-inline: 14px;
                 align-items: center;
                 overflow: hidden;
             }
 
             .reset {
-                font: 30px 'Galmuri14', sans-serif;
+                font-size: 36px;
+                font-family: var(--font-numeric);
+                font-variant-numeric: tabular-nums;
                 background-color: transparent;
                 color: black;
                 border: none;
                 transition: all 0.2s ease-out;
+                padding: 0 20px;
 
                 &:hover {
                     background-color: black;
@@ -200,7 +206,7 @@ export default {
 
         .rafflePool {
             padding: 4px 8px;
-            font: 16px 'Galmuri14', sans-serif;
+            font-size: 16px;
             height: 260px;
             overflow: hidden;
         }
@@ -209,7 +215,7 @@ export default {
             background-color: rgba(75, 75, 75, 0.8);
             color: white;
             padding: 8px 16px;
-            font: 20px 'Galmuri14', sans-serif;
+            font-size: 24px;
         }
     }
 
@@ -220,7 +226,7 @@ export default {
 
         padding: 4px 8px;
         height: 280px;
-        font: 16px 'Galmuri14', sans-serif;
+        font-size: 16px;
         overflow: hidden;
     }
 
@@ -234,7 +240,7 @@ export default {
             border-radius: 8px;
             background-color: rgba(0, 0, 0, 0.7);
             color: white;
-            font: 20px 'Galmuri14', sans-serif;
+            font-size: 20px;
             transition: all 0.2s ease-out;
 
             &:hover {

@@ -1,9 +1,13 @@
-@import url("https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css");
 @font-face {
     font-family: 'KBO-Dia-Gothic_bold';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_bold.woff') format('woff');
     font-weight: 700;
     font-style: normal;
+}
+
+:root {
+    --font-normal: 'Pretendard JP', 'Pretendard', 'Pretendard Variable', sans-serif;
+    --font-numeric: 'Novecento Sans Wide', 'novecento-sans-wide', 'Pretendard JP', 'Pretendard', 'Pretendard Variable', sans-serif;
 }
 
 html, body {
@@ -12,7 +16,7 @@ html, body {
     margin: 0px;
     padding: 0px;
 
-    font-family: 'Pretendard', 'Pretendard Variable', sans-serif;
+    font-family: var(--font-normal);
 }
 
 * {

@@ -285,17 +285,18 @@ export default {
         position: relative;
 
         .blockNumber {
+            display: inline-block;
             position: absolute;
-            width: 32px;
+            top: 0;
             z-index: 5;
 
             // content
-            font: bold 20px/1.4 sans-serif;
-
-            // decoration
-            border-bottom: 4px solid;
-            border-right: 4px solid;
-            background-color: white;
+            font-family: var(--font-numeric);
+            font-variant-numeric: lining-nums;
+            font-weight: 500;
+            font-size: 24px;
+            line-height: 24px;
+            padding: 8px 10px;
         }
 
         .blockDetail {
@@ -316,7 +317,7 @@ export default {
             top: 0px;
 
             // content
-            font: 40px "Galmuri14", sans-serif;
+            font-size: 40px;
             white-space: pre-wrap;
 
             // decoration
@@ -443,6 +444,19 @@ export default {
         background-position: center;
         background-size: cover;
         background-clip: border-box;
+    }
+    .ez2on, .mars, .truck {
+        .blockNumber {
+            color: white;
+            mix-blend-mode: exclusion;
+        }
+    }
+    .djmax, .circle {
+        .blockNumber {
+            color: white;
+            right: 0;
+            text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
+        }
     }
 }
 

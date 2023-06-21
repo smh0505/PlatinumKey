@@ -69,6 +69,7 @@ export default {
     text-shadow: 0 0 0.25em #000, 0 0 0.5em #000, 0 0 0.5em #000;
 
     list-style: none;
+    user-select: none;
 
     > li {
         display: flex;
