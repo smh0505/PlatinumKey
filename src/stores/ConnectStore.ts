@@ -19,11 +19,6 @@ export const useConnectStore = defineStore('connection', {
             logs: [] as Log[]
         }
     },
-    getters: {
-        output(state) {
-            return state.logs.slice(-10)
-        }
-    },
     actions: {
         result({ type, status, detail }: Log) {
             if(type === 'twitch' || type === 'toonation') {

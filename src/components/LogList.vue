@@ -1,7 +1,7 @@
 <template>
     <ul class="logSlots">
         <li
-            v-for="log in connection.output"
+            v-for="log in logs"
             :class="[
                 'type-' + log.type,
                 'status-' + log.status
@@ -24,6 +24,12 @@ const CONNECTION_STATUS_MAP: { [key in ConnectionLog['status']]: string } = {
 }
 
 export default {
+    props: {
+        visibleCount: {
+            type: Number,
+            default: 10
+        }
+    },
     data() {
         return {
             connection: useConnectStore(),
@@ -37,6 +43,11 @@ export default {
             } else {
                 return log.detail
             }
+        }
+    },
+    computed: {
+        logs() {
+            return this.connection.logs.slice(-this.visibleCount)
         }
     }
 }
@@ -56,15 +67,20 @@ export default {
 
     color: white;
     text-shadow: 0 0 0.25em #000, 0 0 0.5em #000, 0 0 0.5em #000;
-    text-align: right;
 
     list-style: none;
-    white-space: nowrap;
-
 
     > li {
+        display: flex;
+        justify-content: flex-end;
+
         padding: 0 4px;
         background: linear-gradient(to right, transparent 50%, var(--color) 95%);
+
+        white-space: nowrap;
+        word-break: keep-all;
+        text-overflow: clip;
+        overflow: hidden;
     }
 
     .type {

@@ -11,7 +11,10 @@
             <!--right panel-->
             <div name="right-panel">
                 <Timer :clockwise="clockwise" @reverse="clockwise = !clockwise"></Timer>
-                <Inventory v-show="this.state >= 0"></Inventory>
+                <div class="inv-container">
+                    <LogList :visible-count="this.state < 0? 5 : 10"></LogList>
+                    <Items v-show="this.state >= 0"></Items>
+                </div>
             </div>
 
             <!--right-bottom buttons-->
@@ -67,7 +70,8 @@
 import Dice from './components/Dice.vue'
 import Wheel from './components/Wheel.vue'
 import Timer from './components/Timer.vue'
-import Inventory from './components/Inventory.vue'
+import Items from './components/Items.vue'
+import LogList from './components/LogList.vue'
 import Setup from './components/Setup.vue'
 import StartMenu from './components/StartMenu.vue'
 import Raffle from './components/Raffle.vue'
@@ -133,7 +137,7 @@ export default {
         }
     },
     components: {
-        Dice, Timer, Setup, Wheel, Inventory, StartMenu, Raffle
+        Dice, Timer, Setup, Wheel, Items, LogList, StartMenu, Raffle
     },
     methods: {
         // game setup
@@ -353,6 +357,26 @@ export default {
                 width: 120px;
                 background-color: #333d;
                 color: #fff;
+            }
+        }
+
+        .inv-container {
+            display: flex;
+            justify-items: end;
+
+            margin: 6px;
+            gap: 4px;
+            height: 240px;
+
+            > .logSlots {
+                flex-basis: 33.3%;
+                flex-grow: 1;
+                margin-left: auto;
+                min-width: 0;
+            }
+            > .inv-bg {
+                flex-basis: 66.6%;
+                grid-column: span 2;
             }
         }
     }
