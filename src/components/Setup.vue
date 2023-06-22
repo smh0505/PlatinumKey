@@ -71,6 +71,8 @@
 </template>
 
 <script lang="ts">
+import type Options from '../scripts/IOptions'
+
 import BlocksList from './BlocksList.vue'
 import KeysList from './KeysList.vue'
 import DefaultKeys from './DefaultKeys.vue'
@@ -109,13 +111,13 @@ export default {
                 channel: 'arpa__',
                 password: '',
                 useSceneSwitching: false,
-                scenePlaying: [],
+                scenePlaying: [] as string[],
                 sceneNotPlaying: ''
-            },
+            } as Options,
 
             // obs
-            controlLevel: -1, // 4 required for scene switching
-            scenes: null,
+            controlLevel: -1 as OBSControlLevel | -1, // 4 required for scene switching
+            scenes: null as string[] | null,
 
             // store
             wheel: useWheelStore()
@@ -215,8 +217,9 @@ export default {
                 items.forEach(x => this.defaultKeys.push(x))
             }
         })
-        LocalForage.getItem('options').then(async options => {
-            const password = await LocalForage.getItem('toonation')
+        LocalForage.getItem('options').then(async (_options) => {
+            const options = _options! as Options | null
+            const password = await LocalForage.getItem('toonation') as string | null
             if (password) {
                 LocalForage.removeItem('toonation')
                 // also works as migration flag; if they already have options, there's no need to update
@@ -225,8 +228,9 @@ export default {
             } else if (options == null) {
                 return
             }
-            for (const key in options) {
-                this.options[key] = options[key]
+            this.options = {
+                ...this.options,
+                ...options
             }
             if (password) {
                 this.options.password = password
@@ -241,10 +245,10 @@ export default {
             })
         })
 
-        window.obsstudio?.getControlLevel((level) => {
+        window.obsstudio?.getControlLevel((level: OBSControlLevel) => {
             this.controlLevel = level
         })
-        window.obsstudio?.getScenes((scenes) => {
+        window.obsstudio?.getScenes((scenes: string[]) => {
             this.scenes = scenes
         })
     }
