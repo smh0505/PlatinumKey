@@ -17,7 +17,7 @@
 import { ref } from 'vue'
 import { useWheelStore } from '../stores/WheelStore';
 import { useItemStore } from '../stores/ItemStore'
-import { useConnectStore } from '../stores/ConnectStore'
+import { ConnectionLog, useConnectStore } from '../stores/ConnectStore'
 import { remainder } from '../scripts/Calculate';
 import { DateTime } from 'luxon';
 import * as LocalForage from 'localforage'
@@ -148,13 +148,13 @@ export default {
             this.log.result({
                 type: 'toonation',
                 status: 'connecting'
-            })
+            } as ConnectionLog)
 
             this.socket.onopen = () => {
                 this.log.result({
                     type: 'toonation',
                     status: 'connected'
-                })
+                } as ConnectionLog)
                 this.retryCount = 0
             }
 
@@ -169,12 +169,12 @@ export default {
             }
 
             this.socket.onclose = () => {
-                const filtered = this.log.logs.filter(x => x.type === 1)
-                if (filtered.length === 0 || filtered.slice(-1)[0].positive) {
+                const filtered = this.log.logs.filter(x => x.type === "toonation")
+                if (filtered.length === 0 || filtered.slice(-1)[0].status === "connected") {
                     this.log.result({
                         type: 'toonation',
                         status: 'disconnected'
-                    })
+                    } as ConnectionLog)
                 }
                 setTimeout(() => this.connect(), this.retryCount > 0? 1000 : 10)
                 this.retryCount++

@@ -184,7 +184,7 @@ export default {
                 this.return()
                 this.$emit('close', {
                     options: this.options,
-                    payload
+                    payload: payload
                 })
             } else {
                 window.alert("오류: Payload를 불러오지 못했습니다.\n비밀키를 다시 확인해주세요.")

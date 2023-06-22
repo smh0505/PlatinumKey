@@ -12,13 +12,13 @@
             <div name="right-panel">
                 <Timer :clockwise="clockwise" @reverse="clockwise = !clockwise"></Timer>
                 <div class="inv-container">
-                    <LogList :visible-count="this.state < 0? 5 : 10"></LogList>
-                    <Items v-show="this.state >= 0"></Items>
+                    <LogList :visible-count="state < 0? 5 : 10"></LogList>
+                    <Items v-show="state >= 0"></Items>
                 </div>
             </div>
 
             <!--right-bottom buttons-->
-            <div class="static-menu" v-show="this.state >= 0">
+            <div class="static-menu" v-show="state >= 0">
                 <button @keydown.prevent @click="showSetup = true">기본 설정</button>
                 <button @keydown.prevent @click="showStart = true">판때기 메뉴</button>
             </div>

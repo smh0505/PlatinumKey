@@ -30,27 +30,42 @@ export default {
     },
     emits: ['addtheme', 'removetheme'],
     methods: {
-        addItemByKeydown(event: KeyboardEvent, position: string, index: number) {
+        addItemByKeydown(event: KeyboardEvent, position: 'head' | 'tail', index: number) {
             const ctrlPressed = event.ctrlKey || event.metaKey
-
+            
             if (event.shiftKey) {
-                this.$refs[position][index - 1].focus()
+                this.focusPrev(position, index)
                 return
-            } else if (!ctrlPressed && this.list[index + 1]) {
-                this.$refs[position][index + 1].focus()
+            } else if (!ctrlPressed && this.list && this.list[index + 1]) {
+                this.focusNext(position, index)
                 return
             }
 
             this.$emit('addtheme', index)
             this.$nextTick(() => {
-                if (ctrlPressed)
+                if (this.list && ctrlPressed) {
                     this.list[index + 1].head = this.list[index].head
-
-                if (ctrlPressed && position === 'tail')
-                    this.$refs.tail[index + 1].focus()
-                else
-                    this.$refs.head[index + 1].focus()
+                    this.focusNext(position, index)
+                }
             })
+        },
+        focusPrev(position: 'head' | 'tail', index: number) {
+            const refs = {
+                heads: this.$refs.head as HTMLInputElement[],
+                tails: this.$refs.tail as HTMLInputElement[]
+            }
+
+            if (position === 'head') refs.heads[index - 1].focus()
+            if (position === 'tail') refs.tails[index - 1].focus()
+        },
+        focusNext(position: 'head' | 'tail', index: number) {
+            const refs = {
+                heads: this.$refs.head as HTMLInputElement[],
+                tails: this.$refs.tail as HTMLInputElement[]
+            }
+
+            if (position === 'head') refs.heads[index + 1].focus()
+            if (position === 'tail') refs.tails[index + 1].focus()
         }
     }
 }

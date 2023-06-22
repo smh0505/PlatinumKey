@@ -4,7 +4,7 @@
             <button @keydown.prevent class="seekButton centered" @click="seekLaps(-1)">
                 <span class="material-symbols-rounded">remove</span>
             </button>
-            <span class="lapsCount" @wheel="seekLaps">
+            <span class="lapsCount">
                 {{ laps[lapsIdx] }}<small>바퀴째</small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="seekLaps(+1)">

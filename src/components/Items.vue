@@ -57,7 +57,7 @@ export default {
             }
         },
         manualAdd() {
-            this.inventory.addItem(prompt('황금열쇠의 이름을 정확히 입력해주세요.'))
+            this.inventory.addItem(String(prompt('황금열쇠의 이름을 정확히 입력해주세요.')))
         }
     },
     mounted() {
