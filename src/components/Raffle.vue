@@ -28,7 +28,7 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { useBoardStore, vote } from '../stores/BoardStore';
-import { ConnectionLog, VoteLog, useConnectStore } from '../stores/ConnectStore';
+import { VoteLog, useConnectStore } from '../stores/ConnectStore';
 import Marquee from './Marquee.vue';
 import * as LocalForage from 'localforage'
 import Scroll from './Scroll.vue';
@@ -78,7 +78,7 @@ export default {
             this.connection.result({
                 type: 'twitch',
                 status: 'connecting'
-            } as ConnectionLog)
+            })
 
             this.socket.onopen = () => {
                 this.socket?.send('CAP REQ :twitch.tv/commands twitch.tv/tags')
@@ -87,7 +87,7 @@ export default {
                 this.connection.result({
                     type: 'twitch',
                     status: 'connected'
-                } as ConnectionLog)
+                })
             }
 
             this.socket.onmessage = msg => {
@@ -111,7 +111,7 @@ export default {
                     this.connection.result({
                         type: 'twitch',
                         status: "disconnected"
-                    } as ConnectionLog)
+                    })
                 }
                 setTimeout(() => this.connect(), 5000)
             }
