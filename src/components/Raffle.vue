@@ -12,6 +12,7 @@
                 <span>다음 곡은</span><br>
                 <span style="color: yellow; font-size: 40px;">{{ temp[tempIdx].song }}</span><br>
                 <span>by {{ temp[tempIdx].name }}</span>
+                <div class="raffleScore">x{{ temp.length }}</div>
             </div>
         </div>
         <div class="usedList">
@@ -28,7 +29,7 @@
 <script lang="ts">
 import { ref } from 'vue'
 import { useBoardStore, vote } from '../stores/BoardStore';
-import { VoteLog, useConnectStore } from '../stores/ConnectStore';
+import { useConnectStore } from '../stores/ConnectStore';
 import Marquee from './Marquee.vue';
 import * as LocalForage from 'localforage'
 import Scroll from './Scroll.vue';
@@ -96,12 +97,11 @@ export default {
                 }
                 if (this.begin && msg.data.includes('!픽')) {
                     const { name, status } = this.board.parse(msg.data)
-
                     this.connection.result({
                         type: 'vote',
                         status: status,
                         detail: name
-                    } as VoteLog)
+                    })
                 }
             }
 
@@ -161,12 +161,12 @@ export default {
 
 <style lang="scss">
 .raffleContainer {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     width: 700px;
-    height: 97.5%;
+    height: 640px;
     margin: 8px;
     gap: 8px;
-    grid-template-rows: 1fr 1fr 3rem;
 
     .raffleList {
         border: 4px solid white;
@@ -188,17 +188,19 @@ export default {
                 padding-inline: 14px;
                 align-items: center;
                 overflow: hidden;
+                white-space: nowrap;
             }
 
             .reset {
+                height: 3rem;
                 font-size: 36px;
                 font-family: var(--font-numeric);
                 font-variant-numeric: tabular-nums;
                 background-color: transparent;
                 color: black;
                 border: none;
+                padding: 0px 20px;
                 transition: all 0.2s ease-out;
-                padding: 0 20px;
 
                 &:hover {
                     background-color: black;
@@ -210,15 +212,27 @@ export default {
         .rafflePool {
             padding: 4px 8px;
             font-size: 16px;
-            height: 260px;
+            height: 280px;
             overflow: hidden;
         }
 
         .raffleResult {
             background-color: rgba(75, 75, 75, 0.8);
+            position: relative;
+            height: 280px;
             color: white;
             padding: 8px 16px;
             font-size: 24px;
+
+            .raffleScore {
+                display: flex;
+                position: absolute;
+                bottom: 4px;
+                right: 16px;
+                font-size: 60px;
+                font-style: italic;
+                color: rgba(white, 0.5);
+            }
         }
     }
 
@@ -228,28 +242,35 @@ export default {
         color: white;
 
         padding: 4px 8px;
-        height: 280px;
+        height: 296px;
         font-size: 16px;
         overflow: hidden;
     }
 
-    .raffleButtons {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
+    
+}
 
-        & > * {
-            border: 4px solid white;
-            border-radius: 8px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            font-size: 20px;
-            transition: all 0.2s ease-out;
+.raffleButtons {
+    display: grid;
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    width: 700px;
+    height: 48px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
 
-            &:hover {
-                background-color: white;
-                color: black;
-            }
+    & > * {
+        border: 4px solid white;
+        border-radius: 8px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 20px;
+        transition: all 0.2s ease-out;
+
+        &:hover {
+            background-color: white;
+            color: black;
         }
     }
 }

@@ -60,7 +60,8 @@ export default {
             buttonLabels: ['돌리기', '멈추기', '', '다음'],
 
             // result
-            inventory: useItemStore()
+            inventory: useItemStore(),
+            temp: [] as string[]
         }
     },
     computed: {
@@ -136,6 +137,8 @@ export default {
             if (this.state === this.states.idle) {
                 this.inventory.addItem(this.result)
                 this.options.subOption(this.result)
+                this.temp.forEach(x => this.options.addOption(x))
+                this.temp.splice(0, this.temp.length)
             }
         },
 
@@ -163,7 +166,8 @@ export default {
                     const roulette = JSON.parse(msg.data).content.message as string
                     const rValue = roulette.split(' - ')[1]
                     if (rValue !== '꽝') {
-                        this.options.addOption(rValue)
+                        if (this.state === this.states.idle) this.options.addOption(rValue)
+                        else this.temp.push(rValue)
                     }
                 }
             }

@@ -43,9 +43,7 @@ export default {
 
             this.$emit('addtheme', index)
             this.$nextTick(() => {
-                if (!this.list) {
-                    return
-                }
+                if (!this.list) return
                 if (ctrlPressed) {
                     this.list[index + 1].head = this.list[index].head
                     this.focus(position, index, +1)

@@ -111,7 +111,7 @@ export const useBoardStore = defineStore('board', {
         },
 
         // add votes
-        parse(msg: string) {
+        parse(msg: string): { name: string, status: 'accepted' | 'cooldown' | 'rejected' | 'failed' } {
             const parsedMsg = parse(msg)
             const match = parsedMsg.text.match(/!픽 (?<index>\d+) (?<song>.+)/)
             if (match) {
@@ -119,10 +119,9 @@ export const useBoardStore = defineStore('board', {
                 const excluded = [0, 13].concat(this.goldenKeys)
                 const map = [...Array(26).keys()].filter(x => !excluded.includes(x))
                 if (map.includes(index)) {
-                    const result = this.insert(parsedMsg.name, Number(match.groups?.index), String(match.groups?.song))
                     return {
                         name: parsedMsg.name,
-                        status: result? 'accepted' : 'cooldown'
+                        status: this.insert(parsedMsg.name, Number(match.groups?.index), String(match.groups?.song))
                     }
                 } else {
                     return {
@@ -145,24 +144,27 @@ export const useBoardStore = defineStore('board', {
                 timestamp: DateTime.now()
             }
 
-            if ([7, 20].includes(index)) {
-                if (this.checkTimeIsland(name, newVote.timestamp)) {
-                    const idx = this.islandPool.findIndex(x => x.name === name)
-                    if (idx !== -1) {
-                        this.islandPool.splice(idx, 1)
-                    }
-                    this.islandPool.push(newVote)
-                    return true
-                } else return false
-            } else {
-                if (this.checkTime(name, newVote.timestamp)) {
-                    const group = this.pool.filter(x => x.name === name)
-                    if (group.length === 3) {
-                        this.pool.splice(this.pool.indexOf(group[0]), 1)
-                    }
-                    this.pool.push(newVote)
-                    return true
-                } else return false
+            // already picked
+            if (this.usedList.find(x => x.name === newVote.name)) return 'rejected'
+
+            if ([7, 20].includes(index)) {  // island
+                // cooldown
+                if (!this.checkTimeIsland(name, newVote.timestamp)) return 'cooldown'
+
+                // accepted
+                const idx = this.islandPool.findIndex(x => x.name === name)
+                if (idx !== -1) this.islandPool.splice(idx, 1)
+                this.islandPool.push(newVote)
+                return 'accepted'
+            } else {    // normal
+                // cooldown
+                if (!this.checkTime(name, newVote.timestamp)) return 'cooldown'
+
+                // accepted
+                const group = this.pool.filter(x => x.name === name)
+                if (group.length === 3) this.pool.splice(this.pool.indexOf(group[0]), 1)
+                this.pool.push(newVote)
+                return 'accepted'
             }
         },
         checkTime(name: string, time: DateTime) {

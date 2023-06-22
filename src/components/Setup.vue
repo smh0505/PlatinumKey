@@ -320,15 +320,6 @@ export default {
             max-height: 100%;
             overflow-y: auto;
 
-            .setup-board {
-
-                // &::-webkit-scrollbar {
-                //     background: transparent;
-                //     width: 0px;
-                //     height: 0px;
-                // }
-            }
-
             .setup-goldenkey {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
