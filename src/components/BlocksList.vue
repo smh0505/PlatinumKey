@@ -32,12 +32,12 @@ export default {
     methods: {
         addItemByKeydown(event: KeyboardEvent, position: 'head' | 'tail', index: number) {
             const ctrlPressed = event.ctrlKey || event.metaKey
-            
+
             if (event.shiftKey) {
-                this.focusPrev(position, index)
+                this.focus(position, index, -1)
                 return
-            } else if (!ctrlPressed && this.list && this.list[index + 1]) {
-                this.focusNext(position, index)
+            } else if (!ctrlPressed && this.list?.[index + 1]) {
+                this.focus(position, index, +1)
                 return
             }
 
@@ -45,28 +45,18 @@ export default {
             this.$nextTick(() => {
                 if (this.list && ctrlPressed) {
                     this.list[index + 1].head = this.list[index].head
-                    this.focusNext(position, index)
+                    this.focus(position, index, +1)
                 }
             })
         },
-        focusPrev(position: 'head' | 'tail', index: number) {
+        focus(position: 'head' | 'tail', index: number, offset: number) {
             const refs = {
-                heads: this.$refs.head as HTMLInputElement[],
-                tails: this.$refs.tail as HTMLInputElement[]
+                head: this.$refs.head as HTMLInputElement[],
+                tail: this.$refs.tail as HTMLInputElement[]
             }
 
-            if (position === 'head') refs.heads[index - 1].focus()
-            if (position === 'tail') refs.tails[index - 1].focus()
+            refs[position][index + offset].focus()
         },
-        focusNext(position: 'head' | 'tail', index: number) {
-            const refs = {
-                heads: this.$refs.head as HTMLInputElement[],
-                tails: this.$refs.tail as HTMLInputElement[]
-            }
-
-            if (position === 'head') refs.heads[index + 1].focus()
-            if (position === 'tail') refs.tails[index + 1].focus()
-        }
     }
 }
 </script>

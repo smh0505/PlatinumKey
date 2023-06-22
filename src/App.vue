@@ -77,6 +77,7 @@ import StartMenu from './components/StartMenu.vue'
 import Raffle from './components/Raffle.vue'
 
 // imports
+import type Options from './scripts/IOptions'
 import { useBoardStore } from './stores/BoardStore'
 import * as LocalForage from 'localforage'
 
@@ -127,10 +128,10 @@ export default {
             // setup
             showSetup: true,
             started: false,
-            options: {},
+            options: {} as Options,
 
             // obs
-            currentScene: null,
+            currentScene: '',
 
             // start
             showStart: false,
@@ -141,7 +142,7 @@ export default {
     },
     methods: {
         // game setup
-        async beginGame({ options, payload }) {
+        async beginGame({ options, payload }: { options: Options, payload: string }) {
             this.showSetup = false
             this.options = options
             if (!this.started) {
@@ -253,7 +254,7 @@ export default {
         window.addEventListener('obsSceneChanged', (event) => {
             this.currentScene = event.detail.name
         })
-        window.obsstudio?.getCurrentScene((scene) => {
+        window.obsstudio?.getCurrentScene((scene: OBSSceneInfo) => {
             this.currentScene = scene.name
         })
 

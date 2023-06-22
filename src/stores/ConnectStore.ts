@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export interface ConnectionLog {
     type: 'twitch' | 'toonation'
     status: 'disconnected' | 'connecting' | 'connected'
-    detail: string | null
+    detail?: string
 }
 export interface VoteLog {
     type: 'vote',
