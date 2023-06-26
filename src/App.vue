@@ -5,7 +5,7 @@
             <div name="left-panel">
                 <Dice v-show="state === 0" />
                 <div v-show="state === 1" v-if="payload"><Wheel :payload="payload"></Wheel></div>
-                <Raffle v-show="state === 2" v-if="options.channel" :begin="started" :index="boardIndex" @reset="boardIndex = 0" :channel="options.channel"></Raffle>
+                <Raffle v-show="state === 2" v-if="options.channel" :begin="started" :index="boardIndex" :channel="options.channel"></Raffle>
             </div>
 
             <!--right panel-->

@@ -3,7 +3,7 @@
         <div class="raffleList">
             <div class="raffleHeader" :style="color">
                 <div class="theme"><Marquee :text="theme"></Marquee></div>
-                <button class="reset" @click="$emit('reset')">×{{ pool.length }}</button>
+                <div class="count">×{{ state === 0 ? pool.length : temp.length }}</div>
             </div>
             <div class="rafflePool" v-if="state === 0">
                 <Scroll :list="pool.map(x => x.song)"></Scroll>
@@ -12,7 +12,6 @@
                 <span>다음 곡은</span><br>
                 <span style="color: yellow; font-size: 40px;">{{ temp[tempIdx].song }}</span><br>
                 <span>by {{ temp[tempIdx].name }}</span>
-                <div class="raffleScore">x{{ temp.length }}</div>
             </div>
         </div>
         <div class="usedList">
@@ -30,10 +29,12 @@
 import { ref } from 'vue'
 import { useBoardStore, vote } from '../stores/BoardStore';
 import { useConnectStore } from '../stores/ConnectStore';
-import Marquee from './Marquee.vue';
-import * as LocalForage from 'localforage'
-import Scroll from './Scroll.vue';
+import { useMoneyStore } from '../stores/MoneyStore';
 import { remainder } from '../scripts/Calculate';
+
+import Marquee from './Marquee.vue';
+import Scroll from './Scroll.vue';
+import * as LocalForage from 'localforage'
 
 export default {
     props: {
@@ -49,6 +50,7 @@ export default {
             socket: ref<WebSocket | null>(null),
             board: useBoardStore(),
             connection: useConnectStore(),
+            wallet: useMoneyStore(),
 
             temp: [] as vote[],
             tempIdx: 0,
@@ -59,7 +61,6 @@ export default {
         }
     },
     components: { Marquee, Scroll },
-    emits: ['reset'],
     computed: {
         theme() {
             return this.board.board[Number(this.index)]
@@ -124,6 +125,7 @@ export default {
                 case 0:
                     this.board.remove(this.temp[this.tempIdx])
                     this.tempIdx = 0
+                    this.wallet.addMoney(Number(this.index))
                     break
                 case 1:
                     this.temp = this.pool
@@ -191,21 +193,13 @@ export default {
                 white-space: nowrap;
             }
 
-            .reset {
+            .count {
                 height: 3rem;
                 font-size: 36px;
                 font-family: var(--font-numeric);
                 font-variant-numeric: tabular-nums;
-                background-color: transparent;
-                color: black;
-                border: none;
                 padding: 0px 20px;
                 transition: all 0.2s ease-out;
-
-                &:hover {
-                    background-color: black;
-                    color: white;
-                }
             }
         }
 
@@ -218,21 +212,10 @@ export default {
 
         .raffleResult {
             background-color: rgba(75, 75, 75, 0.8);
-            position: relative;
             height: 280px;
             color: white;
             padding: 8px 16px;
             font-size: 24px;
-
-            .raffleScore {
-                display: flex;
-                position: absolute;
-                bottom: 4px;
-                right: 16px;
-                font-size: 60px;
-                font-style: italic;
-                color: rgba(white, 0.5);
-            }
         }
     }
 

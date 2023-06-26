@@ -27,7 +27,7 @@ export const useBoardStore = defineStore('board', {
                 const i = this.themes.length
                 const j = Math.floor(Math.random() * themes.length)
 
-                this.themes.push({ theme: themes[j].head + ':\n' + themes[j].tail, color: colors[i] })
+                this.themes.push({ theme: themes[j].head + ':\n' + themes[j].tail, color: colors[i], stepped: 0 })
                 themes.splice(j, 1)
             }
         },
@@ -204,7 +204,8 @@ export const useBoardStore = defineStore('board', {
 // interfaces
 interface theme {
     theme: string,
-    color: string
+    color: string,
+    stepped: number
 }
 export interface vote {
     name: string,
