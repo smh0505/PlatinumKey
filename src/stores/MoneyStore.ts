@@ -16,7 +16,7 @@ export const useMoneyStore = defineStore('currency', {
             if (this.checkMonopoly(index)) this.money += 30
             else if (theme) {
                 const score = [35, 25, 15]
-                this.money += score[Math.min(score.length, theme.stepped)]
+                this.money += score[Math.min(score.length, theme.stepped++)]
             }
             console.log(this.money)
         },
