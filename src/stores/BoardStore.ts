@@ -15,7 +15,11 @@ export const useBoardStore = defineStore('board', {
             // raffle pools
             pool: [] as vote[],
             islandPool: [] as vote[],
-            usedList: [] as { name: string, song: string }[]
+            usedList: [] as { name: string, song: string }[],
+
+            // money
+            money: 0,
+            limit: 1000
         }
     },
     actions: {
@@ -109,6 +113,25 @@ export const useBoardStore = defineStore('board', {
             if (pair) return pair.color
             else return "white"
         },
+        checkMonopoly(index: number) {
+            const lines = [
+                [1, 2, 3, 4, 5, 6],
+                [8, 9, 10, 11, 12],
+                [14, 15, 16, 17, 18, 19],
+                [21, 22, 23, 24, 25]
+            ]
+
+            for (let i = 0; i < 4; i++) {
+                if (lines[i].includes(index)) {
+                    for (let j = 0; j < lines[i].length; j++) {
+                        const k = this.themes.find(x => x.theme === this.board[lines[i][j]])
+                        if (k && k.stepped === 0) return false
+                    }
+                    return true
+                }
+            }
+            return false
+        },
 
         // add votes
         parse(msg: string): { name: string, status: 'accepted' | 'cooldown' | 'rejected' | 'failed' } {
@@ -197,7 +220,18 @@ export const useBoardStore = defineStore('board', {
             this.islandPool.filter(x => x.name === target.name).forEach(x => {
                 this.islandPool.splice(this.islandPool.indexOf(x), 1)
             })
-        }
+        },
+
+        // control money
+        addMoney(index: number) {
+            const theme = this.themes.find(x => x.theme === this.board[index])
+
+            if (this.checkMonopoly(index)) this.money += 30
+            else if (theme) {
+                const score = [35, 25, 15]
+                this.money += score[Math.min(score.length, theme.stepped++)]
+            }
+        },
     }
 })
 

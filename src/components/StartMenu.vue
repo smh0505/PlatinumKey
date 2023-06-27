@@ -6,6 +6,7 @@
                 <button class="startMenuButton" @click="$emit('shuffle')">판 섞기</button>
                 <button class="startMenuButton" @click="$emit('addkey')">판 섞기 + 열쇠 추가</button>
                 <button class="startMenuButton" @click="$emit('reset')">판 초기화</button>
+                <button class="startMenuButton" @click="">로그 보기</button>
             </div>
             <div class="startFooter">
                 <button class="footButton" @click="$emit('close')">닫기</button>
@@ -87,22 +88,6 @@ export default {
                 }
             }
         }
-    }
-}
-
-.modal-enter-from {
-    opacity: 0;
-
-    .startContainer {
-        transform: scale(1.1);
-    }
-}
-
-.modal-leave-to {
-    opacity: 0;
-
-    .startContainer {
-        transform: scale(1.1);
     }
 }
 </style>

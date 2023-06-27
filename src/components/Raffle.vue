@@ -26,10 +26,8 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
 import { useBoardStore, vote } from '../stores/BoardStore';
 import { useConnectStore } from '../stores/ConnectStore';
-import { useMoneyStore } from '../stores/MoneyStore';
 import { remainder } from '../scripts/Calculate';
 
 import Marquee from './Marquee.vue';
@@ -47,10 +45,8 @@ export default {
     },
     data() {
         return {
-            socket: ref<WebSocket | null>(null),
             board: useBoardStore(),
             connection: useConnectStore(),
-            wallet: useMoneyStore(),
 
             temp: [] as vote[],
             tempIdx: 0,
@@ -75,49 +71,6 @@ export default {
         }
     },
     methods: {
-        connect() {
-            this.socket = new WebSocket('wss://irc-ws.chat.twitch.tv')
-            this.connection.result({
-                type: 'twitch',
-                status: 'connecting'
-            })
-
-            this.socket.onopen = () => {
-                this.socket?.send('CAP REQ :twitch.tv/commands twitch.tv/tags')
-                this.socket?.send('NICK justinfan9705')
-                this.socket?.send('JOIN #' + this.channel)
-                this.connection.result({
-                    type: 'twitch',
-                    status: 'connected'
-                })
-            }
-
-            this.socket.onmessage = msg => {
-                if (msg.data.includes('PING')) {
-                    this.socket?.send('PONG :tmi.twitch.tv')
-                }
-                if (this.begin && msg.data.includes('!픽')) {
-                    const { name, status } = this.board.parse(msg.data)
-                    this.connection.result({
-                        type: 'vote',
-                        status: status,
-                        detail: name
-                    })
-                }
-            }
-
-            this.socket.onclose = () => {
-                const filtered = this.connection.logs.filter(x => x.type === "twitch")
-                if (filtered.length === 0 || filtered.slice(-1)[0].status === "connected") {
-                    this.connection.result({
-                        type: 'twitch',
-                        status: "disconnected"
-                    })
-                }
-                setTimeout(() => this.connect(), 5000)
-            }
-        },
-
         // controls
         click() {
             this.state = remainder(this.state + 1, 3)
@@ -125,7 +78,7 @@ export default {
                 case 0:
                     this.board.remove(this.temp[this.tempIdx])
                     this.tempIdx = 0
-                    this.wallet.addMoney(Number(this.index))
+                    this.board.addMoney(Number(this.index))
                     break
                 case 1:
                     this.temp = this.pool
@@ -149,7 +102,7 @@ export default {
         }
     },
     mounted() {
-        this.connect()
+        this.connection.connectTwitch(Boolean(this.begin), String(this.channel))
         window.addEventListener('beforeunload', () => {
             LocalForage.setItem('votes-snapshot', JSON.parse(JSON.stringify({
                 pool: this.board.pool,
@@ -194,12 +147,12 @@ export default {
             }
 
             .count {
-                height: 3rem;
-                font-size: 36px;
+                display: flex;
+                align-items: center;
+                font-size: 30px;
                 font-family: var(--font-numeric);
                 font-variant-numeric: tabular-nums;
                 padding: 0px 20px;
-                transition: all 0.2s ease-out;
             }
         }
 
@@ -229,8 +182,6 @@ export default {
         font-size: 16px;
         overflow: hidden;
     }
-
-    
 }
 
 .raffleButtons {

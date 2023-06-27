@@ -29,38 +29,27 @@ export const useItemStore = defineStore('items', {
             const object = this.checkType(name)
             if (object) {
                 const idx = this.items.findIndex(x => x.key === object.key)
-                if (idx !== -1) {
-                    if (object.type !== itemType.limit) {
-                        this.items[idx].count += object.count
-                    }
-                } else {
-                    this.items.push(object)
-                }
+                if (idx !== -1) this.items[idx].count += object.count
+                else this.items.push(object)
             }
         },
         checkType(name: string) {
-            for (let i = 0; i < regex.length; i++){
-                const match = name.match(regex[i])
-                if (match) {
-                    return {
-                        key: String(match.groups?.option.trim()),
-                        count: Number(match.groups?.count),
-                        type: i
-                    }
-                }
+            const match = name.match(regex)
+            if (match) return {
+                key: String(match.groups?.option.trim()),
+                count: Number(match.groups?.count),
+                type: String(match.groups?.type) as '턴' | '곡' | '개'
             }
         },
 
         // controls
-        removeAll(type: number) {
+        removeAll(type: '턴' | '곡' | '개') {
             for (let i = this.items.length - 1; i > -1; i--) {
                 if (this.items[i].type === type) {
                     this.subOne(i)
                 }
             }
-            if (this.pageNum > 0 && this.pageNum >= this.maxPage) {
-                this.pageNum = this.maxPage - 1
-            }
+            this.setMaxPage()
         },
         addOne(index: number) {
             this.items[index].count += 1
@@ -70,9 +59,7 @@ export const useItemStore = defineStore('items', {
             if (this.items[index].count === 0) {
                 this.items.splice(index, 1)
             }
-            if (this.pageNum > 0 && this.pageNum >= this.maxPage) {
-                this.pageNum = this.maxPage - 1
-            }
+            this.setMaxPage()
         },
 
         // pages
@@ -81,6 +68,11 @@ export const useItemStore = defineStore('items', {
         },
         nextPage() {
             this.pageNum = remainder(this.pageNum + 1, this.maxPage)
+        },
+        setMaxPage() {
+            if (this.pageNum > 0 && this.pageNum >= this.maxPage) {
+                this.pageNum = this.maxPage - 1
+            }
         }
     }
 })
@@ -88,17 +80,7 @@ export const useItemStore = defineStore('items', {
 interface item{
     key: string,
     count: number,
-    type: number
+    type: '턴' | '곡' | '개'
 }
 
-export const itemType = {
-    dice: 0,
-    song: 1,
-    limit: 2
-}
-
-const regex = [
-    /(?<count>\d+)턴간(?<option>.+)/,
-    /(?<count>\d+)곡동안(?<option>.+)/,
-    /(?<option>.+)\((?<count>\d+)회\)/
-]
+const regex = /\((?<count>\d+)(?<type>턴|곡|개)\)(?<option>.+)/

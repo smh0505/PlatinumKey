@@ -464,7 +464,7 @@ export default {
 .modal-enter-from {
     opacity: 0;
 
-    .setupContainer {
+    .setupContainer, .startContainer {
         transform: scale(1.1);
     }
 }
@@ -472,7 +472,7 @@ export default {
 .modal-leave-to {
     opacity: 0;
 
-    .setupContainer {
+    .setupContainer, .startContainer {
         transform: scale(1.1);
     }
 }

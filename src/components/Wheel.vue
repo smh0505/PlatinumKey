@@ -14,7 +14,6 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
 import { useWheelStore } from '../stores/WheelStore';
 import { useItemStore } from '../stores/ItemStore'
 import { useConnectStore } from '../stores/ConnectStore'
@@ -35,9 +34,7 @@ export default {
     data() {
         return {
             // websocket
-            socket: ref<WebSocket | null>(null),
-            log: useConnectStore(),
-            retryCount: 0,
+            connection: useConnectStore(),
 
             // wheel
             options: useWheelStore(),
@@ -60,8 +57,7 @@ export default {
             buttonLabels: ['돌리기', '멈추기', '', '다음'],
 
             // result
-            inventory: useItemStore(),
-            temp: [] as string[]
+            inventory: useItemStore()
         }
     },
     computed: {
@@ -137,51 +133,8 @@ export default {
             if (this.state === this.states.idle) {
                 this.inventory.addItem(this.result)
                 this.options.subOption(this.result)
-                this.temp.forEach(x => this.options.addOption(x))
-                this.temp.splice(0, this.temp.length)
-            }
-        },
-
-        // websocket
-        connect() {
-            if(!this.payload) {
-                return
-            }
-            this.socket = new WebSocket('wss://toon.at:8071/' + this.payload)
-            this.log.result({
-                type: 'toonation',
-                status: 'connecting'
-            })
-
-            this.socket.onopen = () => {
-                this.log.result({
-                    type: 'toonation',
-                    status: 'connected'
-                })
-                this.retryCount = 0
-            }
-
-            this.socket.onmessage = msg => {
-                if (msg.data.includes('roulette')) {
-                    const roulette = JSON.parse(msg.data).content.message as string
-                    const rValue = roulette.split(' - ')[1]
-                    if (rValue !== '꽝') {
-                        if (this.state === this.states.idle) this.options.addOption(rValue)
-                        else this.temp.push(rValue)
-                    }
-                }
-            }
-
-            this.socket.onclose = () => {
-                const filtered = this.log.logs.filter(x => x.type === "toonation")
-                if (filtered.length === 0 || filtered.slice(-1)[0].status === "connected") {
-                    this.log.result({
-                        type: 'toonation',
-                        status: 'disconnected'
-                    })
-                }
-                setTimeout(() => this.connect(), this.retryCount > 0? 1000 : 10)
-                this.retryCount++
+                this.connection.roulette_temp.forEach(x => this.options.addOption(x))
+                this.connection.roulette_temp.splice(0, this.connection.roulette_temp.length)
             }
         },
 
@@ -196,7 +149,7 @@ export default {
     },
     mounted() {
         this.spin()
-        this.connect()
+        this.connection.connectToonation(String(this.payload))
         window.addEventListener('beforeunload', this.saveWheel)
     }
 }
