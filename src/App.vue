@@ -38,9 +38,27 @@
             </transition>
         </teleport>
 
-        <div v-for="(block, index) in blocks" class="block" :style="block.style" :class="blockType(index)">
+        <div
+            v-for="(block, index) in blocks"
+            :style="block.style"
+            :class="[
+                'block', {
+                    ...blockType(index),
+                    top: 13 < index && index < 20,
+                    right: 20 < index && index < 26,
+                    bottom: 0 < index && index < 7,
+                    left: 7 < index && index < 13,
+                    corner: [0, 7, 13, 20].includes(index)
+                }
+            ]">
             <!--number tags-->
-            <div v-if="index !== 0 && index !== 13" class="blockNumber centered">{{ index }}</div>
+            <header
+                class="block-header"
+                v-if="index !== 0 && index !== 13"
+                :style="fillColor(index)">
+                <div class="block-number">{{ index }}</div>
+                <div class="block-prize">{{ board.getPrizeByIndex(index) }}$</div>
+            </header>
 
             <!--start-->
             <div v-if="index === 0" style="width: 100%; height: 100%;">
@@ -48,19 +66,28 @@
             </div>
 
             <!--free-->
-            <button @keydown.prevent v-else-if="index === 13" class="blockButton centered" @click="state = 0">뱅하싶</button>
+            <button
+                @keydown.prevent v-else-if="index === 13"
+                class="blockButton centered"
+                @click="state = 0">뱅하싶</button>
 
             <!--golden key-->
-            <button @keydown.prevent v-else-if="board.isGoldenKey(index)" class="blockButton centered" @click="state = 1">황금열쇠</button>
+            <button
+                @keydown.prevent v-else-if="board.isGoldenKey(index)"
+                class="blockButton centered"
+                @click="state = 1">황금열쇠</button>
 
             <!--islands-->
-            <button @keydown.prevent v-else-if="index === 7 || index === 20" class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
+            <button
+                @keydown.prevent v-else-if="index === 7 || index === 20"
+                class="blockButton centered"
+                @click="select(index)">{{ board.selectAll(index).length }}</button>
 
             <!--other blocks-->
-            <div v-else style="width: 100%; height: 100%;" :style="fillColor(index)">
-                <div class="blockDetail">{{ board.board[index] }}</div>
+            <template v-else>
+                <div class="block-content">{{ board.board[index] }}</div>
                 <button @keydown.prevent class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
-            </div>
+            </template>
         </div>
     </div>
 </template>
@@ -282,14 +309,53 @@ export default {
     // background-color: lightgray;
 
     .block {
+        display: flex;
         border: 2px solid;
         position: relative;
 
-        .blockNumber {
-            display: inline-block;
-            position: absolute;
-            top: 0;
-            z-index: 5;
+        &.top { flex-direction: column-reverse; }
+        &.bottom { flex-direction: column; }
+        &.left { flex-direction: row-reverse; }
+
+        &.left, &.right {
+            .block-header {
+                min-width: 2.25em;
+                flex-direction: column;
+            }
+        }
+        &.left {
+            .block-header {
+                text-align: right;
+            }
+        }
+        &.corner {
+            .block-header {
+                color: white;
+                mix-blend-mode: exclusion;
+            }
+        }
+        &.corner, &.golden {
+            .block-header {
+                background: none !important;
+            }
+            .block-prize {
+                display: none;
+            }
+        }
+
+        &.djmax, &.circle {
+            flex-direction: row-reverse;
+
+            .block-header {
+                color: white;
+                mix-blend-mode: unset;
+                text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
+            }
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
 
             // content
             font-family: var(--font-numeric);
@@ -299,12 +365,18 @@ export default {
             line-height: 24px;
             padding: 8px 10px;
         }
+        .block-prize {
+            font-size: 0.8em;
+        }
 
-        .blockDetail {
-            height: 100%;
+        .block-content {
             display: flex;
             justify-content: center;
             align-items: center;
+
+            flex-grow: 1;
+
+            background-color: #ddd;
 
             white-space: pre-wrap;
             text-align: center;
@@ -445,19 +517,6 @@ export default {
         background-position: center;
         background-size: cover;
         background-clip: border-box;
-    }
-    .ez2on, .mars, .truck {
-        .blockNumber {
-            color: white;
-            mix-blend-mode: exclusion;
-        }
-    }
-    .djmax, .circle {
-        .blockNumber {
-            color: white;
-            right: 0;
-            text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
-        }
     }
 }
 
