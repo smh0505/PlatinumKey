@@ -1,10 +1,10 @@
 <template>
     <div class="raffleContainer">
+        <div class="raffleHeader" :style="color">
+            <div class="theme"><Marquee :text="theme"></Marquee></div>
+            <div class="count">×{{ state === 0 ? pool.length : temp.length }}</div>
+        </div>
         <div class="raffleList">
-            <div class="raffleHeader" :style="color">
-                <div class="theme"><Marquee :text="theme"></Marquee></div>
-                <div class="count">×{{ state === 0 ? pool.length : temp.length }}</div>
-            </div>
             <div class="rafflePool" v-if="state === 0">
                 <Scroll :list="pool.map(x => x.song)"></Scroll>
             </div>
@@ -116,68 +116,63 @@ export default {
 
 <style lang="scss">
 .raffleContainer {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 48px 2fr 1fr 48px;
     width: 700px;
-    height: 640px;
-    gap: 8px;
+    height: 100%;
 
-    .raffleList {
-        border: 4px solid white;
-        background-color: rgba(255, 255, 255, 0.8);
-
+    .raffleHeader {
         display: grid;
-        grid-template-rows: 3rem 1fr;
+        grid-template-columns: auto min-content;
 
-        .raffleHeader {
-            display: grid;
-            grid-template-columns: auto min-content;
+        line-height: 32px;
+        padding-bottom: 4px;
 
-            line-height: 32px;
-            padding-bottom: 4px;
-
-            .theme {
-                display: flex;
-                font-size: 30px;
-                padding-inline: 14px;
-                align-items: center;
-                overflow: hidden;
-                white-space: nowrap;
-            }
-
-            .count {
-                display: flex;
-                align-items: center;
-                font-size: 30px;
-                font-family: var(--font-numeric);
-                font-variant-numeric: tabular-nums;
-                padding: 0px 20px;
-            }
+        .theme {
+            display: flex;
+            font-size: 30px;
+            padding-inline: 14px;
+            align-items: center;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
+        .count {
+            display: flex;
+            align-items: center;
+            font-size: 30px;
+            font-family: var(--font-numeric);
+            font-variant-numeric: tabular-nums;
+            padding: 0px 20px;
+        }
+    }
+
+    .raffleList {
+        background-color: #000c;
+
         .rafflePool {
+            color: #fff;
+
             padding: 4px 8px;
             font-size: 16px;
-            height: 280px;
             overflow: hidden;
         }
 
         .raffleResult {
             background-color: rgba(75, 75, 75, 0.8);
-            height: 280px;
             color: white;
             padding: 8px 16px;
             font-size: 24px;
+            height: 100%;
         }
     }
 
     .usedList {
-        border: 4px solid white;
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
+        background-color: #000c;
+        color: #fff9;
+        margin-top: 8px;
 
         padding: 4px 8px;
-        height: 296px;
         font-size: 16px;
         overflow: hidden;
     }
@@ -188,6 +183,7 @@ export default {
     width: 100%;
     grid-template-columns: repeat(5, 1fr);
     margin-top: 8px;
+    gap: 8px;
 
     & > * {
         background-color: rgba(0, 0, 0, 0.7);
