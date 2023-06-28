@@ -4,6 +4,9 @@ import * as LocalForage from 'localforage'
 
 import { parse } from "../scripts/IRC";
 
+const STEP_PRIZES = [35, 25, 15]
+const MONOPOLY_PRIZE = 30
+
 export const useBoardStore = defineStore('board', {
     state() {
         return {
@@ -226,12 +229,23 @@ export const useBoardStore = defineStore('board', {
         addMoney(index: number) {
             const theme = this.themes.find(x => x.theme === this.board[index])
 
-            if (this.checkMonopoly(index)) this.money += 30
-            else if (theme) {
-                const score = [35, 25, 15]
-                this.money += score[Math.min(score.length, theme.stepped++)]
-            }
+            if (this.checkMonopoly(index))
+                this.money += MONOPOLY_PRIZE
+            else if (theme)
+                this.money += STEP_PRIZES[theme.stepped++] ?? STEP_PRIZES.at(-1)
         },
+        getPrizeByIndex(index: number) {
+            const theme = this.themes.find(x => x.theme === this.board[index])
+            if(!theme)
+                return
+            else if (this.checkMonopoly(index))
+                return MONOPOLY_PRIZE
+            else
+                return STEP_PRIZES[theme.stepped] ?? STEP_PRIZES.at(-1)
+        },
+        updateMoney(amount: number) {
+            this.money += amount
+        }
     }
 })
 
