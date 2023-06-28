@@ -164,7 +164,7 @@ export default {
             align-items: center;
             justify-content: center;
 
-            gap: 0.5em;
+            gap: 1em;
 
             background-color: #000a;
             color: white;
