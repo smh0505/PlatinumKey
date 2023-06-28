@@ -99,7 +99,7 @@ export default {
 .clockFrame {
     display: flex;
     height: 48px;
-    margin: 6px;
+    margin: 0 0 8px 0;
     padding: 4px;
     gap: 4px;
 

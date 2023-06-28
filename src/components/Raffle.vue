@@ -120,7 +120,6 @@ export default {
     flex-direction: column;
     width: 700px;
     height: 640px;
-    margin: 8px;
     gap: 8px;
 
     .raffleList {
@@ -186,17 +185,11 @@ export default {
 
 .raffleButtons {
     display: grid;
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    width: 700px;
-    height: 48px;
+    width: 100%;
     grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+    margin-top: 8px;
 
     & > * {
-        border: 4px solid white;
-        border-radius: 8px;
         background-color: rgba(0, 0, 0, 0.7);
         color: white;
         font-size: 20px;

@@ -416,6 +416,8 @@ export default {
         background-position: center;
         background-size: cover;
 
+        padding: 8px;
+
         .static-menu {
             position: absolute;
             right: 8px;
@@ -437,8 +439,6 @@ export default {
         .inv-container {
             display: flex;
             justify-items: end;
-
-            margin: 6px;
             gap: 4px;
             height: 240px;
 

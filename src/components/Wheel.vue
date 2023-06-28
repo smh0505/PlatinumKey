@@ -158,14 +158,13 @@ export default {
 <style lang="scss">
 .wheelButton {
     position: absolute;
-    width: 96px;
-    height: 48px;
-    left: 16px;
-    bottom: 16px;
+    width: 140px;
+    height: 40px;
+    left: 8px;
+    bottom: 8px;
 
     // decoration
     border: none;
-    border-radius: 8px;
     font-size: 20px;
     background-color: rgba(148, 255, 127, 0.75);
     transition: all 0.2s ease-out;
