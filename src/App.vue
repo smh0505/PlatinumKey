@@ -376,7 +376,7 @@ export default {
 
             flex-grow: 1;
 
-            background-color: #ddd;
+            background-color: #eee;
 
             white-space: pre-wrap;
             text-align: center;

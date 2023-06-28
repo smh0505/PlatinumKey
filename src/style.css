@@ -42,3 +42,23 @@ input, select {
     font: inherit;
     color: inherit;
 }
+
+.roulette-selected {
+    display: block;
+    background: none;
+
+    font-size: 48px;
+    font-weight: 900;
+
+    padding-top: 0.5em;
+
+    min-height: 0;
+    overflow: hidden;
+}
+.roulette-selected > span {
+    background: linear-gradient(to bottom, #fff, #2fe);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+}

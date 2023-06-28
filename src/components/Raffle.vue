@@ -9,9 +9,9 @@
                 <Scroll :list="pool.map(x => x.song)"></Scroll>
             </div>
             <div class="raffleResult" v-if="state !== 0">
-                <span>다음 곡은</span><br>
-                <span style="color: yellow; font-size: 40px;">{{ temp[tempIdx].song }}</span><br>
-                <span>by {{ temp[tempIdx].name }}</span>
+                {{ theme }}
+                <div class="roulette-selected"><span>{{ temp[tempIdx].song }}</span></div>
+                {{ temp[tempIdx].name }}
             </div>
         </div>
         <div class="usedList">
@@ -159,11 +159,20 @@ export default {
         }
 
         .raffleResult {
-            background-color: rgba(75, 75, 75, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            background-color: #000c;
             color: white;
             padding: 8px 16px;
             font-size: 24px;
             height: 100%;
+
+            > .roulette-selected {
+                flex-basis: 50%;
+            }
         }
     }
 

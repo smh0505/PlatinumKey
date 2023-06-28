@@ -8,7 +8,7 @@
     </v-stage>
     <div v-show="showResult" class="resultScreen">
         <div class="label">다음 황금열쇠는</div>
-        <div class="value">{{ result }}</div>
+        <div class="value roulette-selected"><span>{{ result }}</span></div>
     </div>
     <button @keydown.prevent v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
 </template>
@@ -175,6 +175,10 @@ export default {
 }
 
 .resultScreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
     position: absolute;
     width: 656px;
     height: 600px;
@@ -182,16 +186,16 @@ export default {
     top: 32px;
     padding: 12px 16px;
 
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: #000e;
+    text-align: center;
 
     .label {
         font-size: 24px;
         color: white;
     }
 
-    .value {
-        font-size: 40px;
-        color: yellow;
+    > .roulette-selected {
+        flex-basis: 50%;
     }
 }
 </style>
