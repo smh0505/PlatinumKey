@@ -153,6 +153,8 @@ export default {
         .rafflePool {
             color: #fff;
 
+            height: 100%;
+
             padding: 4px 8px;
             font-size: 16px;
             overflow: hidden;
