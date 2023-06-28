@@ -1,5 +1,5 @@
 <template>
-    <v-stage :config="{ width: 712, height: 712}">
+    <v-stage :config="{ width: 704, height: 704 }">
         <v-layer>
             <v-wedge v-for="(item, index) in options.options" :config="sectorConfig(index, item)"></v-wedge>
             <v-text v-for="(item, index) in options.options" :config="textConfig(index, item)"></v-text>
@@ -8,7 +8,7 @@
     </v-stage>
     <div v-show="showResult" class="resultScreen">
         <div class="label">다음 황금열쇠는</div>
-        <div class="value">{{ result }}</div>
+        <div class="value roulette-selected"><span>{{ result }}</span></div>
     </div>
     <button @keydown.prevent v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
 </template>
@@ -158,14 +158,13 @@ export default {
 <style lang="scss">
 .wheelButton {
     position: absolute;
-    width: 96px;
-    height: 48px;
-    left: 16px;
-    bottom: 16px;
+    width: 140px;
+    height: 40px;
+    left: 8px;
+    bottom: 8px;
 
     // decoration
     border: none;
-    border-radius: 8px;
     font-size: 20px;
     background-color: rgba(148, 255, 127, 0.75);
     transition: all 0.2s ease-out;
@@ -176,6 +175,12 @@ export default {
 }
 
 .resultScreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 1em;
+
     position: absolute;
     width: 656px;
     height: 600px;
@@ -183,16 +188,16 @@ export default {
     top: 32px;
     padding: 12px 16px;
 
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: #000e;
+    text-align: center;
 
     .label {
         font-size: 24px;
         color: white;
     }
 
-    .value {
-        font-size: 40px;
-        color: yellow;
+    > .roulette-selected {
+        flex-basis: 50%;
     }
 }
 </style>

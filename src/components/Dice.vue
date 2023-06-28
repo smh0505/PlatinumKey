@@ -19,7 +19,8 @@ export default {
         width: 100%;
         height: 100%;
         border: none;
-        scale: 90%;
+        transform: scale(0.9);
+        vertical-align: top;
     }
 }
 </style>

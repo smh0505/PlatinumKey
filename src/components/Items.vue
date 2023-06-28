@@ -88,7 +88,7 @@ export default {
     min-width: 0;
     line-height: 36px;
 
-    background-color: #333d;
+    background-color: #222e;
     color: white;
 
     .inv-empty {

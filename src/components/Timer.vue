@@ -4,33 +4,54 @@
             <button @keydown.prevent class="seekButton centered" @click="seekLaps(-1)">
                 <span class="material-symbols-rounded">remove</span>
             </button>
-            <span class="lapsCount">
-                {{ laps[lapsIdx] }}<small>바퀴째</small>
+            <span class="lapsCount" @click="$emit('reverse')">
+                <span class="material-symbols-rounded">{{ clockwise? 'rotate_right' : 'rotate_left' }}</span>
+                {{ laps }}<small>바퀴</small>
+                <small v-if="!clockwise"> 반시계</small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="seekLaps(+1)">
                 <span class="material-symbols-rounded">add</span>
             </button>
         </div>
-        <div class="clockwise" @click="$emit('reverse')">
-            <span class="material-symbols-rounded">{{ clockwise ? 'rotate_right' : 'rotate_left' }}</span>
-            <span class="clockwiseLabel">{{ clockwise ? "시계" : "반시계" }}</span>
+        <div class="money">
+            <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, -1)">
+                <span class="material-symbols-rounded">remove</span>
+            </button>
+            <span class="moneyAmount">
+                {{ board.money }}<small>$ / {{ board.limit }}</small>
+            </span>
+            <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, +1)">
+                <span class="material-symbols-rounded">add</span>
+            </button>
+            <div class="seekHint">
+                CTRL … ×10
+                <br />
+                SHIFT … ×100
+            </div>
         </div>
+        <!-- <div class="clockwise" @click="$emit('reverse')">
+        </div> -->
         <div class="clock" :class="{ paused }" @click="startButton()">
-            <button @keydown.prevent class="seekButton centered" @click.stop="subMin()">
+            <button @keydown.prevent class="seekButton centered" @click.stop="e => seekMin(e, -1)">
                 <span class="material-symbols-rounded">remove</span>
             </button>
             <span class="clockTime">
                 {{ elapsed.toFormat('hh:mm:ss') }}
             </span>
-            <button @keydown.prevent class="seekButton centered" @click.stop="addMin()">
+            <button @keydown.prevent class="seekButton centered" @click.stop="e => seekMin(e, +1)">
                 <span class="material-symbols-rounded">add</span>
             </button>
+            <div class="seekHint">
+                CTRL … × 10m
+                <br />
+                SHIFT … × 1h
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { remainder } from '../scripts/Calculate'
+import { useBoardStore } from '../stores/BoardStore';
 import { DateTime, Duration } from 'luxon'
 import * as LocalForage from 'localforage'
 
@@ -40,12 +61,13 @@ export default {
     },
     data() {
         return {
-            laps: ['1', '2', '3', 'B'],
-            lapsIdx: 0,
+            laps: 1,
             start: DateTime.now(),
             elapsed: Duration.fromMillis(0),
             paused: true,
-            intervalId: 0
+            intervalId: 0,
+
+            board: useBoardStore(),
         }
     },
     computed: {
@@ -55,7 +77,33 @@ export default {
     },
     methods: {
         seekLaps(direction: number): void {
-            this.lapsIdx = remainder(this.lapsIdx + direction, 4)
+            this.laps += direction
+        },
+        seekMoney(e: MouseEvent, direction: number) {
+            let amount = direction
+
+            if (e.ctrlKey || e.metaKey)
+                amount *= 10
+            if (e.shiftKey)
+                amount *= 100
+
+            this.board.updateMoney(amount)
+        },
+        seekMin(e: MouseEvent, direction: number) {
+            const time = { minutes: 1 }
+
+            if (e.ctrlKey || e.metaKey)
+                time.minutes = 10
+            if (e.shiftKey)
+                time.minutes = 60
+
+            if(direction > 0) {
+                this.elapsed = this.elapsed.plus(time)
+                this.start = this.start.minus(time)
+            } else {
+                this.elapsed = this.elapsed.minus(time)
+                this.start = this.start.plus(time)
+            }
         },
         startButton(): void {
             if (this.paused) {
@@ -69,14 +117,6 @@ export default {
                 this.elapsed = DateTime.now().diff(this.start)
                 window.clearInterval(this.intervalId)
             }
-        },
-        subMin(): void {
-            this.elapsed = this.elapsed.minus({ minutes: 1 })
-            this.start = this.start.plus({ minutes: 1 })
-        },
-        addMin(): void {
-            this.elapsed = this.elapsed.plus({ minutes: 1 })
-            this.start = this.start.minus({ minutes: 1 })
         }
     },
     mounted() {
@@ -99,7 +139,7 @@ export default {
 .clockFrame {
     display: flex;
     height: 48px;
-    margin: 6px;
+    margin: 0 0 8px 0;
     padding: 4px;
     gap: 4px;
 
@@ -111,8 +151,9 @@ export default {
 
     user-select: none;
 
-    background-color: #333d;
+    background-color: #222e;
     color: #fff;
+    text-shadow: 0 0 0.25em #000, 0 0 0.5em #000, 0 0 0.5em #000;
     @include borderless;
 
     > * {
@@ -120,7 +161,7 @@ export default {
         text-align: center;
     }
 
-    .laps, .clock {
+    .laps, .money, .clock {
         position: relative;
         display: flex;
         justify-content: space-around;
@@ -132,9 +173,7 @@ export default {
             left: 0;
 
             border: 0;
-            opacity: 0;
-            background: #fff6;
-            transition: opacity 0.2s ease-out;
+            background: #000c;
 
             &:active {
                 background-color: #9df6;
@@ -144,8 +183,39 @@ export default {
             left: unset;
             right: 0;
         }
-        &:hover > .seekButton {
+        .seekButton, .seekHint {
+            transition: opacity 0.2s ease-out;
+            opacity: 0;
+        }
+        &:hover > .seekButton, &:hover > .seekHint {
             opacity: 1;
+        }
+
+        .seekHint {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            left: 0;
+            margin: auto;
+            padding: 0.5em;
+
+            font-size: 0.666em;
+            font-weight: 400;
+
+            line-height: 24px;
+            background: #222d;
+            color: #fff;
+            opacity: 0;
+
+            white-space: nowrap;
+            word-break: keep-all;
+            pointer-events: none;
+
+            > kbd {
+                display: inline-block;
+                font: inherit;
+                padding: 0 0.2em;
+            }
         }
     }
 
