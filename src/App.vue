@@ -2,14 +2,14 @@
     <div class="board">
         <div class="center block">
             <!--left panel-->
-            <div name="left-panel">
+            <div class="left-panel">
                 <Dice v-show="state === 0" />
                 <div v-show="state === 1" v-if="payload"><Wheel :payload="payload"></Wheel></div>
                 <Raffle v-show="state === 2" v-if="options.channel" :begin="started" :index="boardIndex" :channel="options.channel"></Raffle>
             </div>
 
             <!--right panel-->
-            <div name="right-panel">
+            <div class="right-panel">
                 <Timer :clockwise="clockwise" @reverse="clockwise = !clockwise"></Timer>
                 <div class="inv-container">
                     <LogList :visible-count="state < 0? 5 : 10"></LogList>
@@ -308,6 +308,10 @@ export default {
     border: 2px solid;
     // background-color: lightgray;
 
+    .left-panel, .right-panel {
+        height: 100%;
+        overflow: auto;
+    }
     .block {
         display: flex;
         border: 2px solid;

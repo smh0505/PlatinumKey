@@ -1,5 +1,5 @@
 <template>
-    <v-stage :config="{ width: 712, height: 712}">
+    <v-stage :config="{ width: 704, height: 704 }">
         <v-layer>
             <v-wedge v-for="(item, index) in options.options" :config="sectorConfig(index, item)"></v-wedge>
             <v-text v-for="(item, index) in options.options" :config="textConfig(index, item)"></v-text>
@@ -178,6 +178,8 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
+
+    gap: 1em;
 
     position: absolute;
     width: 656px;

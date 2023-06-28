@@ -9,9 +9,9 @@
                 <Scroll :list="pool.map(x => x.song)"></Scroll>
             </div>
             <div class="raffleResult" v-if="state !== 0">
-                {{ theme }}
+                <div class="genre">{{ theme }}</div>
                 <div class="roulette-selected"><span>{{ temp[tempIdx].song }}</span></div>
-                {{ temp[tempIdx].name }}
+                <div class="artist">{{ temp[tempIdx].name }}</div>
             </div>
         </div>
         <div class="usedList">
@@ -117,7 +117,7 @@ export default {
 <style lang="scss">
 .raffleContainer {
     display: grid;
-    grid-template-rows: 48px 2fr 1fr 48px;
+    grid-template-rows: 48px minmax(0, 2fr) 1fr 48px;
     width: 700px;
     height: 100%;
 
@@ -164,14 +164,22 @@ export default {
             align-items: center;
             justify-content: center;
 
-            background-color: #000c;
+            gap: 0.5em;
+
+            background-color: #000a;
             color: white;
             padding: 8px 16px;
             font-size: 24px;
             height: 100%;
 
+            > .genre, > .artist {
+                flex-shrink: 0;
+            }
+            > .artist {
+                font-weight: 600;
+            }
             > .roulette-selected {
-                flex-basis: 50%;
+                min-height: 50%;
             }
         }
     }

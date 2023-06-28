@@ -50,10 +50,9 @@ input, select {
     font-size: 48px;
     font-weight: 900;
 
-    padding-top: 0.5em;
-
     min-height: 0;
     overflow: hidden;
+    text-align: center;
 }
 .roulette-selected > span {
     background: linear-gradient(to bottom, #fff, #2fe);
