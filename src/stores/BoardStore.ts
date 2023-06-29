@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { DateTime } from "luxon";
 import * as LocalForage from 'localforage'
 
 import { parse } from "../scripts/IRC";
@@ -169,7 +168,7 @@ export const useBoardStore = defineStore('board', {
                 name: name,
                 theme: this.board[index],
                 song: song,
-                timestamp: DateTime.now()
+                timestamp: Date.now()
             }
 
             // already picked
@@ -190,22 +189,22 @@ export const useBoardStore = defineStore('board', {
 
                 // accepted
                 const group = this.pool.filter(x => x.name === name)
-                if (group.length === 3) this.pool.splice(this.pool.indexOf(group[0]), 1)
+                if (group.length === 30) this.pool.splice(this.pool.indexOf(group[0]), 1)
                 this.pool.push(newVote)
                 return 'accepted'
             }
         },
-        checkTime(name: string, time: DateTime) {
+        checkTime(name: string, time: number) {
             const group = this.pool.filter(x => x.name === name)
             if (group.length > 0) {
                 const last = group.slice(-1)[0]
-                return time.diff(last.timestamp).as('seconds') > 30
+                return (time - last.timestamp) > 0
             } else return true
         },
-        checkTimeIsland(name: string, time: DateTime) {
+        checkTimeIsland(name: string, time: number) {
             const last = this.islandPool.find(x => x.name === name)
             if (last) {
-                return time.diff(last.timestamp).as('seconds') > 30
+                return (time - last.timestamp) > 0
             } else return true
         },
 
@@ -261,7 +260,7 @@ export interface vote {
     name: string,
     theme: string,
     song: string,
-    timestamp: DateTime
+    timestamp: number
 }
 
 // constants

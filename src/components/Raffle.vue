@@ -9,13 +9,17 @@
                 <Scroll :list="pool.map(x => ({
                     text: x.song,
                     class: {
-                        'iidx-title-inline': true
+                        'iidx-title-inline': true,
+                        'new': isRelativelyNew(x.timestamp)
                     }
                 }))"></Scroll>
             </div>
             <div class="raffleResult" v-if="state !== 0">
                 <div class="genre">{{ theme }}</div>
-                <div class="iidx-title large"><span>{{ temp[tempIdx].song }}</span></div>
+                <div :class="[
+                    'iidx-title large',
+                    { new: isRelativelyNew(temp[tempIdx].timestamp) }
+                ]"><span>{{ temp[tempIdx].song }}</span></div>
                 <div class="artist">{{ temp[tempIdx].name }}</div>
             </div>
         </div>
@@ -58,7 +62,10 @@ export default {
             intervalId: 0,
 
             buttonLabels: ['추첨', '멈추기', '결정'],
-            state: 0
+            state: 0,
+
+            // updated lazily
+            now: Date.now()
         }
     },
     components: { Marquee, Scroll },
@@ -106,6 +113,9 @@ export default {
         cancel() {
             this.state = 0
             this.tempIdx = 0
+        },
+        isRelativelyNew(timestamp: number) {
+            return (this.now - timestamp) < 30 * 60 * 1000
         }
     },
     mounted() {
@@ -117,6 +127,9 @@ export default {
                 used: this.board.usedList
             })))
         })
+        setInterval(() => {
+            this.now = Date.now()
+        }, 1000)
     }
 }
 </script>
