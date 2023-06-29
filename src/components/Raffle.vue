@@ -175,8 +175,16 @@ export default {
             height: 100%;
 
             padding: 4px 8px;
-            font-size: 16px;
+            font-size: 20px;
+            line-height: 28px;
             overflow: hidden;
+
+            filter: drop-shadow(0 0 0.05em black) drop-shadow(0 0 0.05em black) drop-shadow(0 0 0.05em black);
+
+            .scroll {
+                text-align: center;
+                justify-content: center;
+            }
         }
 
         .raffleResult {
@@ -184,6 +192,7 @@ export default {
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            text-align: center;
 
             gap: 1em;
 
