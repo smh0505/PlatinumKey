@@ -61,6 +61,9 @@ export const useConnectStore = defineStore('connection', {
             this.logs.push({ type, status, detail } as Log)
         },
         connectTwitch(begin: boolean, channel: string = "arpa__") {
+            if(this.socket_twitch) {
+                return
+            }
             this.socket_twitch = new WebSocket('wss://irc-ws.chat.twitch.tv')
             this.result({
                 type: 'twitch',
@@ -142,6 +145,9 @@ export const useConnectStore = defineStore('connection', {
             }
         },
         connectToonation(payload: string) {
+            if (!this.socket_toonation) {
+                return
+            }
             this.socket_toonation = new WebSocket('wss://toon.at:8071/' + payload)
             this.result({
                 type: 'toonation',
@@ -179,6 +185,7 @@ export const useConnectStore = defineStore('connection', {
                         status: 'disconnected'
                     })
                 }
+                this.socket_toonation = null
                 setTimeout(this.connectToonation, this.retryCount > 0 ? 1000 : 10, payload);
                 this.retryCount++
             }
