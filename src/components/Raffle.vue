@@ -82,19 +82,21 @@ export default {
                     break
                 case 1:
                     this.temp = this.pool
-                    this.intervalId = window.setInterval(() => {
-                        this.tempIdx = Math.floor(Math.random() * this.temp.length)
-                    }, 16)
+                    this.seekIndex()
                     break
                 case 2:
                     window.clearInterval(this.intervalId)
             }
         },
+        seekIndex() {
+            this.tempIdx = (this.tempIdx + 1) % this.temp.length
+            if(this.state === 1) {
+                requestAnimationFrame(() => this.seekIndex())
+            }
+        },
         retry() {
             this.state = 1
-            this.intervalId = window.setInterval(() => {
-                this.tempIdx = Math.floor(Math.random() * this.temp.length)
-            }, 16)
+            this.seekIndex()
         },
         cancel() {
             this.state = 0
