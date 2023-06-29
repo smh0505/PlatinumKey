@@ -70,27 +70,27 @@
             </div>
 
             <!--free-->
-            <button
-                @keydown.prevent v-else-if="index === 13"
+            <div
+                v-else-if="index === 13"
                 class="blockButton centered"
-                @click="state = 0">뱅하싶</button>
+                @click="state = 0">뱅하싶</div>
 
             <!--golden key-->
-            <button
-                @keydown.prevent v-else-if="board.isGoldenKey(index)"
+            <div
+                v-else-if="board.isGoldenKey(index)"
                 class="blockButton centered"
-                @click="state = 1">황금열쇠</button>
+                @click="state = 1">황금열쇠</div>
 
             <!--islands-->
-            <button
-                @keydown.prevent v-else-if="index === 7 || index === 20"
+            <div
+                v-else-if="index === 7 || index === 20"
                 class="blockButton centered"
-                @click="select(index)">{{ board.selectAll(index).length }}</button>
+                @click="select(index)">{{ board.selectAll(index).length }}</div>
 
             <!--other blocks-->
             <template v-else>
                 <div class="block-content">{{ board.board[index] }}</div>
-                <button @keydown.prevent class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
+                <div class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</div>
             </template>
         </div>
     </div>
@@ -410,6 +410,8 @@ export default {
             color: transparent;
             border: none;
             transition: all 0.1s ease-out;
+
+            user-select: none;
 
             &:hover {
                 background-color: rgba(255, 255, 255, 0.7);
