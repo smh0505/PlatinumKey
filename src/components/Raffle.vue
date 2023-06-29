@@ -6,16 +6,21 @@
         </div>
         <div class="raffleList">
             <div class="rafflePool" v-if="state === 0">
-                <Scroll :list="pool.map(x => x.song)"></Scroll>
+                <Scroll :list="pool.map(x => ({
+                    text: x.song,
+                    class: {
+                        'iidx-title-inline': true
+                    }
+                }))"></Scroll>
             </div>
             <div class="raffleResult" v-if="state !== 0">
                 <div class="genre">{{ theme }}</div>
-                <div class="roulette-selected"><span>{{ temp[tempIdx].song }}</span></div>
+                <div class="iidx-title large"><span>{{ temp[tempIdx].song }}</span></div>
                 <div class="artist">{{ temp[tempIdx].name }}</div>
             </div>
         </div>
         <div class="usedList">
-            <Scroll :list="board.usedList.map(x => x.name + ' => ' + x.song)"></Scroll>
+            <Scroll :list="board.usedList.map(x => ({ text: x.name + ' => ' + x.song }))"></Scroll>
         </div>
         <div class="raffleButtons">
             <button @keydown.prevent v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>

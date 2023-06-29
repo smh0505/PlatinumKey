@@ -2,19 +2,20 @@
     <div ref="container" class="scrollContainer">
         <div class="scroll">
             <div :class="{ partOne: isOverflown }">
-                <span v-for="item in list">{{ item }}<br></span>
+                <span :class="item.class ?? {}" v-for="item in list">{{ item.text ?? item }}<br></span>
             </div>
             <div v-if="isOverflown" class="partTwo">
-                <span v-for="item in list">{{ item }}<br></span>
+                <span :class="item.class ?? {}" v-for="item in list">{{ item.text ?? item }}<br></span>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
+import type { PropType } from 'vue'
 export default {
     props: {
-        list: Array
+        list: Array as PropType<{ class?: any, text: string }[]>
     },
     data() {
         return {
