@@ -145,8 +145,7 @@ export default {
         display: grid;
         grid-template-columns: auto min-content;
 
-        line-height: 32px;
-        padding-bottom: 4px;
+        line-height: 40px;
 
         .theme {
             display: flex;
@@ -162,7 +161,7 @@ export default {
             align-items: center;
             font-size: 30px;
             font-family: var(--font-numeric);
-            font-variant-numeric: tabular-nums;
+            font-variant-numeric: lining-nums;
             padding: 0px 20px;
         }
     }

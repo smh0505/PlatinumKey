@@ -210,7 +210,7 @@ export default {
 
     .inv-buttons {
         display: grid;
-        grid-template-columns: 2fr 2fr 1fr;
+        grid-template-columns: 2fr 2fr max-content;
         gap: 4px;
 
         color: #fff8;
