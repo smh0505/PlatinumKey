@@ -1,6 +1,6 @@
 <template>
     <div class="board">
-        <div class="center block">
+        <div class="center">
             <!--left panel-->
             <div class="left-panel">
                 <Dice v-show="state === 0" />
@@ -62,8 +62,7 @@
             </header>
 
             <!--start-->
-            <div v-if="index === 0" style="width: 100%; height: 100%;">
-                <button @keydown.prevent class="blockButton centered" @click="closeAll(); switchScene(true)">출발</button>
+            <div v-if="index === 0" style="width: 100%; height: 100%;" @click="closeAll(); switchScene(true)">
             </div>
 
             <!--free-->
@@ -308,21 +307,26 @@ export default {
     height: 100vh;
 
     // grid
-    grid-template-columns: 316px repeat(6, 1fr) 316px;
-    grid-template-rows: 176px repeat(5, 1fr) 176px;
+    grid-template-columns: 320px repeat(6, 1fr) 320px;
+    grid-template-rows: 180px repeat(5, 1fr) 180px;
 
     // decoration
-    border: 2px solid;
+    box-shadow: 0 0 0 2px #000 inset;
     // background-color: lightgray;
 
     .left-panel, .right-panel {
         height: 100%;
         overflow: auto;
     }
+    .center {
+        box-shadow: 0 0 0 1px black inset;
+    }
     .block {
         display: flex;
-        border: 2px solid;
         position: relative;
+
+        background-color: #eee;
+        border: 1px solid black;
 
         &.top { flex-direction: column-reverse; }
         &.bottom { flex-direction: column; }
@@ -334,26 +338,22 @@ export default {
                 flex-direction: column;
             }
         }
-        &.left {
-            .block-header {
-                text-align: right;
-            }
+        &.left .block-header {
+            text-align: right;
         }
-        &.corner {
-            .block-header {
-                color: white;
-                mix-blend-mode: exclusion;
-            }
+        &.corner .block-header {
+            color: white;
+            mix-blend-mode: exclusion;
         }
         &.corner, &.golden {
             .block-header {
                 background: none !important;
+                box-shadow: none;
             }
             .block-prize {
                 display: none;
             }
         }
-
         &.djmax, &.circle {
             flex-direction: row-reverse;
 
@@ -375,6 +375,8 @@ export default {
             font-size: 24px;
             line-height: 24px;
             padding: 8px 10px;
+
+            box-shadow: 0 0 0 2px black;
         }
         .block-prize {
             font-size: 0.8em;
@@ -386,8 +388,6 @@ export default {
             align-items: center;
 
             flex-grow: 1;
-
-            background-color: #eee;
 
             white-space: pre-wrap;
             text-align: center;
