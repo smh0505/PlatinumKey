@@ -177,14 +177,23 @@ export default {
 
             padding: 4px 8px;
             font-size: 20px;
-            line-height: 28px;
+            line-height: 24px;
             overflow: hidden;
 
             filter: drop-shadow(0 0 0.05em black) drop-shadow(0 0 0.05em black) drop-shadow(0 0 0.05em black);
 
+            &:has(.overflown) {
+                box-shadow: 0 0.75em 0.5em -1em #000 inset, 0 -0.75em 0.5em -1em #000 inset;
+            }
             .scroll {
                 text-align: center;
                 justify-content: center;
+
+                br {
+                    display: block;
+                    content: '';
+                    height: 0.25em;
+                }
             }
         }
 

@@ -1,5 +1,8 @@
 <template>
-    <div ref="container" class="scrollContainer">
+    <div ref="container" :class="[
+        'scrollContainer',
+        { overflown: isOverflown }
+    ]">
         <div class="scroll">
             <div :class="{ partOne: isOverflown }">
                 <span :class="item.class ?? {}" v-for="item in list">{{ item.text ?? item }}<br></span>
