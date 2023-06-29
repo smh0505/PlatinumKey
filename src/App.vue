@@ -1,10 +1,10 @@
 <template>
     <div class="board">
-        <div class="center block">
+        <div class="center">
             <!--left panel-->
             <div class="left-panel">
                 <Dice v-show="state === 0" />
-                <div v-show="state === 1" v-if="payload"><Wheel :payload="payload"></Wheel></div>
+                <Wheel v-show="state === 1" v-if="payload" :payload="payload"></Wheel>
                 <Raffle v-show="state === 2" v-if="options.channel" :begin="started" :index="boardIndex" :channel="options.channel"></Raffle>
             </div>
 
@@ -62,32 +62,35 @@
             </header>
 
             <!--start-->
-            <div v-if="index === 0" style="width: 100%; height: 100%;">
-                <button @keydown.prevent class="blockButton centered" @click="closeAll(); switchScene(true)">출발</button>
+            <div
+                v-if="index === 0"
+                style="width: 100%; height: 100%;"
+                @click="closeAll(); switchScene(true)"
+                @contextmenu.prevent="state = 2">
             </div>
 
             <!--free-->
-            <button
-                @keydown.prevent v-else-if="index === 13"
+            <div
+                v-else-if="index === 13"
                 class="blockButton centered"
-                @click="state = 0">뱅하싶</button>
+                @click="state = 0">뱅하싶</div>
 
             <!--golden key-->
-            <button
-                @keydown.prevent v-else-if="board.isGoldenKey(index)"
+            <div
+                v-else-if="board.isGoldenKey(index)"
                 class="blockButton centered"
-                @click="state = 1">황금열쇠</button>
+                @click="state = 1">황금열쇠</div>
 
             <!--islands-->
-            <button
-                @keydown.prevent v-else-if="index === 7 || index === 20"
+            <div
+                v-else-if="index === 7 || index === 20"
                 class="blockButton centered"
-                @click="select(index)">{{ board.selectAll(index).length }}</button>
+                @click="select(index)">{{ board.selectAll(index).length }}</div>
 
             <!--other blocks-->
             <template v-else>
                 <div class="block-content">{{ board.board[index] }}</div>
-                <button @keydown.prevent class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</button>
+                <div class="blockButton centered" @click="select(index)">{{ board.selectAll(index).length }}</div>
             </template>
         </div>
     </div>
@@ -308,11 +311,11 @@ export default {
     height: 100vh;
 
     // grid
-    grid-template-columns: 316px repeat(6, 1fr) 316px;
-    grid-template-rows: 176px repeat(5, 1fr) 176px;
+    grid-template-columns: 320px repeat(6, 1fr) 320px;
+    grid-template-rows: 180px repeat(5, 1fr) 180px;
 
     // decoration
-    border: 2px solid;
+    box-shadow: 0 0 0 2px #000 inset;
     // background-color: lightgray;
 
     .left-panel, .right-panel {
@@ -321,8 +324,10 @@ export default {
     }
     .block {
         display: flex;
-        border: 2px solid;
         position: relative;
+
+        background-color: #eee;
+        border: 1px solid black;
 
         &.top { flex-direction: column-reverse; }
         &.bottom { flex-direction: column; }
@@ -334,26 +339,22 @@ export default {
                 flex-direction: column;
             }
         }
-        &.left {
-            .block-header {
-                text-align: right;
-            }
+        &.left .block-header {
+            text-align: right;
         }
-        &.corner {
-            .block-header {
-                color: white;
-                mix-blend-mode: exclusion;
-            }
+        &.corner .block-header {
+            color: white;
+            mix-blend-mode: exclusion;
         }
         &.corner, &.golden {
             .block-header {
                 background: none !important;
+                box-shadow: none;
             }
             .block-prize {
                 display: none;
             }
         }
-
         &.djmax, &.circle {
             flex-direction: row-reverse;
 
@@ -375,6 +376,8 @@ export default {
             font-size: 24px;
             line-height: 24px;
             padding: 8px 10px;
+
+            box-shadow: 0 0 0 2px black;
         }
         .block-prize {
             font-size: 0.8em;
@@ -386,8 +389,6 @@ export default {
             align-items: center;
 
             flex-grow: 1;
-
-            background-color: #eee;
 
             white-space: pre-wrap;
             text-align: center;
@@ -410,6 +411,8 @@ export default {
             border: none;
             transition: all 0.1s ease-out;
 
+            user-select: none;
+
             &:hover {
                 background-color: rgba(255, 255, 255, 0.7);
                 color: black;
@@ -421,7 +424,10 @@ export default {
         grid-area: 2 / 2 / 7 / 8;
         position: relative;
         display: grid;
-        grid-template-columns: 7fr 5fr;
+        grid-template-columns: 10fr 8fr;
+        gap: 40px;
+
+        box-shadow: 0 0 0 1px black inset;
 
         // background-image: url('./assets/RM2023SM.png');
         background-position: center;

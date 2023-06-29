@@ -1,16 +1,18 @@
 <template>
-    <v-stage :config="{ width: 704, height: 704 }">
-        <v-layer>
-            <v-wedge v-for="(item, index) in options.options" :config="sectorConfig(index, item)"></v-wedge>
-            <v-text v-for="(item, index) in options.options" :config="textConfig(index, item)"></v-text>
-            <v-line :config="arrow"></v-line>
-        </v-layer>
-    </v-stage>
-    <div v-show="showResult" class="resultScreen">
-        <div class="label">다음 황금열쇠는</div>
-        <div class="value iidx-title large"><span>{{ result }}</span></div>
+    <div class="wheelContainer">
+        <v-stage :config="{ width: 640, height: 640 }">
+            <v-layer>
+                <v-wedge v-for="(item, index) in options.options" :config="sectorConfig(index, item)"></v-wedge>
+                <v-text v-for="(item, index) in options.options" :config="textConfig(index, item)"></v-text>
+                <v-line :config="arrow"></v-line>
+            </v-layer>
+        </v-stage>
+        <div v-if="showResult" class="resultScreen">
+            <div class="label">다음 황금열쇠는</div>
+            <div class="value iidx-title large"><span>{{ result }}</span></div>
+        </div>
+        <button @keydown.prevent v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
     </div>
-    <button @keydown.prevent v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
 </template>
 
 <script lang="ts">
@@ -41,7 +43,7 @@ export default {
             startAngle: 0,
             speed: 50,
             arrow: {
-                points: [586, 356, 606, 366, 606, 346],
+                points: [555, 320, 575, 330, 575, 310],
                 fill: 'black',
                 closed: true
             },
@@ -82,8 +84,8 @@ export default {
         // properties
         sectorConfig(index: number, item: option) {
             return {
-                x: 356,
-                y: 356,
+                x: 320,
+                y: 320,
                 radius: 240,
                 angle: item.count * this.options.unitAngle,
                 fill: item.color,
@@ -96,8 +98,8 @@ export default {
                 text: item.key,
                 fontSize: 16,
                 fontStyle: 'bold',
-                x: 356,
-                y: 356,
+                x: 320,
+                y: 320,
                 offsetX: -60,
                 offsetY: 8,
                 rotation: this.startAngle + this.options.sum(index) * this.options.unitAngle + item.count * this.options.unitAngle / 2
@@ -156,21 +158,35 @@ export default {
 </script>
 
 <style lang="scss">
+.wheelContainer {
+    position: relative;
+    height: 100%;
+
+    overflow: hidden;
+
+    > div:not([class]) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+}
 .wheelButton {
     position: absolute;
+    bottom: 0;
+    left: 0;
+
     width: 140px;
     height: 40px;
-    left: 8px;
-    bottom: 8px;
 
-    // decoration
-    border: none;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
     font-size: 20px;
-    background-color: rgba(148, 255, 127, 0.75);
     transition: all 0.2s ease-out;
 
     &:hover {
-        background-color: rgb(148, 255, 127);
+        background-color: white;
+        color: black;
     }
 }
 
@@ -182,10 +198,10 @@ export default {
     gap: 1em;
 
     position: absolute;
-    width: 656px;
-    height: 600px;
-    left: 32px;
-    top: 32px;
+    width: 100%;
+    height: calc(100% - 48px);
+    left: 0;
+    top: 0;
     padding: 12px 16px;
 
     background-color: #000e;

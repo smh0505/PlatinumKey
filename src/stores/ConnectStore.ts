@@ -17,6 +17,24 @@ interface VoteLog {
 
 export type Log = ConnectionLog | VoteLog
 
+export interface ParsedIRCMessage {
+    tags: { [key: string]: string },
+    source: {
+        full: string,
+        nick?: string,
+        user?: string,
+        host?: string
+    },
+    command: string,
+    params: string,
+    content: string
+}
+
+const IRC_REGEXES = {
+    line: /^(?:@(?<tags>(?:.+?=.*?)(?:;.+?=.*?)*) )?(?::(?<source>[^ ]+?) )?(?<command>[0-9]{3}|[a-zA-Z]+)(?: (?<params>.+?))?(?: :(?<content>.*))?$/,
+    user: /^(?:(?<nick>[^\s]+?)!(?<user>[^\s]+?)@)?(?<host>[^\s]+)$/
+}
+
 export const useConnectStore = defineStore('connection', {
     state() {
         return {
@@ -43,6 +61,9 @@ export const useConnectStore = defineStore('connection', {
             this.logs.push({ type, status, detail } as Log)
         },
         connectTwitch(begin: boolean, channel: string = "arpa__") {
+            if (this.socket_twitch) {
+                return
+            }
             this.socket_twitch = new WebSocket('wss://irc-ws.chat.twitch.tv')
             this.result({
                 type: 'twitch',
@@ -59,18 +80,9 @@ export const useConnectStore = defineStore('connection', {
                 })
             }
 
-            this.socket_twitch.onmessage = msg => {
-                if (msg.data.includes('PING')) {
-                    this.socket_twitch?.send('PONG :tmi.twitch.tv')
-                }
-                if (begin && msg.data.includes('!픽')) {
-                    const { name, status } = useBoardStore().parse(msg.data)
-                    this.result({
-                        type: 'vote',
-                        status: status,
-                        detail: name
-                    })
-                }
+            this.socket_twitch.onmessage = (msg) => {
+                const lines = msg.data.split('\r\n') as string[]
+                lines.forEach(line => this.parseTwitch(line))
             }
 
             this.socket_twitch.onclose = () => {
@@ -81,10 +93,61 @@ export const useConnectStore = defineStore('connection', {
                         status: "disconnected"
                     })
                 }
+                this.socket_twitch = null
                 setTimeout(this.connectTwitch, 1000, begin, channel)
             }
         },
+        parseTwitch(line: string) {
+            if (!line)
+                return
+
+            const { groups: match } = IRC_REGEXES.line.exec(line) ?? {}
+
+            if(!match)
+                return
+
+            if (match.command === 'PING') {
+                this.socket_twitch?.send(`PONG ${match.params}`)
+            } else if (match.command === 'PRIVMSG') {
+                // temporal early return
+                if(!match.content.includes('!픽'))
+                    return
+
+                const message: ParsedIRCMessage = {
+                    tags: Object.fromEntries(
+                        match.tags?.split(/(?<!\\);/)
+                            .map(_ => _.split(/(?<!\\)=/))
+                            .map(([a, ...b]) => [
+                                a.replaceAll('-', '_'),
+                                b.join('=')
+                            ])
+                        ?? []
+                    ),
+                    source: {
+                        full: match.source,
+                        ...(IRC_REGEXES.user.exec(match.source)?.groups ?? {})
+                    },
+                    command: match.command,
+                    params: match.params,
+                    content:
+                        match.content.startsWith('\x01ACTION')
+                        ? match.content.slice(8, -1)
+                        : match.content
+                }
+
+                // WARNING: early return made !픽 check unnecessary
+                const { name, status } = useBoardStore().parse(message)
+                this.result({
+                    type: 'vote',
+                    status: status,
+                    detail: name
+                })
+            }
+        },
         connectToonation(payload: string) {
+            if (this.socket_toonation) {
+                return
+            }
             this.socket_toonation = new WebSocket('wss://toon.at:8071/' + payload)
             this.result({
                 type: 'toonation',
@@ -122,6 +185,7 @@ export const useConnectStore = defineStore('connection', {
                         status: 'disconnected'
                     })
                 }
+                this.socket_toonation = null
                 setTimeout(this.connectToonation, this.retryCount > 0 ? 1000 : 10, payload);
                 this.retryCount++
             }

@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 import { remainder } from "../scripts/Calculate";
 
-export const ITEMS_PER_PAGE = 4
-
 export const useItemStore = defineStore('items', {
     state() {
         return {
@@ -35,10 +33,13 @@ export const useItemStore = defineStore('items', {
         },
         checkType(name: string) {
             const match = name.match(regex)
-            if (match) return {
-                key: String(match.groups?.option.trim()),
+            if(!match) return
+
+            const option = name.replace(regex, '').trim()
+            return {
+                key: option,
                 count: Number(match.groups?.count),
-                type: String(match.groups?.type) as '턴' | '곡' | '개'
+                type: ITEM_LABEL_MAPPING[match.groups?.type!]
             }
         },
 
@@ -83,4 +84,14 @@ interface item{
     type: '턴' | '곡' | '개'
 }
 
-const regex = /\((?<count>\d+)(?<type>턴|곡|개)\)(?<option>.+)/
+const regex = /\((?<count>\d+)(?<type>[턴곡개회번])\)/
+
+export const ITEMS_PER_PAGE = 4
+
+const ITEM_LABEL_MAPPING: { [key: string]: item["type"] } = {
+    턴: '턴',
+    곡: '곡',
+    개: '개',
+    회: '개',
+    번: '개'
+}

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import * as LocalForage from 'localforage'
 
-import { parse } from "../scripts/IRC";
+import type { ParsedIRCMessage } from "./ConnectStore";
 
 const STEP_PRIZES = [35, 25, 15]
 const MONOPOLY_PRIZE = 30
@@ -17,7 +17,7 @@ export const useBoardStore = defineStore('board', {
             // raffle pools
             pool: [] as vote[],
             islandPool: [] as vote[],
-            usedList: [] as { name: string, song: string }[],
+            usedList: [] as vote[],
 
             // money
             money: 0,
@@ -138,71 +138,66 @@ export const useBoardStore = defineStore('board', {
         },
 
         // add votes
-        parse(msg: string): { name: string, status: 'accepted' | 'cooldown' | 'rejected' | 'failed' } {
-            const parsedMsg = parse(msg)
-            const match = parsedMsg.text.match(/!픽 (?<index>\d+) (?<song>.+)/)
-            if (match) {
-                const index = Number(match.groups?.index)
-                const excluded = [0, 13].concat(this.goldenKeys)
-                const map = [...Array(26).keys()].filter(x => !excluded.includes(x))
-                if (map.includes(index)) {
-                    return {
-                        name: parsedMsg.name,
-                        status: this.insert(parsedMsg.name, Number(match.groups?.index), String(match.groups?.song))
-                    }
-                } else {
-                    return {
-                        name: parsedMsg.name,
-                        status: 'rejected'
-                    }
-                }
+        parse({ tags, content, source }: ParsedIRCMessage): { name: string, status: 'accepted' | 'cooldown' | 'rejected' | 'failed' } {
+            const { groups: match } = content.match(/!픽 (?<index>\d+) (?<song>.+)/) ?? {}
+            const name = tags.display_name ?? source.nick
+            const uid = source.nick ?? source.full // i don't think this parse shall fail
+
+            if (!match)
+                return { name, status: 'failed' }
+
+            const index = Number(match.index)
+            const excluded = [0, 13].concat(this.goldenKeys)
+            const map = [...Array(26).keys()].filter(x => !excluded.includes(x))
+
+            if (map.includes(index)) {
+                const status = this.insert(uid, name, Number(match.index), match.song)
+                return { name, status }
             } else {
-                return {
-                    name: parsedMsg.name,
-                    status: 'failed'
-                }
+                return { name, status: 'rejected' }
             }
         },
-        insert(name: string, index: number, song: string) {
+        insert(uid: string, name: string, index: number, song: string) {
             const newVote = {
-                name: name,
+                uid,
+                name,
                 theme: this.board[index],
-                song: song,
+                song,
                 timestamp: Date.now()
             }
 
             // already picked
-            if (this.usedList.find(x => x.name === newVote.name)) return 'rejected'
+            if (this.usedList.find(x => x.uid === newVote.uid)) return 'rejected'
 
             if ([7, 20].includes(index)) {  // island
                 // cooldown
-                if (!this.checkTimeIsland(name, newVote.timestamp)) return 'cooldown'
+                if (!this.checkTimeIsland(uid, newVote.timestamp)) return 'cooldown'
 
                 // accepted
-                const idx = this.islandPool.findIndex(x => x.name === name)
+                const idx = this.islandPool.findIndex(x => x.uid === uid)
                 if (idx !== -1) this.islandPool.splice(idx, 1)
                 this.islandPool.push(newVote)
                 return 'accepted'
             } else {    // normal
                 // cooldown
-                if (!this.checkTime(name, newVote.timestamp)) return 'cooldown'
+                if (!this.checkTime(uid, newVote.timestamp)) return 'cooldown'
 
                 // accepted
-                const group = this.pool.filter(x => x.name === name)
+                const group = this.pool.filter(x => x.uid === uid)
                 if (group.length === 3) this.pool.splice(this.pool.indexOf(group[0]), 1)
                 this.pool.push(newVote)
                 return 'accepted'
             }
         },
-        checkTime(name: string, time: number) {
-            const group = this.pool.filter(x => x.name === name)
+        checkTime(uid: string, time: number) {
+            const group = this.pool.filter(x => x.uid === uid)
             if (group.length > 0) {
                 const last = group.slice(-1)[0]
                 return (time - last.timestamp) > 30_000
             } else return true
         },
-        checkTimeIsland(name: string, time: number) {
-            const last = this.islandPool.find(x => x.name === name)
+        checkTimeIsland(uid: string, time: number) {
+            const last = this.islandPool.find(x => x.uid === uid)
             if (last) {
                 return (time - last.timestamp) > 30_000
             } else return true
@@ -217,11 +212,11 @@ export const useBoardStore = defineStore('board', {
             }
         },
         remove(target: vote) {
-            this.usedList.push({ name: target.name, song: target.song })
-            this.pool.filter(x => x.name === target.name).forEach(x => {
+            this.usedList.push(target)
+            this.pool.filter(x => x.uid === target.uid).forEach(x => {
                 this.pool.splice(this.pool.indexOf(x), 1)
             })
-            this.islandPool.filter(x => x.name === target.name).forEach(x => {
+            this.islandPool.filter(x => x.uid === target.uid).forEach(x => {
                 this.islandPool.splice(this.islandPool.indexOf(x), 1)
             })
         },
@@ -257,6 +252,7 @@ interface theme {
     stepped: number
 }
 export interface vote {
+    uid: string,
     name: string,
     theme: string,
     song: string,
