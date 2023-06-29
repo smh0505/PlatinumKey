@@ -22,7 +22,9 @@ export const useBoardStore = defineStore('board', {
 
             // money
             money: 0,
-            limit: 1000
+            limit: 1000,
+            laps: 1,
+            limitless: false
         }
     },
     actions: {

@@ -19,6 +19,7 @@
 
             <!--right-bottom buttons-->
             <div class="static-menu" v-show="state >= 0">
+                <button @keydown.prevent @click="salary()">월급 받기</button>
                 <button @keydown.prevent @click="showSetup = true">기본 설정</button>
                 <button @keydown.prevent @click="showStart = true">판때기 메뉴</button>
             </div>
@@ -207,6 +208,12 @@ export default {
         },
         closeAll() {
             this.state = -1
+        },
+
+        // salary
+        salary() {
+            this.board.updateMoney(100)
+            this.board.laps++
         },
 
         // select

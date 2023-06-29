@@ -53,7 +53,6 @@ export default {
         .startBody {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
             margin: 16px;
             gap: 16px;
 

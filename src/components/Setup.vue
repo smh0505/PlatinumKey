@@ -1,6 +1,9 @@
 <template>
     <div class="setupMask">
         <div class="setupContainer">
+            <button class="extra-button" @keydown.prevent @click="board.limitless = !board.limitless"
+                :class="{ yes: board.limitless, no: !board.limitless }">
+                <span class="material-symbols-rounded">{{ board.limitless ? 'done' : 'close' }}</span>자낳괴 옵션</button>
             <div class="setupHeader">기본 설정</div>
             <div class="setupTabs">
                 <button class="tabButton" :class="{ tabSelected: state === 0 }" @click="state = 0">판때기</button>
@@ -80,6 +83,7 @@ import CustomKeys from './CustomKeys.vue'
 
 import * as LocalForage from 'localforage'
 import { useWheelStore } from '../stores/WheelStore'
+import { useBoardStore } from '../stores/BoardStore'
 import { DateTime } from 'luxon'
 
 export default {
@@ -120,7 +124,8 @@ export default {
             scenes: null as string[] | null,
 
             // store
-            wheel: useWheelStore()
+            wheel: useWheelStore(),
+            board: useBoardStore()
         }
     },
     components: {
@@ -274,6 +279,7 @@ export default {
     transition: opacity 0.2s ease;
 
     .setupContainer {
+        position: relative;
         width: 65%;
         margin: auto;
         padding: 28px 20px;
@@ -398,7 +404,6 @@ export default {
                     margin-bottom: 0;
                 }
             }
-
         }
 
         .setup-comment {
@@ -421,6 +426,37 @@ export default {
 
                 &:hover {
                     background-color: yellow;
+                }
+            }
+        }
+
+        .extra-button {
+            display: flex;
+            position: absolute;
+            align-items: center;
+            top: 16px;
+            right: 20px;
+            padding: 8px 12px;
+            border-radius: 4px 8px 4px 4px;
+            transition: all 0.2s ease-out;
+
+            &.yes {
+                background-color: rgba(green, 0.75);
+                color: black;
+
+                &:hover {
+                    background-color: green;
+                    color: white;
+                }
+            }
+
+            &.no {
+                background-color: rgba(red, 0.75);
+                color: black;
+
+                &:hover {
+                    background-color: red;
+                    color: white;
                 }
             }
         }

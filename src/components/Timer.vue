@@ -6,7 +6,7 @@
             </button>
             <span class="lapsCount" @click="$emit('reverse')">
                 <span class="material-symbols-rounded">{{ clockwise? 'rotate_right' : 'rotate_left' }}</span>
-                {{ laps }}<small>바퀴</small>
+                {{ board.laps }}<small>바퀴</small>
                 <small v-if="!clockwise"> 반시계</small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="seekLaps(+1)">
@@ -61,7 +61,6 @@ export default {
     },
     data() {
         return {
-            laps: 1,
             start: DateTime.now(),
             elapsed: Duration.fromMillis(0),
             paused: true,
@@ -77,7 +76,7 @@ export default {
     },
     methods: {
         seekLaps(direction: number): void {
-            this.laps += direction
+            this.board.laps += direction
         },
         seekMoney(e: MouseEvent, direction: number) {
             let amount = direction

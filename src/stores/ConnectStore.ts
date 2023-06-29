@@ -44,7 +44,7 @@ export const useConnectStore = defineStore('connection', {
         },
         connectTwitch(begin: boolean, channel: string = "arpa__") {
             this.socket_twitch = new WebSocket('wss://irc-ws.chat.twitch.tv')
-            useConnectStore().result({
+            this.result({
                 type: 'twitch',
                 status: 'connecting'
             })
@@ -101,6 +101,10 @@ export const useConnectStore = defineStore('connection', {
 
             this.socket_toonation.onmessage = msg => {
                 if (msg.data.includes('roulette')) {
+                    const amount = JSON.parse(msg.data).content.amount as number
+                    const count = amount / 1000
+                    if (useBoardStore().limitless) useBoardStore().limit += count
+
                     const roulette = JSON.parse(msg.data).content.message as string
                     const rValue = roulette.split(' - ')[1]
                     if (rValue !== '꽝') {
