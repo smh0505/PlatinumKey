@@ -8,7 +8,7 @@
     </v-stage>
     <div v-show="showResult" class="resultScreen">
         <div class="label">다음 황금열쇠는</div>
-        <div class="value roulette-selected"><span>{{ result }}</span></div>
+        <div class="value iidx-title large"><span>{{ result }}</span></div>
     </div>
     <button @keydown.prevent v-show="showButton" class="wheelButton" @click="click">{{ buttonLabels[state] }}</button>
 </template>

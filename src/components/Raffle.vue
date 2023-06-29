@@ -187,7 +187,7 @@ export default {
             > .artist {
                 font-weight: 600;
             }
-            > .roulette-selected {
+            > .iidx-title {
                 min-height: 50%;
             }
         }
