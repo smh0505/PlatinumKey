@@ -17,7 +17,7 @@ export const useBoardStore = defineStore('board', {
             // raffle pools
             pool: [] as vote[],
             islandPool: [] as vote[],
-            usedList: [] as { uid: string, song: string }[],
+            usedList: [] as vote[],
 
             // money
             money: 0,
@@ -212,7 +212,7 @@ export const useBoardStore = defineStore('board', {
             }
         },
         remove(target: vote) {
-            this.usedList.push({ uid: target.uid, song: target.song })
+            this.usedList.push(target)
             this.pool.filter(x => x.uid === target.uid).forEach(x => {
                 this.pool.splice(this.pool.indexOf(x), 1)
             })
