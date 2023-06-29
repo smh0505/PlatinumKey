@@ -189,7 +189,7 @@ export const useBoardStore = defineStore('board', {
 
                 // accepted
                 const group = this.pool.filter(x => x.name === name)
-                if (group.length === 30) this.pool.splice(this.pool.indexOf(group[0]), 1)
+                if (group.length === 3) this.pool.splice(this.pool.indexOf(group[0]), 1)
                 this.pool.push(newVote)
                 return 'accepted'
             }
@@ -198,13 +198,13 @@ export const useBoardStore = defineStore('board', {
             const group = this.pool.filter(x => x.name === name)
             if (group.length > 0) {
                 const last = group.slice(-1)[0]
-                return (time - last.timestamp) > 0
+                return (time - last.timestamp) > 30_000
             } else return true
         },
         checkTimeIsland(name: string, time: number) {
             const last = this.islandPool.find(x => x.name === name)
             if (last) {
-                return (time - last.timestamp) > 0
+                return (time - last.timestamp) > 30_000
             } else return true
         },
 
