@@ -62,7 +62,11 @@
             </header>
 
             <!--start-->
-            <div v-if="index === 0" style="width: 100%; height: 100%;" @click="closeAll(); switchScene(true)">
+            <div
+                v-if="index === 0"
+                style="width: 100%; height: 100%;"
+                @click="closeAll(); switchScene(true)"
+                @contextmenu.prevent="state = 2">
             </div>
 
             <!--free-->
