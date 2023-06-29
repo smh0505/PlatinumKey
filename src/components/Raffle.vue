@@ -137,9 +137,10 @@ export default {
 
 <style lang="scss">
 .raffleContainer {
+    position: relative;
     display: grid;
     grid-template-rows: 48px minmax(0, 2fr) 1fr 48px;
-    width: 700px;
+    width: 100%;
     height: 100%;
 
     .raffleHeader {

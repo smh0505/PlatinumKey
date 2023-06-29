@@ -322,9 +322,6 @@ export default {
         height: 100%;
         overflow: auto;
     }
-    .center {
-        box-shadow: 0 0 0 1px black inset;
-    }
     .block {
         display: flex;
         position: relative;
@@ -425,7 +422,10 @@ export default {
         grid-area: 2 / 2 / 7 / 8;
         position: relative;
         display: grid;
-        grid-template-columns: 7fr 5fr;
+        grid-template-columns: 10fr 8fr;
+        gap: 40px;
+
+        box-shadow: 0 0 0 1px black inset;
 
         // background-image: url('./assets/RM2023SM.png');
         background-position: center;
