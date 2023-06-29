@@ -101,7 +101,8 @@ export default {
             }
         },
         seekIndex() {
-            this.tempIdx = (this.tempIdx + 1) % this.temp.length
+            // (this.tempIdx + 1) % this.temp.length
+            this.tempIdx = Math.floor(Math.random() * this.temp.length)
             if(this.state === 1) {
                 requestAnimationFrame(() => this.seekIndex())
             }
