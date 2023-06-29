@@ -6,16 +6,25 @@
         </div>
         <div class="raffleList">
             <div class="rafflePool" v-if="state === 0">
-                <Scroll :list="pool.map(x => x.song)"></Scroll>
+                <Scroll :list="pool.map(x => ({
+                    text: x.song,
+                    class: {
+                        'iidx-title-inline': true,
+                        'new': isRelativelyNew(x.timestamp)
+                    }
+                }))"></Scroll>
             </div>
             <div class="raffleResult" v-if="state !== 0">
                 <div class="genre">{{ theme }}</div>
-                <div class="roulette-selected"><span>{{ temp[tempIdx].song }}</span></div>
+                <div :class="[
+                    'iidx-title large',
+                    { new: isRelativelyNew(temp[tempIdx].timestamp) }
+                ]"><span>{{ temp[tempIdx].song }}</span></div>
                 <div class="artist">{{ temp[tempIdx].name }}</div>
             </div>
         </div>
         <div class="usedList">
-            <Scroll :list="board.usedList.map(x => x.name + ' => ' + x.song)"></Scroll>
+            <Scroll :list="board.usedList.map(x => ({ text: x.name + ' => ' + x.song }))"></Scroll>
         </div>
         <div class="raffleButtons">
             <button @keydown.prevent v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>
@@ -53,7 +62,10 @@ export default {
             intervalId: 0,
 
             buttonLabels: ['추첨', '멈추기', '결정'],
-            state: 0
+            state: 0,
+
+            // updated lazily
+            now: Date.now()
         }
     },
     components: { Marquee, Scroll },
@@ -82,23 +94,29 @@ export default {
                     break
                 case 1:
                     this.temp = this.pool
-                    this.intervalId = window.setInterval(() => {
-                        this.tempIdx = Math.floor(Math.random() * this.temp.length)
-                    }, 16)
+                    this.seekIndex()
                     break
                 case 2:
                     window.clearInterval(this.intervalId)
             }
         },
+        seekIndex() {
+            // (this.tempIdx + 1) % this.temp.length
+            this.tempIdx = Math.floor(Math.random() * this.temp.length)
+            if(this.state === 1) {
+                requestAnimationFrame(() => this.seekIndex())
+            }
+        },
         retry() {
             this.state = 1
-            this.intervalId = window.setInterval(() => {
-                this.tempIdx = Math.floor(Math.random() * this.temp.length)
-            }, 16)
+            this.seekIndex()
         },
         cancel() {
             this.state = 0
             this.tempIdx = 0
+        },
+        isRelativelyNew(timestamp: number) {
+            return (this.now - timestamp) < 30 * 60 * 1000
         }
     },
     mounted() {
@@ -110,6 +128,9 @@ export default {
                 used: this.board.usedList
             })))
         })
+        setInterval(() => {
+            this.now = Date.now()
+        }, 1000)
     }
 }
 </script>
@@ -125,8 +146,7 @@ export default {
         display: grid;
         grid-template-columns: auto min-content;
 
-        line-height: 32px;
-        padding-bottom: 4px;
+        line-height: 40px;
 
         .theme {
             display: flex;
@@ -142,7 +162,7 @@ export default {
             align-items: center;
             font-size: 30px;
             font-family: var(--font-numeric);
-            font-variant-numeric: tabular-nums;
+            font-variant-numeric: lining-nums;
             padding: 0px 20px;
         }
     }
@@ -156,8 +176,25 @@ export default {
             height: 100%;
 
             padding: 4px 8px;
-            font-size: 16px;
+            font-size: 20px;
+            line-height: 24px;
             overflow: hidden;
+
+            filter: drop-shadow(0 0 0.05em black) drop-shadow(0 0 0.05em black) drop-shadow(0 0 0.05em black);
+
+            &:has(.overflown) {
+                box-shadow: 0 0.75em 0.5em -1em #000 inset, 0 -0.75em 0.5em -1em #000 inset;
+            }
+            .scroll {
+                text-align: center;
+                justify-content: center;
+
+                br {
+                    display: block;
+                    content: '';
+                    height: 0.25em;
+                }
+            }
         }
 
         .raffleResult {
@@ -165,6 +202,7 @@ export default {
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            text-align: center;
 
             gap: 1em;
 
@@ -180,7 +218,7 @@ export default {
             > .artist {
                 font-weight: 600;
             }
-            > .roulette-selected {
+            > .iidx-title {
                 min-height: 50%;
             }
         }

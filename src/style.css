@@ -43,21 +43,26 @@ input, select {
     color: inherit;
 }
 
-.roulette-selected {
+.iidx-title {
     display: block;
     background: none;
-
-    font-size: 52px;
-    font-weight: 900;
 
     min-height: 0;
     overflow: hidden;
     text-align: center;
 }
-.roulette-selected > span {
-    background: linear-gradient(to bottom, #fff, #2fe);
+.iidx-title.large {
+    font-size: 52px;
+    font-weight: 900;
+}
+.iidx-title > span, .iidx-title-inline {
+    background-image: linear-gradient(to bottom, #fff, #888);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-
+}
+.iidx-title-inline {
+}
+.iidx-title.new > span, .iidx-title-inline.new {
+    background-image: linear-gradient(to bottom, #fff, #2fe);
 }
