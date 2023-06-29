@@ -61,8 +61,6 @@ input, select {
     -webkit-background-clip: text;
     color: transparent;
 }
-.iidx-title-inline {
-}
 .iidx-title.new > span, .iidx-title-inline.new {
     background-image: linear-gradient(to bottom, #fff, #2fe);
 }
