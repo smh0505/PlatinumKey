@@ -49,7 +49,8 @@
                     right: 20 < index && index < 26,
                     bottom: 0 < index && index < 7,
                     left: 7 < index && index < 13,
-                    corner: [0, 7, 13, 20].includes(index)
+                    corner: [0, 7, 13, 20].includes(index),
+                    monopoly: board.checkMonopoly(index)
                 }
             ]">
             <!--number tags-->
@@ -362,6 +363,13 @@ export default {
                 color: white;
                 mix-blend-mode: unset;
                 text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
+            }
+        }
+
+        &.monopoly {
+            background-color: #ff6;
+            > .block-header {
+                background-color: transparent !important;
             }
         }
 
