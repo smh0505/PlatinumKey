@@ -116,7 +116,7 @@ export default {
             this.tempIdx = 0
         },
         isRelativelyNew(timestamp: number) {
-            return (this.now - timestamp) < 30 * 60 * 1000
+            return (this.now - timestamp) < 10 * 60 * 1000
         }
     },
     mounted() {
