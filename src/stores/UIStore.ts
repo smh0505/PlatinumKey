@@ -6,7 +6,7 @@ export type UIPageState = 'dice' | 'wheel' | 'raffle' | 'setup' | ''
 
 export const useUIStore = defineStore('ui', {
     state: () => ({
-        page: 'dice' as UIPageState,
+        page: 'setup' as UIPageState,
         param: null as any,
 
         // obs

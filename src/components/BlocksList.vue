@@ -24,9 +24,11 @@
 </template>
 
 <script lang="ts">
+import type { ThemeDefinition } from '../stores/OptionsStore'
+
 export default {
     props: {
-        list: Array<{ head: string, tail: string }>
+        list: Array<ThemeDefinition>
     },
     emits: ['addtheme', 'removetheme'],
     methods: {

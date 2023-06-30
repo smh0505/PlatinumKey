@@ -41,14 +41,12 @@ import { remainder } from '../scripts/Calculate';
 
 import Marquee from './Marquee.vue';
 import Scroll from './Scroll.vue';
-import * as LocalForage from 'localforage'
 
 export default {
     props: {
-        index: Number,
-        channel: {
-            type: String,
-            default: 'arpa__'
+        index: {
+            type: Number,
+            required: true
         }
     },
     data() {
@@ -70,7 +68,7 @@ export default {
     components: { Marquee, Scroll },
     computed: {
         theme() {
-            return this.board.board[Number(this.index)]
+            return this.board.board[this.index]
         },
         color() {
             return {
@@ -78,7 +76,7 @@ export default {
             }
         },
         pool() {
-            return this.board.selectAll(Number(this.index))
+            return this.board.selectAll(this.index)
         }
     },
     methods: {
@@ -89,7 +87,7 @@ export default {
                 case 0:
                     this.board.remove(this.temp[this.tempIdx])
                     this.tempIdx = 0
-                    this.board.addMoney(Number(this.index))
+                    this.board.addMoney(this.index)
                     break
                 case 1:
                     this.temp = this.pool

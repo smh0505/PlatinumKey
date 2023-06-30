@@ -6,9 +6,11 @@
 </template>
 
 <script lang="ts">
+import type { KeyDefinition } from '../stores/OptionsStore'
+
 export default {
     props: {
-        list: Array<{ key: string, count: number }>
+        list: Array<KeyDefinition>
     }
 }
 </script>

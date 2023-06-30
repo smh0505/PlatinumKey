@@ -32,14 +32,14 @@ export default {
     },
     data() {
         return {
-            connection: useConnectStore(),
+            connect: useConnectStore(),
         }
     },
     methods: {
         logText(log: Log) {
             if (log.type in CONNECTION_LABEL_MAP) {
                 log = log as ConnectionLog
-                return CONNECTION_LABEL_MAP[log.type] + ' ' + CONNECTION_STATUS_MAP[log.status]
+                return (log.detail ?? CONNECTION_LABEL_MAP[log.type]) + ' ' + CONNECTION_STATUS_MAP[log.status]
             } else {
                 return log.detail
             }
@@ -47,7 +47,7 @@ export default {
     },
     computed: {
         logs() {
-            return this.connection.logs.slice(-this.visibleCount)
+            return this.connect.logs.slice(-this.visibleCount)
         }
     }
 }
