@@ -151,7 +151,6 @@ export default {
     },
     mounted() {
         this.spin()
-        this.connection.connectToonation(String(this.payload))
         window.addEventListener('beforeunload', this.saveWheel)
     }
 }

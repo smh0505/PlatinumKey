@@ -1,4 +1,5 @@
-import { defineStore } from "pinia";
+import { toRaw } from 'vue'
+import { defineStore } from 'pinia'
 import * as LocalForage from 'localforage'
 
 import type { ParsedIRCMessage } from "./ConnectStore";
@@ -10,14 +11,18 @@ export const useBoardStore = defineStore('board', {
     state() {
         return {
             // board
-            themes: [] as theme[],
+            started: false,
+            clockwise: true,
+
+            themes: [] as Theme[],
             board: [] as string[],
+            initialBoard: [] as string[],
             goldenKeys: [2, 5, 9, 11, 15, 18, 22, 24],
 
             // raffle pools
-            pool: [] as vote[],
-            islandPool: [] as vote[],
-            usedList: [] as vote[],
+            pool: [] as Vote[],
+            islandPool: [] as Vote[],
+            usedList: [] as Vote[],
 
             // money
             money: 0,
@@ -27,6 +32,27 @@ export const useBoardStore = defineStore('board', {
         }
     },
     actions: {
+        async begin() {
+            if(this.started)
+                return
+
+            await this.setupThemes()
+            this.buildBoard()
+
+            this.initialBoard = this.board
+
+            this.started = true
+        },
+        async snapshot() {
+            LocalForage.setItem('board-snapshot', toRaw(this.$state))
+        },
+        async restore() {
+            const snapshot = await LocalForage.getItem('board-snapshot')
+            if(!snapshot)
+                return
+
+            this.$patch(snapshot)
+        },
         // generate
         async setupThemes() {
             const themes = await LocalForage.getItem('themes') as { head: string, tail: string }[]
@@ -77,7 +103,10 @@ export const useBoardStore = defineStore('board', {
 
             return themes
         },
-        shuffleBoard(clockwise: boolean) {
+        shuffleBoard(addKey: boolean = false) {
+            if (addKey) {
+                this.goldenKeys.push(-1)
+            }
             const count = this.goldenKeys.length
             let newKeys = [] as number[]
             let board = [
@@ -88,7 +117,7 @@ export const useBoardStore = defineStore('board', {
             ]
 
             // initial key
-            if (clockwise) {
+            if (this.clockwise) {
                 const k = Math.floor(Math.random() * 5)
                 newKeys.push(board.slice(-5)[k])
                 board.splice(k + 17, 1)
@@ -106,10 +135,19 @@ export const useBoardStore = defineStore('board', {
             }
 
             this.goldenKeys = newKeys
+
+            this.buildBoard()
+        },
+        unshuffleBoard() {
+            this.board = this.initialBoard
+            this.goldenKeys = [2, 5, 9, 11, 15, 18, 22, 24]
         },
 
         // return values
         isGoldenKey(index: number) {
+            if (!this.started) {
+                return false
+            }
             return this.goldenKeys.includes(index)
         },
         getColor(theme: string) {
@@ -117,7 +155,10 @@ export const useBoardStore = defineStore('board', {
             if (pair) return pair.color
             else return "white"
         },
-        checkMonopoly(index: number) {
+        isMonopoly(index: number) {
+            if (!this.started) {
+                return false
+            }
             const lines = [
                 [1, 2, 3, 4, 5, 6],
                 [8, 9, 10, 11, 12],
@@ -211,7 +252,7 @@ export const useBoardStore = defineStore('board', {
                 return this.pool.filter(x => x.theme === this.board[index])
             }
         },
-        remove(target: vote) {
+        remove(target: Vote) {
             this.usedList.push(target)
             this.pool.filter(x => x.uid === target.uid).forEach(x => {
                 this.pool.splice(this.pool.indexOf(x), 1)
@@ -225,7 +266,7 @@ export const useBoardStore = defineStore('board', {
         addMoney(index: number) {
             const theme = this.themes.find(x => x.theme === this.board[index])
 
-            if (this.checkMonopoly(index))
+            if (this.isMonopoly(index))
                 this.money += MONOPOLY_PRIZE
             else if (theme)
                 this.money += STEP_PRIZES[theme.stepped++] ?? STEP_PRIZES.at(-1)
@@ -234,24 +275,28 @@ export const useBoardStore = defineStore('board', {
             const theme = this.themes.find(x => x.theme === this.board[index])
             if(!theme)
                 return
-            else if (this.checkMonopoly(index))
+            else if (this.isMonopoly(index))
                 return MONOPOLY_PRIZE
             else
                 return STEP_PRIZES[theme.stepped] ?? STEP_PRIZES.at(-1)
         },
         updateMoney(amount: number) {
             this.money += amount
+        },
+        getSalary() {
+            this.updateMoney(100)
+            this.laps++
         }
     }
 })
 
 // interfaces
-interface theme {
+interface Theme {
     theme: string,
     color: string,
     stepped: number
 }
-export interface vote {
+export interface Vote {
     uid: string,
     name: string,
     theme: string,

@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { useBoardStore, vote } from '../stores/BoardStore';
+import { useBoardStore, Vote } from '../stores/BoardStore';
 import { useConnectStore } from '../stores/ConnectStore';
 import { remainder } from '../scripts/Calculate';
 
@@ -45,7 +45,6 @@ import * as LocalForage from 'localforage'
 
 export default {
     props: {
-        begin: Boolean,
         index: Number,
         channel: {
             type: String,
@@ -57,7 +56,7 @@ export default {
             board: useBoardStore(),
             connection: useConnectStore(),
 
-            temp: [] as vote[],
+            temp: [] as Vote[],
             tempIdx: 0,
             intervalId: 0,
 
@@ -120,7 +119,7 @@ export default {
         }
     },
     mounted() {
-        this.connection.connectTwitch(Boolean(this.begin), String(this.channel))
+        this.connection.connectTwitch(this.channel)
         window.addEventListener('beforeunload', () => {
             LocalForage.setItem('votes-snapshot', JSON.parse(JSON.stringify({
                 pool: this.board.pool,
