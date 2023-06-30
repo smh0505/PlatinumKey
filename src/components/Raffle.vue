@@ -119,14 +119,6 @@ export default {
         }
     },
     mounted() {
-        this.connection.connectTwitch(this.channel)
-        window.addEventListener('beforeunload', () => {
-            LocalForage.setItem('votes-snapshot', JSON.parse(JSON.stringify({
-                pool: this.board.pool,
-                island: this.board.islandPool,
-                used: this.board.usedList
-            })))
-        })
         setInterval(() => {
             this.now = Date.now()
         }, 1000)

@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from "pinia";
 import { useBoardStore } from "./BoardStore";
 import { useWheelStore } from './WheelStore';
+import { useOptionsStore } from './OptionsStore';
 
 export interface ConnectionLog {
     type: 'twitch' | 'toonation'
@@ -61,6 +62,13 @@ export const useConnectStore = defineStore('connection', {
             }
 
             this.logs.push({ type, status, detail } as Log)
+        },
+        async connectAll() {
+            const options = useOptionsStore()
+            this.connectTwitch(options.channel || undefined)
+
+            await this.prepareToonation(options.password)
+            this.connectToonation()
         },
         connectTwitch(channel: string = 'arpa__') {
             if (this.socket_twitch) {

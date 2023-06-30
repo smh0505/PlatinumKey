@@ -83,20 +83,19 @@ export default {
         async beginGame() {
             if (!this.board.started) {
                 this.wheel.fill(this.options.defaultKeys)
+                this.connect.connectAll()
                 await this.board.begin()
             }
         }
     },
-    async mounted() {
+    mounted() {
         window.addEventListener('beforeunload', () => {
             this.board.snapshot()
         })
 
         this.ui.initOBS()
 
-        await this.options.load()
-        await this.connect.prepareToonation(this.options.password)
-        this.connect.connectToonation()
+        this.options.load()
     }
 }
 </script>
