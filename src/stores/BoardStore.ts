@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import * as LocalForage from 'localforage'
 
 import type { ParsedIRCMessage } from "./ConnectStore";
+import type { ThemeDefinition } from './OptionsStore';
 
 const STEP_PRIZES = [35, 25, 15]
 const MONOPOLY_PRIZE = 30
@@ -15,6 +16,7 @@ export const useBoardStore = defineStore('board', {
             clockwise: true,
 
             themes: [] as Theme[],
+            themeColors: {} as { [key: ThemeDefinition["head"]]: string },
             board: [] as string[],
             initialBoard: [] as string[],
             goldenKeys: [2, 5, 9, 11, 15, 18, 22, 24],
@@ -32,11 +34,11 @@ export const useBoardStore = defineStore('board', {
         }
     },
     actions: {
-        async begin() {
+        async begin(themes: ThemeDefinition[]) {
             if(this.started)
                 return
 
-            await this.setupThemes()
+            await this.setupThemes(themes)
             this.buildBoard()
 
             this.initialBoard = this.board
@@ -54,15 +56,20 @@ export const useBoardStore = defineStore('board', {
             this.$patch(snapshot)
         },
         // generate
-        async setupThemes() {
-            const themes = await LocalForage.getItem('themes') as { head: string, tail: string }[]
+        async setupThemes(_themes: ThemeDefinition[]) {
+            const themes = [..._themes]
+            const colors = [...COLORS]
 
             while (this.themes.length < 14) {
-                const i = this.themes.length
-                const j = Math.floor(Math.random() * themes.length)
+                const index = Math.floor(Math.random() * themes.length)
+                const theme = themes[index]
 
-                this.themes.push({ theme: themes[j].head + ':\n' + themes[j].tail, color: colors[i], stepped: 0 })
-                themes.splice(j, 1)
+                if(!this.themeColors[theme.head]) {
+                    this.themeColors[theme.head] = colors.splice(Math.floor(colors.length * Math.random()), 1)[0]
+                }
+
+                this.themes.push({ theme: theme.head + ':\n' + theme.tail, color: this.themeColors[theme.head], stepped: 0 })
+                themes.splice(index, 1)
             }
         },
         buildBoard() {
@@ -195,7 +202,7 @@ export const useBoardStore = defineStore('board', {
                 const status = this.insert(uid, name, Number(match.index), match.song)
                 return { name, status }
             } else {
-                return { name, status: 'rejected' }
+                return { name, status: 'failed' }
             }
         },
         insert(uid: string, name: string, index: number, song: string) {
@@ -305,7 +312,7 @@ export interface Vote {
 }
 
 // constants
-const colors = [
+const COLORS = [
     '#ffbfce', '#f17ef7', '#7bb2f2', '#f9bdf2', '#7cf4b4',
     '#c3fc85', '#ddbffc', '#bdccfc', '#bcfc9f', '#f6fc8a',
     '#a5e7f7', '#fc888e', '#fcdbbf', '#f9b17a'

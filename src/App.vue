@@ -84,7 +84,7 @@ export default {
             if (!this.board.started) {
                 this.wheel.fill(this.options.defaultKeys)
                 this.connect.connectAll()
-                await this.board.begin()
+                await this.board.begin(this.options.themes)
             }
         }
     },
