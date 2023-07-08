@@ -6,31 +6,31 @@
             placeholder="대주제"
             v-model="item.head"
             ref="head"
-            @keydown.enter="e => addItemByKeydown(e, 'head', index)">
+            @keypress.enter="e => addItemByKeydown(e, 'head', index)">
         <input
             type="text"
             class="text-input"
             placeholder="소주제"
             v-model="item.tail"
             ref="tail"
-            @keydown.enter="e => addItemByKeydown(e, 'tail', index)">
-        <button class="button-input" @click="$emit('addtheme', index)">
+            @keypress.enter="e => addItemByKeydown(e, 'tail', index)">
+        <button class="button-input" @click="$emit('add', index)">
             <span class="material-symbols-rounded">add</span>
         </button>
-        <button class="button-input" @click="$emit('removetheme', index)" v-if="index !== 0">
+        <button class="button-input" @click="$emit('remove', index)" v-if="index !== 0">
             <span class="material-symbols-rounded">close</span>
         </button>
     </div>
 </template>
 
 <script lang="ts">
-import type { ThemeDefinition } from '../stores/OptionsStore'
+import type { ThemeDefinition } from '../../stores/OptionsStore'
 
 export default {
     props: {
         list: Array<ThemeDefinition>
     },
-    emits: ['addtheme', 'removetheme'],
+    emits: ['add', 'remove'],
     methods: {
         addItemByKeydown(event: KeyboardEvent, position: 'head' | 'tail', index: number) {
             const ctrlPressed = event.ctrlKey || event.metaKey
@@ -43,7 +43,7 @@ export default {
                 return
             }
 
-            this.$emit('addtheme', index)
+            this.$emit('add', index)
             this.$nextTick(() => {
                 if (!this.list) return
                 if (ctrlPressed) {

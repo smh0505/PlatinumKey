@@ -1,46 +1,41 @@
 <template>
     <Board>
-        <!--left panel-->
-        <div class="left-panel">
-            <Dice
-                v-show="ui.page === 'dice'" />
-            <Wheel
-                v-show="ui.page === 'wheel'"
-                v-if="connect.toonationPayload"
-                :payload="connect.toonationPayload" />
-            <Raffle
-                v-show="ui.page === 'raffle'"
-                v-if="options.channel"
-                :index="ui.param" />
-            <Setup
-                v-if="ui.page === 'setup'" />
-        </div>
-
-        <!--right panel-->
-        <div class="right-panel">
-            <Timer />
-            <div class="inv-container">
-                <LogList :visible-count="ui.page? 10 : 5"></LogList>
-                <Items v-show="ui.page"></Items>
+        <Start v-if="ui.page === 'start'" />
+        <template v-else>
+            <!--left panel-->
+            <div class="left-panel">
+                <Dice
+                    v-show="ui.page === 'dice'" />
+                <Wheel
+                    v-show="ui.page === 'wheel'"
+                    v-if="connect.toonationPayload"
+                    :payload="connect.toonationPayload" />
+                <Raffle
+                    v-if="ui.page === 'raffle' && options.channel"
+                    :index="ui.param" />
+                <Setup
+                    v-if="ui.page === 'setup'" />
             </div>
-        </div>
 
-        <!--right-bottom buttons-->
-        <div class="static-menu" v-show="ui.page">
-            <button @keydown.prevent v-if="!board.started" @click="beginGame">게임 시작</button>
-            <button @keydown.prevent @click="board.getSalary()">월급 받기</button>
-            <button @keydown.prevent @click="ui.navigate('setup')">기본 설정</button>
-            <button @keydown.prevent @click="board.shuffleBoard()">판 섞기</button>
-            <button @keydown.prevent @click="board.shuffleBoard(true)">황금열쇠 추가</button>
-            <button @keydown.prevent @click="board.unshuffleBoard()">판 되돌리기</button>
-        </div>
+            <!--right panel-->
+            <div class="right-panel">
+                <Timer />
+                <div class="inv-container">
+                    <LogList :visible-count="ui.page? 10 : 5"></LogList>
+                    <Items v-show="ui.page"></Items>
+                </div>
+            </div>
 
-        <!--modals-->
-        <teleport to="body">
-            <transition name="modal">
-
-            </transition>
-        </teleport>
+            <!--right-bottom buttons-->
+            <div class="static-menu" v-show="ui.page">
+                <button @keydown.prevent v-if="!board.started" @click="beginGame">게임 시작</button>
+                <button @keydown.prevent @click="board.getSalary()">월급 받기</button>
+                <button @keydown.prevent @click="ui.navigate('setup')">기본 설정</button>
+                <button @keydown.prevent @click="board.shuffleBoard()">판 섞기</button>
+                <button @keydown.prevent @click="board.shuffleBoard(true)">황금열쇠 추가</button>
+                <button @keydown.prevent @click="board.unshuffleBoard()">판 되돌리기</button>
+            </div>
+        </template>
     </Board>
 </template>
 
@@ -48,12 +43,13 @@
 // components
 import Board from './components/board/Board.vue'
 
+import Start from './components/Start.vue'
 import Dice from './components/Dice.vue'
 import Wheel from './components/Wheel.vue'
 import Timer from './components/Timer.vue'
 import Items from './components/Items.vue'
 import LogList from './components/LogList.vue'
-import Setup from './components/Setup.vue'
+import Setup from './components/setup/Setup.vue'
 import Raffle from './components/Raffle.vue'
 
 // imports
@@ -76,7 +72,7 @@ export default {
         }
     },
     components: {
-        Board, Dice, Timer, Setup, Wheel, Items, LogList, Raffle
+        Start, Board, Dice, Timer, Setup, Wheel, Items, LogList, Raffle
     },
     methods: {
         // game setup

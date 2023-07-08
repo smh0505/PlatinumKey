@@ -26,25 +26,24 @@ export const useOptionsStore = defineStore('options', {
                 }),
 
                 LocalForage.getItem('themes').then(value => {
-                    // console.log('themes', value)
                     if (value !== null) {
                         this.$patch({ themes: value as ThemeDefinition[] })
                     }
-                    // LocalForage.removeItem('themes')
+                    LocalForage.removeItem('themes')
                 }),
 
                 LocalForage.getItem('items').then(value => {
-                    // console.log('items', value)
                     if (value !== null) {
                         this.$patch({ defaultKeys: value as KeyDefinition[] })
                     }
-                    // LocalForage.removeItem('items')
+                    LocalForage.removeItem('items')
                 })
             ])
 
             this.save()
         },
         save() {
+            console.log(JSON.parse(JSON.stringify(this.$state)))
             LocalForage.setItem('options', JSON.parse(JSON.stringify(this.$state)))
         }
     }

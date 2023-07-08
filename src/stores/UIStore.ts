@@ -2,11 +2,11 @@ import { defineStore } from 'pinia'
 
 import { useOptionsStore } from './OptionsStore'
 
-export type UIPageState = 'dice' | 'wheel' | 'raffle' | 'setup' | ''
+export type UIPageState = 'dice' | 'wheel' | 'raffle' | 'setup' | 'start' | ''
 
 export const useUIStore = defineStore('ui', {
     state: () => ({
-        page: 'setup' as UIPageState,
+        page: 'start' as UIPageState,
         param: null as any,
 
         // obs

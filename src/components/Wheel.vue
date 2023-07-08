@@ -2,8 +2,8 @@
     <div class="wheelContainer">
         <v-stage :config="{ width: 640, height: 640 }">
             <v-layer>
-                <v-wedge v-for="(item, index) in options.options" :config="sectorConfig(index, item)"></v-wedge>
-                <v-text v-for="(item, index) in options.options" :config="textConfig(index, item)"></v-text>
+                <v-wedge v-for="(item, index) in wheel.options" :config="sectorConfig(index, item)"></v-wedge>
+                <v-text v-for="(item, index) in wheel.options" :config="textConfig(index, item)"></v-text>
                 <v-line :config="arrow"></v-line>
             </v-layer>
         </v-stage>
@@ -20,26 +20,16 @@ import { useWheelStore } from '../stores/WheelStore';
 import { useItemStore } from '../stores/ItemStore'
 import { useConnectStore } from '../stores/ConnectStore'
 import { remainder } from '../scripts/Calculate';
-import { DateTime } from 'luxon';
-import * as LocalForage from 'localforage'
-
-interface option {
-    key: string,
-    count: number,
-    color: string
-}
+import type { GoldenKey } from '../stores/WheelStore';
 
 export default {
-    props: {
-        payload: String,
-    },
     data() {
         return {
             // websocket
             connection: useConnectStore(),
 
             // wheel
-            options: useWheelStore(),
+            wheel: useWheelStore(),
             startAngle: 0,
             speed: 50,
             arrow: {
@@ -65,10 +55,10 @@ export default {
     computed: {
         result() {
             let output = ''
-            let target = this.options.sum(this.options.options.length) - Math.floor(this.startAngle / this.options.unitAngle)
-            for (let i = 0; i < this.options.options.length; i++) {
-                if (target > this.options.sum(i)) {
-                    output = this.options.options[i].key
+            let target = this.wheel.sum(this.wheel.options.length) - Math.floor(this.startAngle / this.wheel.unitAngle)
+            for (let i = 0; i < this.wheel.options.length; i++) {
+                if (target > this.wheel.sum(i)) {
+                    output = this.wheel.options[i].key
                 }
             }
             return output
@@ -77,23 +67,23 @@ export default {
             return this.state === this.states.result
         },
         showButton() {
-            return this.state !== this.states.stopping && this.options.options.length > 0
+            return this.state !== this.states.stopping && this.wheel.options.length > 0
         }
     },
     methods: {
         // properties
-        sectorConfig(index: number, item: option) {
+        sectorConfig(index: number, item: GoldenKey) {
             return {
                 x: 320,
                 y: 320,
                 radius: 240,
-                angle: item.count * this.options.unitAngle,
+                angle: item.count * this.wheel.unitAngle,
                 fill: item.color,
                 stroke: 'black',
-                rotation: this.startAngle + this.options.sum(index) * this.options.unitAngle
+                rotation: this.startAngle + this.wheel.sum(index) * this.wheel.unitAngle
             }
         },
-        textConfig(index: number, item: option) {
+        textConfig(index: number, item: GoldenKey) {
             return {
                 text: item.key,
                 fontSize: 16,
@@ -102,7 +92,7 @@ export default {
                 y: 320,
                 offsetX: -60,
                 offsetY: 8,
-                rotation: this.startAngle + this.options.sum(index) * this.options.unitAngle + item.count * this.options.unitAngle / 2
+                rotation: this.startAngle + this.wheel.sum(index) * this.wheel.unitAngle + item.count * this.wheel.unitAngle / 2
             }
         },
 
@@ -134,24 +124,14 @@ export default {
             this.state = remainder(this.state + 1, 4)
             if (this.state === this.states.idle) {
                 this.inventory.addItem(this.result)
-                this.options.subOption(this.result)
-                this.connection.roulette_temp.forEach(x => this.options.addOption(x))
+                this.wheel.subOption(this.result)
+                this.connection.roulette_temp.forEach(x => this.wheel.addOption(x))
                 this.connection.roulette_temp.splice(0, this.connection.roulette_temp.length)
             }
         },
-
-        // saving
-        saveWheel() {
-            if (this.options.options.length > 0) {
-                const currentTime = DateTime.now()
-                const newLog = 'wheel ' + currentTime.toISO()
-                LocalForage.setItem(newLog, this.options.options.map(x => ({ key: x.key, count: x.count })))
-            }
-        }
     },
     mounted() {
         this.spin()
-        window.addEventListener('beforeunload', this.saveWheel)
     }
 }
 </script>

@@ -64,3 +64,29 @@ input, select {
 .iidx-title.new > span, .iidx-title-inline.new {
     background-image: linear-gradient(to bottom, #fff, #2fe);
 }
+
+
+::-webkit-scrollbar {
+    width: 1rem;
+    height: 1rem;
+    background: none;
+    cursor: col-resize;
+
+  margin-right: 0
+}
+::-webkit-scrollbar-track, ::-webkit-scrollbar-thumb {
+  background-size: calc(0.125rem + 1px) calc(100% - 0.25rem);
+  background-position: 50% center;
+  background-repeat: no-repeat;
+  border-radius: 0;
+}
+::-webkit-scrollbar-track {
+  background-image: linear-gradient(to right, #fff3, #fff3);
+  background-size: 1px 100%;
+}
+::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(to right, #fff, #fff);
+}
+::-webkit-scrollbar-corner {
+  background: none;
+}
