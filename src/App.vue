@@ -59,8 +59,9 @@
                 v-if="index !== 0 && index !== 13"
                 :style="fillColor(index)">
                 <div class="block-number">{{ index }}</div>
-                <div class="block-prize">{{ board.getPrizeByIndex(index) }}$</div>
             </header>
+
+            <div class="block-prize">{{ board.getPrizeByIndex(index) }}<small>$</small></div>
 
             <!--start-->
             <div
@@ -334,9 +335,18 @@ export default {
         &.bottom { flex-direction: column; }
         &.left { flex-direction: row-reverse; }
 
+        &.top .block-prize { top: 0; left: 0; }
+        &.right .block-prize { right: 0; bottom: 0; }
+        &.bottom .block-prize { right: 0; bottom: 0; }
+        &.left .block-prize { left: 0; top: 0; }
+        &.top .block-header, &.left .block-header { justify-content: flex-end; }
+
+        &.top .block-header { margin-top: -2rem }
+        &.bottom .block-header { margin-bottom: -2rem }
+
         &.left, &.right {
             .block-header {
-                min-width: 2.25em;
+                min-width: 2em;
                 flex-direction: column;
             }
         }
@@ -385,10 +395,22 @@ export default {
             line-height: 24px;
             padding: 8px 10px;
 
-            box-shadow: 0 0 0 2px black;
+            // box-shadow: 0 0 0 2px black;
         }
         .block-prize {
-            font-size: 0.8em;
+            position: absolute;
+            padding: 0.5rem;
+
+            font-size: 4em;
+            font-weight: 200;
+            line-height: 0.8;
+
+            opacity: 0.333;
+
+            > small {
+                font-size: 0.5em;
+                font-weight: 400;
+            }
         }
 
         .block-content {
