@@ -1,5 +1,5 @@
 <template>
-    <Board>
+    <Board :class="{ 'not-started': !board.started }">
         <Start v-if="ui.page === 'start'" />
         <template v-else>
             <!--left panel-->

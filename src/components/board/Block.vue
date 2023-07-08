@@ -217,4 +217,12 @@ export default {
         }
     }
 }
+
+.not-started .block {
+    filter: brightness(25%);
+
+    .block-prize {
+        display: none;
+    }
+}
 </style>
