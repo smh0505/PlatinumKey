@@ -109,18 +109,21 @@ export default {
     &.bottom { flex-direction: column; }
     &.left { flex-direction: row-reverse; }
 
+    &.top .block-prize { top: 0; left: 0; }
+    &.right .block-prize { right: 0; top: 0; }
+    &.bottom .block-prize { right: 0; bottom: 0; }
+    &.left .block-prize { left: 0; bottom: 0; }
+    &.top .block-header, &.right .block-header { justify-content: flex-end; }
+
     &.left, &.right {
         .block-header {
             min-width: 2em;
             flex-direction: column;
         }
     }
-    &.top .block-prize { top: 0; left: 0; }
-    &.right .block-prize { right: 0; bottom: 0; }
-    &.bottom .block-prize { right: 0; bottom: 0; }
-    &.left .block-prize { left: 0; bottom: 0; }
-
-    &.left .block-header, &.left .block-header { text-align: right; }
+    &.left .block-header {
+        text-align: right;
+    }
     &.corner .block-header {
         color: white;
         mix-blend-mode: exclusion;
