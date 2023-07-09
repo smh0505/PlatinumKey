@@ -251,6 +251,7 @@ export default {
     }
     > ul {
         padding-left: $inner-padding;
+        padding-right: 0.25rem;
         list-style: none;
 
         > li {
