@@ -1,6 +1,10 @@
 <template>
     <div class="start">
         <div class="start-intro" v-show="state === 0">
+            <blockquote class="version">
+                게임 버전: {{ BUILD_TIMESTAMP }}
+                (v{{ VERSION }})
+            </blockquote>
             <h1>판때기</h1>
             <h2>
                 RHYTHM MARBLE
@@ -12,10 +16,8 @@
                 <li @click="continueGame"> 이어하기 </li>
                 <li> 설정 </li>
             </ul>
-            <blockquote>
-                Produced by 김편집
-                <br />
-                Made by Project 판때기
+            <blockquote class="footer">
+                © 2023 김편집 / Project 판때기. All Rights Reserved.
             </blockquote>
         </div>
         <div class="start-goldenkey" v-show="state === 1">
@@ -57,6 +59,8 @@ import { useOptionsStore } from '../stores/OptionsStore';
 import { useUIStore } from '../stores/UIStore';
 import { useWheelStore } from '../stores/WheelStore';
 
+import packageinfo from '../../package.json'
+
 import KeysList from './setup/KeysList.vue';
 
 export default {
@@ -64,11 +68,15 @@ export default {
         KeysList
     },
     data: () => ({
+        BUILD_TIMESTAMP: DateTime.fromISO(import.meta.env.BUILD_TIMESTAMP).toFormat('yyyy.MM.dd.HHmm.0000'),
+        VERSION: packageinfo.version,
+
         board: useBoardStore(),
         options: useOptionsStore(),
         wheel: useWheelStore(),
         connect: useConnectStore(),
         ui: useUIStore(),
+
         state: 0,
         selectedKey: null as string | null
     }),
@@ -217,10 +225,19 @@ export default {
     }
     blockquote {
         position: absolute;
-        bottom: 0;
+        font-size: 1.2rem;
         font-weight: 300;
         line-height: 1.5em;
-        color: #8888;
+        color: #999;
+
+        &.version {
+            top: 0;
+            left: 0;
+            text-align: left;
+        }
+        &.footer {
+            bottom: 0;
+        }
     }
 }
 .start-goldenkey {
