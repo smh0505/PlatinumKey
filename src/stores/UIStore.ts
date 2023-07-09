@@ -19,10 +19,7 @@ export const useUIStore = defineStore('ui', {
             this.switchScene(!page)
             this.page = page
 
-            if (param)
-                this.param = this.lastParam[page] = param
-            else
-                this.param = this.lastParam[page]
+            this.param = this.lastParam[page] = param
         },
 
         switchScene(toPlaying: boolean) {

@@ -67,28 +67,4 @@ export default {
 </script>
 
 <style lang="scss">
-.boardBlocks {
-    display: grid;
-    grid-template-columns: 1fr 1fr 3rem 3rem;
-    margin-block: 8px;
-    column-gap: 8px;
-
-    .text-input {
-        padding: 8px;
-        border: none;
-        border-radius: 8px;
-    }
-
-    .button-input {
-        border: none;
-        border-radius: 8px;
-        background-color: rgba(212, 0, 255, 0.75);
-        color: white;
-        transition: all 0.2s ease-out;
-
-        &:hover {
-            background-color: rgb(212, 0, 255)
-        }
-    }
-}
 </style>

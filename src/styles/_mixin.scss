@@ -1,0 +1,32 @@
+
+@mixin button {
+    background: #0013;
+    border: 1px solid #fff8;
+
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+
+    cursor: pointer;
+    user-select: none;
+    transition: background 200ms ease, outline 200ms ease;
+
+    &:hover {
+        background: #0039;
+    }
+    &:active, &:focus {
+        border-color: #fff;
+        outline: 1px solid white;
+        > .material-symbols-rounded {
+            color: #fff;
+        }
+    }
+    &.success {
+        background: #494c;
+    }
+    > .material-symbols-rounded {
+        vertical-align: top;
+        color: #fff9;
+
+        transition: color 200ms ease;
+    }
+}

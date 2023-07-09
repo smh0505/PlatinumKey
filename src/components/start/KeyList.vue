@@ -71,6 +71,7 @@ export default {
     }
     &-last-label {
         grid-column: 1 / 2 span;
+        text-indent: 0.5rem;
     }
 }
 

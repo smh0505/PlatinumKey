@@ -13,8 +13,11 @@
                 <Raffle
                     v-if="ui.page === 'raffle' && options.channel"
                     :index="ui.param" />
-                <Setup
-                    v-if="ui.page === 'setup'" />
+                <div
+                    class="setup-standalone"
+                    v-if="ui.page === 'setup'">
+                    <Setup />
+                </div>
             </div>
 
             <!--right panel-->
@@ -43,13 +46,14 @@
 // components
 import Board from './components/board/Board.vue'
 
-import Start from './components/Start.vue'
+import Start from './components/start/Start.vue'
+import Setup from './components/setup/Setup.vue'
 import Dice from './components/Dice.vue'
 import Wheel from './components/Wheel.vue'
 import Timer from './components/Timer.vue'
 import Items from './components/Items.vue'
 import LogList from './components/LogList.vue'
-import Setup from './components/setup/Setup.vue'
+
 import Raffle from './components/Raffle.vue'
 
 // imports
@@ -72,7 +76,7 @@ export default {
         }
     },
     components: {
-        Start, Board, Dice, Timer, Setup, Wheel, Items, LogList, Raffle
+        Start, Setup, Board, Dice, Timer, Wheel, Items, LogList, Raffle
     },
     methods: {
         // game setup
@@ -104,7 +108,7 @@ export default {
         position: relative;
         display: grid;
         grid-template-columns: 10fr 8fr;
-        gap: 40px;
+        gap: 24px;
 
         box-shadow: 0 0 0 1px black inset;
 
@@ -112,7 +116,9 @@ export default {
         background-position: center;
         background-size: cover;
 
-        padding: 8px;
+        > .left-panel, > .right-panel {
+            padding: 8px;
+        }
 
         .static-menu {
             position: absolute;
