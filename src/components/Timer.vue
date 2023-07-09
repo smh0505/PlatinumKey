@@ -4,10 +4,10 @@
             <button @keydown.prevent class="seekButton centered" @click="seekLaps(-1)">
                 <span class="material-symbols-rounded">remove</span>
             </button>
-            <span class="lapsCount" @click="$emit('reverse')">
-                <span class="material-symbols-rounded">{{ clockwise? 'rotate_right' : 'rotate_left' }}</span>
+            <span class="lapsCount" @click="board.clockwise = !board.clockwise">
+                <span class="material-symbols-rounded">{{ board.clockwise? 'rotate_right' : 'rotate_left' }}</span>
                 {{ board.laps }}<small>바퀴</small>
-                <small v-if="!clockwise"> 반시계</small>
+                <small v-if="!board.clockwise"> 반시계</small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="seekLaps(+1)">
                 <span class="material-symbols-rounded">add</span>
@@ -63,9 +63,6 @@ import * as LocalForage from 'localforage'
 import Marquee from './Marquee.vue'
 
 export default {
-    props: {
-        clockwise: Boolean
-    },
     components: {
         Marquee,
     },
@@ -81,7 +78,7 @@ export default {
     },
     computed: {
         isClockwise() {
-            return this.clockwise ? {} : { transform: 'scale(-1, 1)' }
+            return this.board.clockwise ? {} : { transform: 'scale(-1, 1)' }
         }
     },
     methods: {
@@ -136,7 +133,7 @@ export default {
         window.addEventListener('beforeunload', () => {
             LocalForage.setItem('timer-snapshot', JSON.parse(JSON.stringify({
                 time: this.elapsed,
-                clockwise: this.clockwise
+                clockwise: this.board.clockwise
             })))
         })
     }

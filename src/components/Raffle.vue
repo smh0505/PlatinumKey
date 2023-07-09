@@ -35,21 +35,18 @@
 </template>
 
 <script lang="ts">
-import { useBoardStore, vote } from '../stores/BoardStore';
+import { useBoardStore, Vote } from '../stores/BoardStore';
 import { useConnectStore } from '../stores/ConnectStore';
 import { remainder } from '../scripts/Calculate';
 
 import Marquee from './Marquee.vue';
 import Scroll from './Scroll.vue';
-import * as LocalForage from 'localforage'
 
 export default {
     props: {
-        begin: Boolean,
-        index: Number,
-        channel: {
-            type: String,
-            default: 'arpa__'
+        index: {
+            type: Number,
+            required: true
         }
     },
     data() {
@@ -57,7 +54,7 @@ export default {
             board: useBoardStore(),
             connection: useConnectStore(),
 
-            temp: [] as vote[],
+            temp: [] as Vote[],
             tempIdx: 0,
             intervalId: 0,
 
@@ -71,7 +68,7 @@ export default {
     components: { Marquee, Scroll },
     computed: {
         theme() {
-            return this.board.board[Number(this.index)]
+            return this.board.board[this.index]
         },
         color() {
             return {
@@ -79,7 +76,7 @@ export default {
             }
         },
         pool() {
-            return this.board.selectAll(Number(this.index))
+            return this.board.selectAll(this.index)
         }
     },
     methods: {
@@ -90,7 +87,7 @@ export default {
                 case 0:
                     this.board.remove(this.temp[this.tempIdx])
                     this.tempIdx = 0
-                    this.board.addMoney(Number(this.index))
+                    this.board.addMoney(this.index)
                     break
                 case 1:
                     this.temp = this.pool
@@ -116,18 +113,10 @@ export default {
             this.tempIdx = 0
         },
         isRelativelyNew(timestamp: number) {
-            return (this.now - timestamp) < 30 * 60 * 1000
+            return (this.now - timestamp) < 10 * 60 * 1000
         }
     },
     mounted() {
-        this.connection.connectTwitch(Boolean(this.begin), String(this.channel))
-        window.addEventListener('beforeunload', () => {
-            LocalForage.setItem('votes-snapshot', JSON.parse(JSON.stringify({
-                pool: this.board.pool,
-                island: this.board.islandPool,
-                used: this.board.usedList
-            })))
-        })
         setInterval(() => {
             this.now = Date.now()
         }, 1000)

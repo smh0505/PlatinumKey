@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from "pinia";
 import { useBoardStore } from "./BoardStore";
 import { useWheelStore } from './WheelStore';
+import { useOptionsStore } from './OptionsStore';
 
 export interface ConnectionLog {
     type: 'twitch' | 'toonation'
@@ -38,6 +39,8 @@ const IRC_REGEXES = {
 export const useConnectStore = defineStore('connection', {
     state() {
         return {
+            toonationPayload: '' as string | null,
+
             logs: [] as Log[],
             socket_twitch: ref<WebSocket | null>(null),
             socket_toonation: ref<WebSocket | null>(null),
@@ -60,7 +63,14 @@ export const useConnectStore = defineStore('connection', {
 
             this.logs.push({ type, status, detail } as Log)
         },
-        connectTwitch(begin: boolean, channel: string = "arpa__") {
+        async connectAll() {
+            const options = useOptionsStore()
+            this.connectTwitch(options.channel || undefined)
+
+            await this.prepareToonation(options.password)
+            this.connectToonation()
+        },
+        connectTwitch(channel: string = 'arpa__') {
             if (this.socket_twitch) {
                 return
             }
@@ -76,7 +86,8 @@ export const useConnectStore = defineStore('connection', {
                 this.socket_twitch?.send('JOIN #' + channel)
                 this.result({
                     type: 'twitch',
-                    status: 'connected'
+                    status: 'connected',
+                    detail: channel
                 })
             }
 
@@ -94,7 +105,7 @@ export const useConnectStore = defineStore('connection', {
                     })
                 }
                 this.socket_twitch = null
-                setTimeout(this.connectTwitch, 1000, begin, channel)
+                setTimeout(this.connectTwitch, 1000, channel)
             }
         },
         parseTwitch(line: string) {
@@ -144,10 +155,24 @@ export const useConnectStore = defineStore('connection', {
                 })
             }
         },
-        connectToonation(payload: string) {
-            if (this.socket_toonation) {
-                return
+        async prepareToonation(password: string) {
+            const response = await fetch("https://cors-proxy.bloppyhb.workers.dev/https://toon.at/widget/alertbox/" + password).then(d => d.text())
+            const match = /"payload":"(\w+)"/.exec(response)
+            if(match) {
+                this.toonationPayload = match[1]
+                return match[1]
+            } else {
+                throw new Error('투네이션 Payload를 가져오지 못했습니다.')
             }
+        },
+        connectToonation(payload?: string) {
+            if (!payload)
+                payload = this.toonationPayload!
+            if (!payload)
+                throw new Error('no payload given')
+            if (this.socket_toonation)
+                return
+
             this.socket_toonation = new WebSocket('wss://toon.at:8071/' + payload)
             this.result({
                 type: 'toonation',
