@@ -188,12 +188,13 @@ export const useConnectStore = defineStore('connection', {
             }
 
             this.socket_toonation.onmessage = msg => {
-                if (msg.data.includes('roulette')) {
-                    const amount = JSON.parse(msg.data).content.amount as number
+                const data = JSON.parse(msg.data)
+                if (data.content.roulette) {
+                    const amount = data.content.amount as number
                     const count = amount / 1000
                     if (useBoardStore().limitless) useBoardStore().limit += count
 
-                    const roulette = JSON.parse(msg.data).content.message as string
+                    const roulette = data.content.message as string
                     const rValue = roulette.split(' - ')[1]
                     if (rValue !== '꽝') {
                         if (this.roulette_idle) useWheelStore().addOption(rValue)
