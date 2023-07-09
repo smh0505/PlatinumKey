@@ -48,16 +48,26 @@
             </div>
         </div>
     </div>
+    <div class="notice" @click="updateNotice" v-if="message">
+        <Marquee :text="message" />
+    </div>
+    <div class="notice-button" @click="updateNotice" v-else>
+        <span class="material-symbols-rounded">edit</span>
+    </div>
 </template>
 
 <script lang="ts">
 import { useBoardStore } from '../stores/BoardStore';
 import { DateTime, Duration } from 'luxon'
 import * as LocalForage from 'localforage'
+import Marquee from './Marquee.vue'
 
 export default {
     props: {
         clockwise: Boolean
+    },
+    components: {
+        Marquee,
     },
     data() {
         return {
@@ -65,8 +75,8 @@ export default {
             elapsed: Duration.fromMillis(0),
             paused: true,
             intervalId: 0,
-
             board: useBoardStore(),
+            message: '방장님 판때기사용법을 익히기 위한 연습공지입니다. 송고하지 마시고 킬 하십시요.'
         }
     },
     computed: {
@@ -116,6 +126,10 @@ export default {
                 this.elapsed = DateTime.now().diff(this.start)
                 window.clearInterval(this.intervalId)
             }
+        },
+        updateNotice() {
+            const message = prompt('메시지를 입력해주세요.')
+            this.message = message == null? this.message : message
         }
     },
     mounted() {
@@ -134,13 +148,20 @@ export default {
     border: none;
     // border-radius: 8px;
 }
-
-.clockFrame {
+.clockFrame, .notice {
     display: flex;
-    height: 48px;
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
     padding: 4px;
     gap: 4px;
+
+    background-color: #222e;
+    color: #fff;
+    text-shadow: 0 0 0.25em #000, 0 0 0.5em #000;
+    @include borderless;
+}
+
+.clockFrame {
+    height: 48px;
 
     // decoration
     font-family: var(--font-numeric);
@@ -149,11 +170,6 @@ export default {
     line-height: 36px;
 
     user-select: none;
-
-    background-color: #222e;
-    color: #fff;
-    text-shadow: 0 0 0.25em #000, 0 0 0.5em #000, 0 0 0.5em #000;
-    @include borderless;
 
     > * {
         flex-grow: 1;
@@ -241,6 +257,34 @@ export default {
 
     .material-symbols-rounded {
         vertical-align: middle;
+    }
+}
+.notice {
+    font-size: 1.25rem;
+    white-space: nowrap;
+    word-break: keep-all;
+    text-align: center;
+    text-indent: 40px;
+    overflow: hidden;
+
+    .marquee > div {
+        flex-grow: 1;
+    }
+}
+.notice-button {
+    position: absolute;
+    background-color: transparent;
+    color: transparent;
+    padding: 0.25rem;
+
+    transition: color 100ms ease, background-color 100ms ease;
+
+    > span {
+        vertical-align: top;
+    }
+    &:hover {
+        color: #fff;
+        background: #222e;
     }
 }
 </style>
