@@ -336,10 +336,10 @@ export default {
         &.left { flex-direction: row-reverse; }
 
         &.top .block-prize { top: 0; left: 0; }
-        &.right .block-prize { right: 0; bottom: 0; }
+        &.right .block-prize { right: 0; top: 0; }
         &.bottom .block-prize { right: 0; bottom: 0; }
-        &.left .block-prize { left: 0; top: 0; }
-        &.top .block-header, &.left .block-header { justify-content: flex-end; }
+        &.left .block-prize { left: 0; bottom: 0; }
+        &.top .block-header, &.right .block-header { justify-content: flex-end; }
 
         &.top .block-header { margin-top: -2rem }
         &.bottom .block-header { margin-bottom: -2rem }
