@@ -27,7 +27,7 @@
             <Scroll :list="board.usedList.map(x => ({ text: x.name + ' => ' + x.song }))"></Scroll>
         </div>
         <div class="raffleButtons">
-            <button @keydown.prevent v-if="pool.length > 0" @click="click()">{{ buttonLabels[state] }}</button>
+            <button @keydown.prevent v-if="isEmpty" @click="click()">{{ buttonLabels[state] }}</button>
             <button @keydown.prevent v-if="state === 2" @click="retry()">재추첨</button>
             <button @keydown.prevent v-if="state === 2" @click="cancel()">추첨 취소</button>
         </div>
@@ -54,9 +54,9 @@ export default {
             board: useBoardStore(),
             connection: useConnectStore(),
 
+            backupIdx: 0,
             temp: [] as Vote[],
             tempIdx: 0,
-            intervalId: 0,
 
             buttonLabels: ['추첨', '멈추기', '결정'],
             state: 0,
@@ -68,7 +68,7 @@ export default {
     components: { Marquee, Scroll },
     computed: {
         theme() {
-            return this.board.board[this.index]
+            return this.state === 0 ? this.board.board[this.index] : this.board.board[this.backupIdx]
         },
         color() {
             return {
@@ -77,6 +77,9 @@ export default {
         },
         pool() {
             return this.board.selectAll(this.index)
+        },
+        isEmpty() {
+            return this.state === 0 ? this.pool.length > 0 : this.temp.length > 0
         }
     },
     methods: {
@@ -87,14 +90,13 @@ export default {
                 case 0:
                     this.board.remove(this.temp[this.tempIdx])
                     this.tempIdx = 0
-                    this.board.addMoney(this.index)
+                    this.board.addMoney(this.backupIdx)
+                    this.backupIdx = 0
                     break
                 case 1:
                     this.temp = this.pool
+                    this.backupIdx = this.index
                     this.seekIndex()
-                    break
-                case 2:
-                    window.clearInterval(this.intervalId)
             }
         },
         seekIndex() {
