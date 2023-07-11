@@ -189,9 +189,9 @@ export const useConnectStore = defineStore('connection', {
 
             this.socket_toonation.onmessage = msg => {
                 const data = JSON.parse(msg.data)
-                if (data.content.roulette) {
+                if (data.content?.roulette) {
                     const amount = data.content.amount as number
-                    const count = amount / 1000
+                    const count = Math.floor(amount / 1000)
                     if (useBoardStore().limitless) useBoardStore().limit += count
 
                     const roulette = data.content.message as string

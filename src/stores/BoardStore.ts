@@ -75,7 +75,7 @@ export const useBoardStore = defineStore('board', {
         buildBoard() {
             this.board = Array(26).fill('')
             this.board[0] = '출발'
-            this.board[13] = '뱅하싶'
+            this.board[13] = '세계여행'
             this.goldenKeys.forEach(value => this.board[value] = '황금열쇠')
 
             // islands

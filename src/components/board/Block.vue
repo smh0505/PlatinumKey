@@ -22,7 +22,7 @@
         <div
             v-else-if="index === 13"
             class="block-button centered"
-            @click="ui.navigate('dice')">뱅하싶</div>
+            @click="ui.navigate('dice')">세계여행</div>
 
         <!--golden key-->
         <div
@@ -50,7 +50,7 @@ import { useUIStore } from '../../stores/UIStore'
 
 const ISLAND_LABELS: { [key: string]: string } = {
     '출발': 'go',
-    '뱅하싶': 'free',
+    '세계여행': 'free',
     '디맥섬': 'djmax',
     '투온섬': 'ez2on',
     '식스타섬': 'mars',
