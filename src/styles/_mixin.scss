@@ -10,6 +10,9 @@
     user-select: none;
     transition: background 200ms ease, outline 200ms ease;
 
+    * {
+        cursor: inherit
+    }
     &:hover {
         background: #0039;
     }

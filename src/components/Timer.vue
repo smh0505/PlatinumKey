@@ -225,6 +225,7 @@ export default {
             white-space: nowrap;
             word-break: keep-all;
             pointer-events: none;
+            z-index: 5;
 
             > kbd {
                 display: inline-block;
@@ -266,6 +267,8 @@ export default {
     text-align: center;
     text-indent: 40px;
     overflow: hidden;
+
+    user-select: none;
 
     .marquee > div {
         flex-grow: 1;

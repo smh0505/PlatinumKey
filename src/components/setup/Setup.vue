@@ -154,7 +154,9 @@ export default {
 
             margin: 0;
             padding: 0 1rem;
+
             list-style: none;
+            background-color: #000c;
 
             line-height: 2em;
 
