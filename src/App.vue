@@ -220,6 +220,14 @@ export default {
         background-size: cover;
         background-clip: border-box;
     }
+
+    .testify {
+        background-color: transparent;
+        background-image: url('./assets/testify.png');
+        background-position: center;
+        background-size: cover;
+        background-clip: border-box;
+    }
 }
 
 .modal-enter-from {

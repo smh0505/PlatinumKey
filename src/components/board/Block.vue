@@ -55,7 +55,8 @@ const ISLAND_LABELS: { [key: string]: string } = {
     '투온섬': 'ez2on',
     '식스타섬': 'mars',
     '뱅섬': 'circle',
-    '프세카섬': 'truck'
+    '프세카섬': 'truck',
+    '아르케아섬': 'testify'
 }
 
 export default {
@@ -137,7 +138,7 @@ export default {
             display: none;
         }
     }
-    &.djmax, &.circle {
+    &.djmax, &.circle, &.testify {
         flex-direction: row-reverse;
 
         .block-header {

@@ -79,13 +79,13 @@ export const useBoardStore = defineStore('board', {
             this.goldenKeys.forEach(value => this.board[value] = '황금열쇠')
 
             // islands
-            const islands = ['디맥섬', '투온섬', '식스타섬', '뱅섬', '프세카섬']
+            const islands = ['디맥섬', '투온섬', '식스타섬', '뱅섬', '프세카섬', '아르케아섬']
 
-            const island1 = Math.floor(Math.random() * 5)
+            const island1 = Math.floor(Math.random() * 6)
             this.board[7] = islands[island1]
             islands.splice(island1, 1)
 
-            const island2 = Math.floor(Math.random() * 4)
+            const island2 = Math.floor(Math.random() * 5)
             this.board[20] = islands[island2]
 
             // other blocks
