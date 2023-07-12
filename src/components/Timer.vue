@@ -141,6 +141,9 @@ export default {
 </script>
 
 <style lang="scss">
+
+@import '../styles/mixin';
+
 @mixin borderless {
     border: none;
     // border-radius: 8px;
@@ -269,19 +272,6 @@ export default {
     }
 }
 .notice-button {
-    position: absolute;
-    background-color: transparent;
-    color: transparent;
-    padding: 0.25rem;
-
-    transition: color 100ms ease, background-color 100ms ease;
-
-    > span {
-        vertical-align: top;
-    }
-    &:hover {
-        color: #fff;
-        background: #222e;
-    }
+    @include hidden-button;
 }
 </style>

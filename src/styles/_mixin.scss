@@ -30,3 +30,20 @@
         transition: color 200ms ease;
     }
 }
+
+@mixin hidden-button {
+    position: absolute;
+    background-color: transparent;
+    color: transparent;
+    padding: 0.25rem;
+
+    transition: color 100ms ease, background-color 100ms ease;
+
+    > span {
+        vertical-align: top;
+    }
+    &:hover {
+        color: #fff;
+        background: #222e;
+    }
+}
