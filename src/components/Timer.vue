@@ -18,7 +18,7 @@
                 <span class="material-symbols-rounded">remove</span>
             </button>
             <span class="moneyAmount">
-                {{ board.money }}<small>$ / {{ board.limit }}</small>
+                {{ board.money }}<small>$ / {{ board.limit }}<template v-if="board.limitless">+</template></small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, +1)">
                 <span class="material-symbols-rounded">add</span>
