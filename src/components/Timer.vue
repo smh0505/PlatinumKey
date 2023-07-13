@@ -6,7 +6,7 @@
             </button>
             <span class="lapsCount" @click="board.clockwise = !board.clockwise">
                 <span class="material-icons-outlined" v-if="!board.clockwise">undo</span>
-                <mark>{{ board.songs }}{{ ordinalSuffix(board.songs) }}</mark> ROUND
+                <mark>{{ board.songs }}<small>{{ ordinalSuffix(board.songs) }}</small></mark><small> ROUND</small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="seekSongs(+1)">
                 <span class="material-icons-outlined">add</span>
@@ -17,7 +17,7 @@
                 <span class="material-icons-outlined">remove</span>
             </button>
             <span class="moneyAmount">
-                {{ board.money }}<small>$ / {{ board.limit }}<template v-if="board.limitless">+</template></small>
+                {{ board.money }}<small>$ vs {{ board.limit }}<template v-if="board.limitless">+</template></small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, +1)">
                 <span class="material-icons-outlined">add</span>
@@ -173,7 +173,6 @@ export default {
 }
 
 .clockFrame {
-
     // decoration
     font-family: var(--font-numeric);
     // font-variant-numeric: tabular-nums;
@@ -198,7 +197,7 @@ export default {
 
         mark {
             background: none;
-            color: #f9d;
+            color: #fce;
         }
 
         .seekButton {
