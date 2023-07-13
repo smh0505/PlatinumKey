@@ -115,6 +115,7 @@ export default {
                 font-size: 24px;
                 line-height: 32px;
                 font-family: var(--font-numeric);
+                font-weight: 300;
                 font-variant-numeric: lining-nums;
 
                 min-width: 64px;

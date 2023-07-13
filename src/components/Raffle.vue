@@ -155,6 +155,7 @@ export default {
             align-items: center;
             font-size: 30px;
             font-family: var(--font-numeric);
+            font-weight: 300;
             font-variant-numeric: lining-nums;
             padding: 0px 20px;
         }
