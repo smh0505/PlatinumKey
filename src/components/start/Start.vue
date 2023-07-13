@@ -13,7 +13,7 @@
             </h2>
             <ul class="start-intro-menu">
                 <li @click="ui.navigate('start', 'select-key')"> 게임 시작 </li>
-                <li @click="continueGame"> 이어하기 </li>
+                <!-- <li @click="continueGame"> 이어하기 </li> -->
                 <li @click="ui.navigate('start', 'settings')"> 설정 </li>
             </ul>
             <blockquote class="footer">
