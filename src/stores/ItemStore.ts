@@ -41,20 +41,25 @@ export const useItemStore = defineStore('items', {
                 this.items.splice(index, 1)
             }
         },
+        subAll() {
+            this.items.forEach(x => {
+                if (x.type === '턴') this.subOne(this.items.indexOf(x))
+            })
+        }
     }
 })
 
 interface item{
     key: string,
     count: number,
-    type: '턴' | '곡' | '개'
+    type: '턴' | '개'
 }
 
 const regex = /\((?<count>\d+)(?<type>[턴곡개회번])\)/
 
 const ITEM_LABEL_MAPPING: { [key: string]: item["type"] } = {
     턴: '턴',
-    곡: '곡',
+    곡: '턴',
     개: '개',
     회: '개',
     번: '개'

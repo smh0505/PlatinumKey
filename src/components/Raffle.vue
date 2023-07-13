@@ -41,6 +41,7 @@
 <script lang="ts">
 import { useBoardStore, Vote } from '../stores/BoardStore';
 import { useConnectStore } from '../stores/ConnectStore';
+import { useItemStore } from '../stores/ItemStore';
 import { remainder } from '../scripts/Calculate';
 
 import Marquee from './Marquee.vue';
@@ -57,6 +58,7 @@ export default {
         return {
             board: useBoardStore(),
             connection: useConnectStore(),
+            items: useItemStore(),
 
             backupIdx: 0,
             temp: [] as Vote[],
@@ -95,6 +97,7 @@ export default {
                     this.board.addMoney(this.backupIdx)
                     this.board.songs++
                     this.backupIdx = 0
+                    this.items.subAll()
                     break
                 case 1:
                     this.temp = this.pool
