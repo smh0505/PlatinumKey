@@ -72,7 +72,7 @@ export default {
             paused: true,
             intervalId: 0,
             board: useBoardStore(),
-            message: '방장님 판때기사용법을 익히기 위한 연습공지입니다. 송고하지 마시고 킬 하십시요.'
+            message: '열심히 했기 때문에 그만큼 보답을 받은게 아닐까 생각합니다. 감사합니다.'
         }
     },
     computed: {
