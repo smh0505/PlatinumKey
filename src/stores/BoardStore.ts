@@ -30,7 +30,7 @@ export const useBoardStore = defineStore('board', {
             money: 0,
             limit: 1000,
             laps: 1,
-            songs: 0,
+            songs: 1,
             limitless: false
         }
     },

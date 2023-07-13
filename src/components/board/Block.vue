@@ -171,7 +171,7 @@ export default {
         // content
         font-family: var(--font-numeric);
         font-variant-numeric: lining-nums;
-        font-weight: 500;
+        font-weight: 700;
         font-size: 24px;
         line-height: 24px;
         padding: 8px 10px;

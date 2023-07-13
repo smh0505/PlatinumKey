@@ -6,8 +6,7 @@
             </button>
             <span class="lapsCount" @click="board.clockwise = !board.clockwise">
                 <span class="material-icons-outlined" v-if="!board.clockwise">undo</span>
-                {{ board.songs }}<small>곡째</small>
-                <small v-if="!board.clockwise"> 반시계</small>
+                <mark>{{ board.songs }}{{ ordinalSuffix(board.songs) }}</mark> ROUND
             </span>
             <button @keydown.prevent class="seekButton centered" @click="seekSongs(+1)">
                 <span class="material-icons-outlined">add</span>
@@ -124,6 +123,19 @@ export default {
                 window.clearInterval(this.intervalId)
             }
         },
+        ordinalSuffix(number: number) {
+            const _ = number % 10
+            const __ = number % 100
+            if (_ === 1 && __ !== 11) {
+                return 'ST'
+            } else if  (_ === 2 && __ !== 12) {
+                return 'ND'
+            } else if  (_ === 3 && __ !== 13) {
+                return 'RD'
+            } else {
+                return 'TH'
+            }
+        },
         updateNotice() {
             const message = prompt('메시지를 입력해주세요.')
             this.message = message == null? this.message : message
@@ -156,18 +168,20 @@ export default {
 
     background-color: #222e;
     color: #fff;
-    text-shadow: 0 0 0.25em #000, 0 0 0.5em #000;
+    // text-shadow: 0 0 0.25em #000, 0 0 0.5em #000;
     @include borderless;
 }
 
 .clockFrame {
-    height: 48px;
 
     // decoration
     font-family: var(--font-numeric);
-    font-variant-numeric: tabular-nums;
-    font-size: 26px;
-    line-height: 36px;
+    // font-variant-numeric: tabular-nums;
+    font-weight: 300;
+    letter-spacing: 0.05ex;
+
+    font-size: 1.625rem;
+    line-height: 2.5rem;
 
     user-select: none;
 
@@ -181,6 +195,11 @@ export default {
         display: flex;
         justify-content: space-around;
         text-align: center;
+
+        mark {
+            background: none;
+            color: #f9d;
+        }
 
         .seekButton {
             position: absolute;
