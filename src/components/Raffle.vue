@@ -1,9 +1,13 @@
 <template>
-    <div class="raffleContainer">
-        <div class="raffleHeader" :style="color">
-            <div class="theme"><Marquee :text="theme"></Marquee></div>
-            <div class="count">×{{ state === 0 ? pool.length : temp.length }}</div>
-        </div>
+    <div class="raffleContainer" :style="{ '--color': color }">
+        <dl class="raffleHeader">
+            <dt>SLOT</dt>
+            <dd>#{{ backupIdx || index }}</dd>
+            <dt>THEME</dt>
+            <dd><Marquee :text="theme"></Marquee></dd>
+            <dt>PICKS</dt>
+            <dd>{{ state === 0 ? pool.length : temp.length }}</dd>
+        </dl>
         <div class="raffleList">
             <div class="rafflePool" v-if="state === 0">
                 <Scroll :list="pool.map(x => ({
@@ -71,9 +75,7 @@ export default {
             return this.state === 0 ? this.board.board[this.index] : this.board.board[this.backupIdx]
         },
         color() {
-            return {
-                'background-color': this.board.getColor(this.theme)
-            }
+            return this.board.getColor(this.theme)
         },
         pool() {
             return this.board.selectAll(this.index)
@@ -131,33 +133,39 @@ export default {
 .raffleContainer {
     position: relative;
     display: grid;
-    grid-template-rows: 48px minmax(0, 2fr) 1fr 48px;
+    grid-template-rows: min-content minmax(0, 2fr) 1fr 48px;
     width: 100%;
     height: 100%;
 
+
     .raffleHeader {
         display: grid;
-        grid-template-columns: auto min-content;
+        grid-auto-flow: column;
+        grid-template-columns: 5rem auto 5rem;
+        grid-template-rows: 1rem 2.5rem;
 
-        line-height: 40px;
+        margin: 0;
+        padding: 0.25rem 0.75rem;
 
-        .theme {
-            display: flex;
-            font-size: 30px;
-            padding-inline: 14px;
-            align-items: center;
-            overflow: hidden;
-            white-space: nowrap;
+        font-family: var(--font-numeric);
+        font-weight: 500;
+        background-color: white;
+        border-top: 0.5rem solid var(--color);
+
+        > dt {
+            font-size: 0.875rem;
         }
+        > dd {
+            margin: 0;
+            font-size: 2rem;
+            line-height: 2.5rem;
 
-        .count {
-            display: flex;
-            align-items: center;
-            font-size: 30px;
-            font-family: var(--font-numeric);
-            font-weight: 300;
-            font-variant-numeric: lining-nums;
-            padding: 0px 20px;
+            white-space: nowrap;
+            word-break: keep-all;
+            overflow: hidden;
+        }
+        > dt:last-of-type, > dd:last-of-type {
+            text-align: right;
         }
     }
 
