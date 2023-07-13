@@ -98,7 +98,7 @@ export default {
         &-vote::after {
             display: inline-block;
             margin-left: 3px;
-            font-family: 'Material Symbols Rounded';
+            font-family: 'Material Icons Outlined';
             font-weight: 400;
             font-size: 16px;
             vertical-align: top;

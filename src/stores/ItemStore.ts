@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { remainder } from "../scripts/Calculate";
 
 export const useItemStore = defineStore('items', {
     state() {
@@ -9,17 +8,6 @@ export const useItemStore = defineStore('items', {
         }
     },
     getters: {
-        maxPage(state) {
-            return Math.ceil(state.items.length / ITEMS_PER_PAGE)
-        },
-        pageView(state) {
-            // 5 items -or- 4 items + page indicators
-            if(state.items.length <= (ITEMS_PER_PAGE + 1)) {
-                return state.items
-            } else {
-                return state.items.slice(state.pageNum * ITEMS_PER_PAGE, (state.pageNum + 1) * ITEMS_PER_PAGE)
-            }
-        }
     },
     actions: {
         // insertion
@@ -44,14 +32,6 @@ export const useItemStore = defineStore('items', {
         },
 
         // controls
-        removeAll(type: '턴' | '곡' | '개') {
-            for (let i = this.items.length - 1; i > -1; i--) {
-                if (this.items[i].type === type) {
-                    this.subOne(i)
-                }
-            }
-            this.setMaxPage()
-        },
         addOne(index: number) {
             this.items[index].count += 1
         },
@@ -60,21 +40,7 @@ export const useItemStore = defineStore('items', {
             if (this.items[index].count === 0) {
                 this.items.splice(index, 1)
             }
-            this.setMaxPage()
         },
-
-        // pages
-        prevPage() {
-            this.pageNum = remainder(this.pageNum - 1, this.maxPage)
-        },
-        nextPage() {
-            this.pageNum = remainder(this.pageNum + 1, this.maxPage)
-        },
-        setMaxPage() {
-            if (this.pageNum > 0 && this.pageNum >= this.maxPage) {
-                this.pageNum = this.maxPage - 1
-            }
-        }
     }
 })
 
@@ -85,8 +51,6 @@ interface item{
 }
 
 const regex = /\((?<count>\d+)(?<type>[턴곡개회번])\)/
-
-export const ITEMS_PER_PAGE = 4
 
 const ITEM_LABEL_MAPPING: { [key: string]: item["type"] } = {
     턴: '턴',

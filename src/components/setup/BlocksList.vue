@@ -15,10 +15,10 @@
             ref="tail"
             @keypress.enter="e => addItemByKeydown(e, 'tail', index)">
         <button class="button-input" @click="$emit('add', index)">
-            <span class="material-symbols-rounded">add</span>
+            <span class="material-icons-outlined">add</span>
         </button>
         <button class="button-input" @click="$emit('remove', index)" v-if="index !== 0">
-            <span class="material-symbols-rounded">close</span>
+            <span class="material-icons-outlined">close</span>
         </button>
     </div>
 </template>

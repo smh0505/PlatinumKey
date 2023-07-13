@@ -2,40 +2,27 @@
     <div class="inv-bg">
         <div class="inv-empty" v-if="inventory.items.length === 0">비었음!</div>
         <div class="inv-items" v-else>
-            <div v-for="(item, index) in inventory.pageView" class="row-item">
+            <div v-for="(item, index) in inventory.items" class="row-item">
                 <div class="item-count" :class="typeConfig(index)">{{ item.count }}</div>
                 <div class="item-name" :key="index"><Marquee :text="item.key"></Marquee></div>
                 <div class="item-buttons">
                     <div>
-                        <button @click="inventory.addOne(inventory.pageNum * ITEMS_PER_PAGE + index)">
-                            <span class="material-symbols-rounded">add</span>
+                        <button @click="inventory.addOne(index)">
+                            <span class="material-icons-outlined">add</span>
                         </button>
-                        <button @click="inventory.subOne(inventory.pageNum * ITEMS_PER_PAGE + index)">
-                            <span class="material-symbols-rounded">remove</span>
+                        <button @click="inventory.subOne(index)">
+                            <span class="material-icons-outlined">remove</span>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="inv-pages" v-if="inventory.items.length > ITEMS_PER_PAGE + 1">
-            <button class="page-button" @click="inventory.prevPage()">
-                <span class="material-symbols-rounded">first_page</span>
-            </button>
-            <div class="page-number">{{ inventory.pageNum + 1 }} / {{ inventory.maxPage }} 페이지</div>
-            <button class="page-button" @click="inventory.nextPage()">
-                <span class="material-symbols-rounded">last_page</span>
-            </button>
-        </div>
-        <div class="inv-buttons">
-            <button class="dice-button" @click="inventory.removeAll('턴')">턴 감소</button>
-            <button class="song-button" @click="inventory.removeAll('곡')">곡 감소</button>
-            <button class="manual-button" @click="manualAdd">수기입력</button>
-        </div>
+        <button class="manual-button" @click="manualAdd">수기입력</button>
     </div>
 </template>
 
 <script lang="ts">
-import { ITEMS_PER_PAGE, useItemStore } from '../stores/ItemStore';
+import { useItemStore } from '../stores/ItemStore';
 import Marquee from './Marquee.vue';
 import * as LocalForage from 'localforage'
 
@@ -43,7 +30,6 @@ export default {
     data() {
         return {
             inventory: useItemStore(),
-            ITEMS_PER_PAGE,
         }
     },
     components: {
@@ -71,6 +57,8 @@ export default {
 
 <style lang="scss">
 
+@import '../styles/mixin';
+
 @mixin transparent-button {
     background-color: transparent;
     transition: background-color 0.2s ease-out;
@@ -81,9 +69,10 @@ export default {
 }
 
 .inv-bg {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
 
     min-width: 0;
     line-height: 36px;
@@ -104,7 +93,7 @@ export default {
     .inv-items {
         display: grid;
         min-width: 0;
-        gap: 4px;
+        gap: 3px;
         padding: 4px;
 
         grid-template-columns: min-content auto 0;
@@ -126,6 +115,7 @@ export default {
                 font-size: 24px;
                 line-height: 32px;
                 font-family: var(--font-numeric);
+                font-weight: 300;
                 font-variant-numeric: lining-nums;
 
                 min-width: 64px;
@@ -191,49 +181,14 @@ export default {
         }
     }
 
-    .inv-pages {
-        grid-row: 5;
-        display: flex;
+    .manual-button {
+        @include hidden-button;
 
-        .page-button {
-            @include transparent-button;
-            width: 32px;
-            margin: 4px;
-            vertical-align: top;
-        }
-
-        .page-number {
-            flex-grow: 1;
-            text-align: center;
-        }
+        right: 0;
+        bottom: -0.25em;
+        padding: 0.5em;
+        line-height: 1em;
+        transform: translateY(100%);
     }
-
-    .inv-buttons {
-        display: grid;
-        grid-template-columns: 2fr 2fr max-content;
-        gap: 4px;
-
-        color: #fff8;
-
-        > button {
-            @include transparent-button;
-            font-size: 16px;
-            line-height: 26px;
-
-            .material-symbols-rounded {
-                vertical-align: middle;
-            }
-        }
-        .dice-button {
-            border-top: 4px solid rgba(0, 255, 0, 0.5);
-        }
-        .song-button {
-            border-top: 4px solid rgba(255, 255, 0, 0.5);
-        }
-        .manual-button {
-            border-top: 4px solid rgba(255, 255, 255, 0.25);
-        }
-    }
-
 }
 </style>

@@ -30,6 +30,7 @@ export const useBoardStore = defineStore('board', {
             money: 0,
             limit: 1000,
             laps: 1,
+            songs: 1,
             limitless: false
         }
     },
@@ -160,7 +161,7 @@ export const useBoardStore = defineStore('board', {
         getColor(theme: string) {
             const pair = this.themes.find(x => x.theme === theme)
             if (pair) return pair.color
-            else return "white"
+            else return '#999'
         },
         isMonopoly(index: number) {
             if (!this.started) {

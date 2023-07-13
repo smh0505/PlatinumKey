@@ -114,7 +114,16 @@ export default {
     &.right .block-prize { right: 0; top: 0; }
     &.bottom .block-prize { right: 0; bottom: 0; }
     &.left .block-prize { left: 0; bottom: 0; }
-    &.top .block-header, &.right .block-header { justify-content: flex-end; }
+    &.top, &.right {
+        .block-prize {
+            align-items: flex-start;
+        }
+        .block-header {
+            justify-content: flex-end;
+        }
+    }
+    &.top .block-content { margin-bottom: -1em; }
+    &.bottom .block-content { margin-top: -1em; }
 
     &.left, &.right {
         .block-header {
@@ -170,18 +179,23 @@ export default {
         // box-shadow: 0 0 0 2px black;
     }
     .block-prize {
+        display: flex;
+        align-items: baseline;
         position: absolute;
         padding: 0.5rem;
 
         font-size: 4em;
         font-weight: 200;
-        line-height: 0.8;
+        line-height: 0.75em;
 
         opacity: 0.333;
+        overflow: hidden;
 
         > small {
+            display: inline-block;
             font-size: 0.5em;
             font-weight: 400;
+            line-height: 1em;
         }
     }
 
@@ -224,6 +238,8 @@ export default {
 
 .not-started .block {
     filter: brightness(25%);
+
+    pointer-events: none;
 
     .block-prize {
         display: none;

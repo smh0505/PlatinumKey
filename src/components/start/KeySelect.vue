@@ -11,7 +11,7 @@
                 v-for="[key, _] of history"
                 :class="{ selected: selectedKey == key }">
                 <label @click="selectedKey = key"> {{ formatTime(key) }} </label>
-                <button @click="wheel.deleteHistory(key)"><span class="material-symbols-rounded">close</span></button>
+                <button @click="wheel.deleteHistory(key)"><span class="material-icons-outlined">close</span></button>
             </li>
         </ul>
 

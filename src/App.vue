@@ -11,7 +11,7 @@
                     v-if="connect.toonationPayload"
                     :payload="connect.toonationPayload" />
                 <Raffle
-                    v-if="ui.page === 'raffle' && options.channel"
+                    v-show="ui.page === 'raffle'"
                     :index="ui.param" />
                 <div
                     class="setup-standalone"

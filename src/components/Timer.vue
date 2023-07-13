@@ -1,50 +1,49 @@
 <template>
     <div class="clockFrame">
         <div class="laps">
-            <button @keydown.prevent class="seekButton centered" @click="seekLaps(-1)">
-                <span class="material-symbols-rounded">remove</span>
+            <button @keydown.prevent class="seekButton centered" @click="seekSongs(-1)">
+                <span class="material-icons-outlined">remove</span>
             </button>
             <span class="lapsCount" @click="board.clockwise = !board.clockwise">
-                <span class="material-symbols-rounded">{{ board.clockwise? 'rotate_right' : 'rotate_left' }}</span>
-                {{ board.laps }}<small>바퀴</small>
-                <small v-if="!board.clockwise"> 반시계</small>
+                <span class="material-icons-outlined" v-if="!board.clockwise">undo</span>
+                <mark>{{ board.songs }}<small>{{ ordinalSuffix(board.songs) }}</small></mark><small> ROUND</small>
             </span>
-            <button @keydown.prevent class="seekButton centered" @click="seekLaps(+1)">
-                <span class="material-symbols-rounded">add</span>
+            <button @keydown.prevent class="seekButton centered" @click="seekSongs(+1)">
+                <span class="material-icons-outlined">add</span>
             </button>
         </div>
         <div class="money">
             <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, -1)">
-                <span class="material-symbols-rounded">remove</span>
+                <span class="material-icons-outlined">remove</span>
             </button>
             <span class="moneyAmount">
-                {{ board.money }}<small>$ / {{ board.limit }}</small>
+                {{ board.money }}<small>$ vs {{ board.limit }}<template v-if="board.limitless">+</template></small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, +1)">
-                <span class="material-symbols-rounded">add</span>
+                <span class="material-icons-outlined">add</span>
             </button>
             <div class="seekHint">
-                CTRL … ×10
+                CTRL … ×5
                 <br />
-                SHIFT … ×100
+                SHIFT … ×50
             </div>
         </div>
         <!-- <div class="clockwise" @click="$emit('reverse')">
         </div> -->
         <div class="clock" :class="{ paused }" @click="startButton()">
             <button @keydown.prevent class="seekButton centered" @click.stop="e => seekMin(e, -1)">
-                <span class="material-symbols-rounded">remove</span>
+                <span class="material-icons-outlined">remove</span>
             </button>
             <span class="clockTime">
                 {{ elapsed.toFormat('hh:mm:ss') }}
             </span>
             <button @keydown.prevent class="seekButton centered" @click.stop="e => seekMin(e, +1)">
-                <span class="material-symbols-rounded">add</span>
+                <span class="material-icons-outlined">add</span>
             </button>
             <div class="seekHint">
-                CTRL … × 10m
+                CTRL … ×10m
                 <br />
-                SHIFT … × 1h
+                SHIFT … ×1h
             </div>
         </div>
     </div>
@@ -52,7 +51,7 @@
         <Marquee :text="message" />
     </div>
     <div class="notice-button" @click="updateNotice" v-else>
-        <span class="material-symbols-rounded">edit</span>
+        <span class="material-icons-outlined">edit</span>
     </div>
 </template>
 
@@ -73,7 +72,7 @@ export default {
             paused: true,
             intervalId: 0,
             board: useBoardStore(),
-            message: '방장님 판때기사용법을 익히기 위한 연습공지입니다. 송고하지 마시고 킬 하십시요.'
+            message: '열심히 했기 때문에 그만큼 보답을 받은게 아닐까 생각합니다. 감사합니다.'
         }
     },
     computed: {
@@ -82,16 +81,16 @@ export default {
         }
     },
     methods: {
-        seekLaps(direction: number): void {
-            this.board.laps += direction
+        seekSongs(direction: number): void {
+            this.board.songs += direction
         },
         seekMoney(e: MouseEvent, direction: number) {
             let amount = direction
 
             if (e.ctrlKey || e.metaKey)
-                amount *= 10
+                amount *= 5
             if (e.shiftKey)
-                amount *= 100
+                amount *= 50
 
             this.board.updateMoney(amount)
         },
@@ -124,6 +123,19 @@ export default {
                 window.clearInterval(this.intervalId)
             }
         },
+        ordinalSuffix(number: number) {
+            const _ = number % 10
+            const __ = number % 100
+            if (_ === 1 && __ !== 11) {
+                return 'ST'
+            } else if  (_ === 2 && __ !== 12) {
+                return 'ND'
+            } else if  (_ === 3 && __ !== 13) {
+                return 'RD'
+            } else {
+                return 'TH'
+            }
+        },
         updateNotice() {
             const message = prompt('메시지를 입력해주세요.')
             this.message = message == null? this.message : message
@@ -141,6 +153,9 @@ export default {
 </script>
 
 <style lang="scss">
+
+@import '../styles/mixin';
+
 @mixin borderless {
     border: none;
     // border-radius: 8px;
@@ -153,18 +168,19 @@ export default {
 
     background-color: #222e;
     color: #fff;
-    text-shadow: 0 0 0.25em #000, 0 0 0.5em #000;
+    // text-shadow: 0 0 0.25em #000, 0 0 0.5em #000;
     @include borderless;
 }
 
 .clockFrame {
-    height: 48px;
-
     // decoration
     font-family: var(--font-numeric);
-    font-variant-numeric: tabular-nums;
-    font-size: 26px;
-    line-height: 36px;
+    // font-variant-numeric: tabular-nums;
+    font-weight: 300;
+    letter-spacing: 0.05ex;
+
+    font-size: 1.625rem;
+    line-height: 2.5rem;
 
     user-select: none;
 
@@ -178,6 +194,11 @@ export default {
         display: flex;
         justify-content: space-around;
         text-align: center;
+
+        mark {
+            background: none;
+            color: #fce;
+        }
 
         .seekButton {
             position: absolute;
@@ -222,6 +243,7 @@ export default {
             white-space: nowrap;
             word-break: keep-all;
             pointer-events: none;
+            z-index: 5;
 
             > kbd {
                 display: inline-block;
@@ -252,7 +274,7 @@ export default {
         }
     }
 
-    .material-symbols-rounded {
+    .material-icons-outlined {
         vertical-align: middle;
     }
 }
@@ -264,24 +286,13 @@ export default {
     text-indent: 40px;
     overflow: hidden;
 
+    user-select: none;
+
     .marquee > div {
         flex-grow: 1;
     }
 }
 .notice-button {
-    position: absolute;
-    background-color: transparent;
-    color: transparent;
-    padding: 0.25rem;
-
-    transition: color 100ms ease, background-color 100ms ease;
-
-    > span {
-        vertical-align: top;
-    }
-    &:hover {
-        color: #fff;
-        background: #222e;
-    }
+    @include hidden-button;
 }
 </style>
