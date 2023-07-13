@@ -2,26 +2,26 @@
     <div class="clockFrame">
         <div class="laps">
             <button @keydown.prevent class="seekButton centered" @click="seekSongs(-1)">
-                <span class="material-symbols-rounded">remove</span>
+                <span class="material-icons-outlined">remove</span>
             </button>
             <span class="lapsCount" @click="board.clockwise = !board.clockwise">
-                <span class="material-symbols-rounded">{{ board.clockwise? 'rotate_right' : 'rotate_left' }}</span>
+                <span class="material-icons-outlined" v-if="!board.clockwise">undo</span>
                 {{ board.songs }}<small>곡째</small>
                 <small v-if="!board.clockwise"> 반시계</small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="seekSongs(+1)">
-                <span class="material-symbols-rounded">add</span>
+                <span class="material-icons-outlined">add</span>
             </button>
         </div>
         <div class="money">
             <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, -1)">
-                <span class="material-symbols-rounded">remove</span>
+                <span class="material-icons-outlined">remove</span>
             </button>
             <span class="moneyAmount">
                 {{ board.money }}<small>$ / {{ board.limit }}<template v-if="board.limitless">+</template></small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, +1)">
-                <span class="material-symbols-rounded">add</span>
+                <span class="material-icons-outlined">add</span>
             </button>
             <div class="seekHint">
                 CTRL … ×10
@@ -33,13 +33,13 @@
         </div> -->
         <div class="clock" :class="{ paused }" @click="startButton()">
             <button @keydown.prevent class="seekButton centered" @click.stop="e => seekMin(e, -1)">
-                <span class="material-symbols-rounded">remove</span>
+                <span class="material-icons-outlined">remove</span>
             </button>
             <span class="clockTime">
                 {{ elapsed.toFormat('hh:mm:ss') }}
             </span>
             <button @keydown.prevent class="seekButton centered" @click.stop="e => seekMin(e, +1)">
-                <span class="material-symbols-rounded">add</span>
+                <span class="material-icons-outlined">add</span>
             </button>
             <div class="seekHint">
                 CTRL … × 10m
@@ -52,7 +52,7 @@
         <Marquee :text="message" />
     </div>
     <div class="notice-button" @click="updateNotice" v-else>
-        <span class="material-symbols-rounded">edit</span>
+        <span class="material-icons-outlined">edit</span>
     </div>
 </template>
 
@@ -256,7 +256,7 @@ export default {
         }
     }
 
-    .material-symbols-rounded {
+    .material-icons-outlined {
         vertical-align: middle;
     }
 }

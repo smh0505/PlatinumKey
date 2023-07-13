@@ -4,7 +4,7 @@
             <input type="text" v-model="key.key" :disabled="!editable" ref="fields" @keypress.enter="e => enter(e, index)" />
             <input type="number" v-model="key.count" :disabled="!editable" @keypress.enter="e => enter(e, index)" />
             <button @click="$emit('remove', index)" v-if="editable">
-                <span class="material-symbols-rounded">close</span>
+                <span class="material-icons-outlined">close</span>
             </button>
         </li>
         <li class="goldenkey-list-last" v-if="editable">
@@ -12,7 +12,7 @@
                 Enter를 눌러 추가…
             </label>
             <button @click="$emit('add', list.length - 1)" id="goldenkey-list-last-add">
-                <span class="material-symbols-rounded">add</span>
+                <span class="material-icons-outlined">add</span>
             </button>
         </li>
     </ul>

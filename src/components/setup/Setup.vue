@@ -12,7 +12,7 @@
         </li>
         <li @click="board.limitless = !board.limitless" style="margin-left: auto;">
             <label>
-                <span class="material-symbols-rounded">{{ board.limitless ? 'done' : 'close' }}</span>
+                <span class="material-icons-outlined">{{ board.limitless ? 'done' : 'close' }}</span>
                 나는 자낳괴입니다
             </label>
         </li>
@@ -160,7 +160,7 @@ export default {
 
             line-height: 2em;
 
-            .material-symbols-rounded {
+            .material-icons-outlined {
                 vertical-align: -0.3rem;
             }
         }

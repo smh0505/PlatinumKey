@@ -19,14 +19,14 @@
     &:active, &:focus {
         border-color: #fff;
         outline: 1px solid white;
-        > .material-symbols-rounded {
+        > .material-icons-outlined {
             color: #fff;
         }
     }
     &.success {
         background: #494c;
     }
-    > .material-symbols-rounded {
+    > .material-icons-outlined {
         vertical-align: top;
         color: #fff9;
 

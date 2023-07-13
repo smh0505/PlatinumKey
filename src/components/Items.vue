@@ -8,10 +8,10 @@
                 <div class="item-buttons">
                     <div>
                         <button @click="inventory.addOne(index)">
-                            <span class="material-symbols-rounded">add</span>
+                            <span class="material-icons-outlined">add</span>
                         </button>
                         <button @click="inventory.subOne(index)">
-                            <span class="material-symbols-rounded">remove</span>
+                            <span class="material-icons-outlined">remove</span>
                         </button>
                     </div>
                 </div>
