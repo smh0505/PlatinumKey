@@ -239,6 +239,8 @@ export default {
 .not-started .block {
     filter: brightness(25%);
 
+    pointer-events: none;
+
     .block-prize {
         display: none;
     }
