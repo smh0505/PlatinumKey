@@ -1,15 +1,15 @@
 <template>
     <div class="clockFrame">
         <div class="laps">
-            <button @keydown.prevent class="seekButton centered" @click="seekLaps(-1)">
+            <button @keydown.prevent class="seekButton centered" @click="seekSongs(-1)">
                 <span class="material-symbols-rounded">remove</span>
             </button>
             <span class="lapsCount" @click="board.clockwise = !board.clockwise">
                 <span class="material-symbols-rounded">{{ board.clockwise? 'rotate_right' : 'rotate_left' }}</span>
-                {{ board.laps }}<small>바퀴</small>
+                {{ board.songs }}<small>곡째</small>
                 <small v-if="!board.clockwise"> 반시계</small>
             </span>
-            <button @keydown.prevent class="seekButton centered" @click="seekLaps(+1)">
+            <button @keydown.prevent class="seekButton centered" @click="seekSongs(+1)">
                 <span class="material-symbols-rounded">add</span>
             </button>
         </div>
@@ -82,8 +82,8 @@ export default {
         }
     },
     methods: {
-        seekLaps(direction: number): void {
-            this.board.laps += direction
+        seekSongs(direction: number): void {
+            this.board.songs += direction
         },
         seekMoney(e: MouseEvent, direction: number) {
             let amount = direction

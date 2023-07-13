@@ -91,6 +91,7 @@ export default {
                     this.board.remove(this.temp[this.tempIdx])
                     this.tempIdx = 0
                     this.board.addMoney(this.backupIdx)
+                    this.board.songs++
                     this.backupIdx = 0
                     break
                 case 1:
