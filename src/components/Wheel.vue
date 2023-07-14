@@ -127,6 +127,9 @@ export default {
                 this.wheel.subOption(this.result)
                 this.connection.roulette_temp.forEach(x => this.wheel.addOption(x))
                 this.connection.roulette_temp.splice(0, this.connection.roulette_temp.length)
+                this.connection.roulette_idle = true;
+            } else {
+                this.connection.roulette_idle = false;
             }
         },
     },

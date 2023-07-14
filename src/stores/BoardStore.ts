@@ -294,6 +294,7 @@ export const useBoardStore = defineStore('board', {
         getSalary() {
             this.updateMoney(100)
             this.laps++
+            this.shuffleBoard()
         }
     }
 })
