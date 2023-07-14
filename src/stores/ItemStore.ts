@@ -42,9 +42,9 @@ export const useItemStore = defineStore('items', {
             }
         },
         subAll() {
-            this.items.forEach(x => {
-                if (x.type === '곡') this.subOne(this.items.indexOf(x))
-            })
+            for (let i = this.items.length - 1; i > -1; i--) {
+                if (this.items[i].type === '곡') this.subOne(i)
+            }
         }
     }
 })
