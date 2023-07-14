@@ -1,7 +1,13 @@
 <template>
     <div class="diceContainer">
         <div id="dice-box" @click="roll"></div>
-        <div class="dice-result"></div>
+        <div class="diceButtonGroup">
+            <button v-for="(button, index) in buttonTypes"
+                    class="diceButton"
+                    :class="{ isSelected: buttonIdx === index}"
+                    @keydown.prevent
+                    @click="buttonIdx = index">{{ button }}</button>
+        </div>
     </div>
 </template>
 
@@ -12,12 +18,23 @@ import DiceBox from '@3d-dice/dice-box'
 let diceBox: any;
 
 export default {
-    data() {
-        return {
-            result: 0
-        }
-    },
+    data: () => ({
+        result: [] as string[],
+        doubleCount: 0,
+
+        buttonTypes: [
+            '일반',   '저속', '후진', '열쇠',   '조커',
+            '모서리', '고속', '전진', '막고라', '슈퍼랜덤'
+        ],
+        buttonIdx: 0
+    }),
     methods: {
+        config(buttonType: string, buttonIdx: number) {
+            return {
+                [buttonType]: true,
+                isSelected: this.buttonIdx === buttonIdx
+            }
+        },
         roll() {
             if (!diceBox) {
                 diceBox = new DiceBox("#dice-box", {
@@ -29,14 +46,17 @@ export default {
                 })
                 diceBox.init()
                     .then(() => diceBox.roll('2d4'))
-                    .then((r: any) => console.log(this.check(r)))
+                    .then((r: any) => this.check(r))
             }
             else diceBox.roll('2d4')
-                .then((r: any) => console.log(this.check(r)))
+                .then((r: any[]) => this.check(r))
         },
-        check(r: any) {
-            this.result = r[0].value + r[1].value
-            return r[0].value === r[1].value
+        check(r: any[]) {
+            this.result = r.map((x: any) => x.value)
+            if (r.length === 2 && r[0].value === r[1].value) {
+                this.doubleCount += 1
+            } else this.doubleCount = 0
+            console.log(this.result)
         }
     }
 }
@@ -45,25 +65,42 @@ export default {
 <style lang="scss">
 .diceContainer {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     width: 100%;
     height: 100%;
 
     #dice-box {
         display: flex;
-        width: 100%;
+        width: 640px;
         height: 320px;
+        background-color: rgba(128, 128, 128, 0.5);
     }
 
-    .dice-result {
-        display: flex;
-        position: absolute;
-        top: 80px;
-        z-index: -10;
+    .diceButtonGroup {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(2, 1fr);
 
-        background-color: rgba(128, 128, 128, 0.5);
-        width: 300px;
-        height: 200px;
+        width: 640px;
+        height: 80px;
+        margin-top: 4px;
+        gap: 4px;
+
+        .diceButton {
+            background-color: black;
+            color: white;
+            transition: all 0.2s ease-out;
+
+            &.isSelected {
+                background-color: white;
+                color: black;
+            }
+
+            &:hover {
+                background-color: white;
+                color: black;
+            }
+        }
     }
 }
 </style>
