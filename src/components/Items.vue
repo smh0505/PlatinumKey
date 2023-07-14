@@ -38,7 +38,6 @@ export default {
     methods: {
         typeConfig(index: number) {
             return {
-                "dice": this.inventory.items[index].type === '턴',
                 "song": this.inventory.items[index].type === '곡',
                 "limit": this.inventory.items[index].type === '개'
             }
