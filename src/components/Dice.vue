@@ -1,10 +1,10 @@
 <template>
     <div class="diceContainer">
         <div class="diceResult" :style="config">
-            <div v-for="r in result">{{ dices[tempIdx].faces[r] }}</div>
-            <div class="doubleCount">{{ returnValue }}</div>
+            <div v-for="r in result" @click="roll(buttonIdx)">{{ dices[tempIdx].faces[r] }}</div>
+            <div class="doubleCount" @click="roll(buttonIdx)">{{ returnValue }}</div>
         </div>
-        <div id="dice-box" @click="roll(buttonIdx)"></div>
+        <canvas id="dice-box" @click="roll(buttonIdx)"></canvas>
         <div class="diceButtonGroup">
             <button v-for="(button, index) in buttonTypes"
                     class="diceButton"
@@ -40,7 +40,8 @@ export default {
             return {
                 "background-color": this.doubleCount < 3
                     ? "rgba(128, 128, 128, 0.5)"
-                    : "rgba(255, 0, 0, 0.5)"
+                    : "rgba(255, 0, 0, 0.5)",
+                "font-size": this.tempIdx === 5 || this.tempIdx === 8 ? "92pt" : "120pt"
             }
         },
         returnValue() {
@@ -90,14 +91,17 @@ export default {
         justify-content: space-evenly;
         align-items: center;
 
-        width: 640px;
-        height: 320px;
-        background-color: rgba(128, 128, 128, 0.5);
+        width: 500px;
+        height: 500px;
 
-        font-size: 108pt;
         font-weight: bold;
         -webkit-text-stroke-color: white;
         -webkit-text-stroke-width: 3px;
+
+        div {
+            z-index: 5;
+            user-select: none;
+        }
 
         .doubleCount {
             position: absolute;
@@ -116,8 +120,8 @@ export default {
     #dice-box {
         display: flex;
         position: absolute;
-        width: 640px;
-        height: 320px;
+        width: 500px;
+        height: 500px;
     }
 
     .diceButtonGroup {
@@ -126,8 +130,8 @@ export default {
         grid-template-columns: repeat(5, 1fr);
         grid-template-rows: repeat(2, 1fr);
 
-        top: 332px;
-        width: 640px;
+        bottom: 8px;
+        width: 500px;
         height: 80px;
         gap: 4px;
 
