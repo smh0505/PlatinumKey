@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@3d-dice/dice-box": "^1.0.10",
     "konva": "^9.2.0",
     "localforage": "^1.10.0",
     "luxon": "^3.3.0",
