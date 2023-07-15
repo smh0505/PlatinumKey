@@ -1,6 +1,10 @@
 <template>
     <div class="diceContainer">
-        <div id="dice-box" @click="roll"></div>
+        <div class="diceResult" :style="config">
+            <div v-for="r in result">{{ dices[tempIdx].faces[r] }}</div>
+            <div class="doubleCount">{{ returnValue }}</div>
+        </div>
+        <div id="dice-box" @click="roll(buttonIdx)"></div>
         <div class="diceButtonGroup">
             <button v-for="(button, index) in buttonTypes"
                     class="diceButton"
@@ -14,49 +18,62 @@
 <script lang="ts">
 // @ts-ignore
 import DiceBox from '@3d-dice/dice-box'
+import { dices } from '../scripts/Dice'
 
 let diceBox: any;
 
 export default {
     data: () => ({
-        result: [] as string[],
+        result: [] as number[],
         doubleCount: 0,
 
         buttonTypes: [
             '일반',   '저속', '후진', '열쇠',   '조커',
             '모서리', '고속', '전진', '막고라', '슈퍼랜덤'
         ],
-        buttonIdx: 0
+        buttonIdx: 0,
+        tempIdx: 0,
+        dices: dices
     }),
-    methods: {
-        config(buttonType: string, buttonIdx: number) {
+    computed: {
+        config() {
             return {
-                [buttonType]: true,
-                isSelected: this.buttonIdx === buttonIdx
+                "background-color": this.doubleCount < 3
+                    ? "rgba(128, 128, 128, 0.5)"
+                    : "rgba(255, 0, 0, 0.5)"
             }
         },
-        roll() {
+        returnValue() {
+            if (this.buttonIdx === 0) return this.doubleCount.toString() + "회"
+            if (this.buttonIdx === 9) return this.dices[this.tempIdx].name
+            return this.dices[this.buttonIdx].name
+        }
+    },
+    methods: {
+        roll(index: number) {
+            this.result = [] as number[]
+            this.tempIdx = index < 9 ? index : Math.floor(Math.random() * 7) + 1
+            if (this.doubleCount === 3) this.doubleCount = 0
+
             if (!diceBox) {
                 diceBox = new DiceBox("#dice-box", {
                     assetPath: "/assets/",
                     mass: 0.8,
                     scale: 9,
-                    spinForce: 8,
-                    throwForce: 10
+                    spinForce: 4,
+                    throwForce: 5,
+                    onRollComplete: (r: any[]) => this.check(r)
                 })
-                diceBox.init()
-                    .then(() => diceBox.roll('2d4'))
-                    .then((r: any) => this.check(r))
+                diceBox.init().then(() => diceBox.roll(this.dices[this.tempIdx].type))
             }
-            else diceBox.roll('2d4')
-                .then((r: any[]) => this.check(r))
+            else diceBox.roll(this.dices[this.tempIdx].type)
         },
         check(r: any[]) {
-            this.result = r.map((x: any) => x.value)
-            if (r.length === 2 && r[0].value === r[1].value) {
-                this.doubleCount += 1
-            } else this.doubleCount = 0
-            console.log(this.result)
+            this.result = r[0].rolls.map((x: any) => x.value - 1)
+            if (this.buttonIdx === 0) {
+                if (r[0].rolls[0].value === r[0].rolls[1].value) this.doubleCount += 1
+                else this.doubleCount = 0
+            }
         }
     }
 }
@@ -64,26 +81,54 @@ export default {
 
 <style lang="scss">
 .diceContainer {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     height: 100%;
 
-    #dice-box {
+    .diceResult {
         display: flex;
+        position: absolute;
+        justify-content: space-evenly;
+        align-items: center;
+
         width: 640px;
         height: 320px;
         background-color: rgba(128, 128, 128, 0.5);
+
+        font-size: 108pt;
+        font-weight: bold;
+        -webkit-text-stroke-color: white;
+        -webkit-text-stroke-width: 3px;
+
+        .doubleCount {
+            position: absolute;
+            right: 16px;
+            bottom: 0px;
+
+            font-size: 48pt;
+            font-weight: normal;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.7);
+
+            -webkit-text-stroke-width: 0px;
+        }
+    }
+
+    #dice-box {
+        display: flex;
+        position: absolute;
+        width: 640px;
+        height: 320px;
     }
 
     .diceButtonGroup {
         display: grid;
+        position: absolute;
         grid-template-columns: repeat(5, 1fr);
         grid-template-rows: repeat(2, 1fr);
 
+        top: 332px;
         width: 640px;
         height: 80px;
-        margin-top: 4px;
         gap: 4px;
 
         .diceButton {
