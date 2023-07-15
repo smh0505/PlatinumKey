@@ -4,7 +4,7 @@
             <div v-for="r in result" @click="roll(buttonIdx)">{{ dices[tempIdx].faces[r] }}</div>
             <div class="doubleCount" @click="roll(buttonIdx)">{{ returnValue }}</div>
         </div>
-        <canvas id="dice-box" @click="roll(buttonIdx)"></canvas>
+        <canvas id="dice-box" ref="rollCanvas" @click="roll(buttonIdx)"></canvas>
         <div class="diceButtonGroup">
             <button v-for="(button, index) in buttonTypes"
                     class="diceButton"
@@ -22,6 +22,14 @@ import { dices } from '../scripts/Dice'
 
 let diceBox: any;
 
+function setDPI(canvas: HTMLCanvasElement, scaleFactor: number) {
+    const rect = canvas.getBoundingClientRect()
+    canvas.style.width = rect.width + "px"
+    canvas.style.height = rect.height + "px"
+    canvas.width = rect.width * scaleFactor
+    canvas.height = rect.height * scaleFactor
+}
+
 export default {
     data: () => ({
         result: [] as number[],
@@ -36,6 +44,9 @@ export default {
         dices: dices
     }),
     computed: {
+        deviceScaleFactor() {
+            return (window.devicePixelRatio || 1)
+        },
         config() {
             return {
                 "background-color": this.doubleCount < 3
@@ -57,12 +68,17 @@ export default {
             if (this.doubleCount === 3) this.doubleCount = 0
 
             if (!diceBox) {
+                const rollCanvas = this.$refs.rollCanvas as HTMLCanvasElement
+                setDPI(rollCanvas, this.deviceScaleFactor)
                 diceBox = new DiceBox("#dice-box", {
                     assetPath: "/assets/",
                     mass: 0.8,
                     scale: 9,
-                    spinForce: 4,
-                    throwForce: 5,
+                    startingHeight: 3,
+                    spinForce: 7,
+                    throwForce: 8,
+                    lightIntensity: 2,
+                    friction: 0.5,
                     onRollComplete: (r: any[]) => this.check(r)
                 })
                 diceBox.init().then(() => diceBox.roll(this.dices[this.tempIdx].type))
