@@ -74,8 +74,11 @@ export default {
                     assetPath: "/assets/",
                     mass: 0.8,
                     scale: 9,
-                    spinForce: 4,
-                    throwForce: 5,
+                    startingHeight: 3,
+                    spinForce: 7,
+                    throwForce: 8,
+                    lightIntensity: 2,
+                    friction: 0.5,
                     onRollComplete: (r: any[]) => this.check(r)
                 })
                 diceBox.init().then(() => diceBox.roll(this.dices[this.tempIdx].type))
