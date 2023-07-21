@@ -1,10 +1,14 @@
 <template>
     <div class="wheelContainer">
-        <v-stage :config="{ width: 640, height: 640 }">
-            <v-layer>
-                <v-wedge v-for="(item, index) in wheel.options" :config="sectorConfig(index, item)"></v-wedge>
-                <v-text v-for="(item, index) in wheel.options" :config="textConfig(index, item)"></v-text>
-                <v-line :config="arrow"></v-line>
+        <v-stage :config="{ width: 340, height: 300 }">
+            <v-layer ref="layer">
+                <v-group ref="group">
+                    <v-rect v-for="(item, index) in wheel.wheel" :config="sectorConfig(index, item)"></v-rect>
+                    <v-text v-for="(item, index) in wheel.wheel" :config="textConfig(index, item)"></v-text>
+                </v-group>
+                <v-line :config="arrowOne"></v-line>
+                <v-line :config="arrowTwo"></v-line>
+                <v-rect :config="outline"></v-rect>
             </v-layer>
         </v-stage>
         <div v-if="showResult" class="resultScreen">
@@ -21,6 +25,17 @@ import { useItemStore } from '../stores/ItemStore'
 import { useConnectStore } from '../stores/ConnectStore'
 import { remainder } from '../scripts/Calculate';
 import type { GoldenKey } from '../stores/WheelStore';
+import Konva from 'konva';
+
+let anim: any
+let group: any
+let layer: any
+const states = {
+    idle: 0,
+    spinning: 1,
+    stopping: 2,
+    result: 3
+}
 
 export default {
     data() {
@@ -30,21 +45,28 @@ export default {
 
             // wheel
             wheel: useWheelStore(),
-            startAngle: 0,
+            yPos: 0,
             speed: 50,
-            arrow: {
-                points: [555, 320, 575, 330, 575, 310],
+            arrowOne: {
+                points: [310, 150, 330, 160, 330, 140],
                 fill: 'black',
                 closed: true
             },
+            arrowTwo: {
+                points: [10, 140, 10, 160, 30, 150],
+                fill: 'black',
+                closed: true
+            },
+            outline: {
+                x: 0,
+                y: 0,
+                width: 340,
+                height: 300,
+                stroke: 'black',
+                strokeWidth: 8
+            },
 
             // button
-            states: {
-                idle: 0,
-                spinning: 1,
-                stopping: 2,
-                result: 3
-            },
             state: 0,
             buttonLabels: ['돌리기', '멈추기', '', '다음'],
 
@@ -54,87 +76,81 @@ export default {
     },
     computed: {
         result() {
-            let output = ''
-            let target = this.wheel.sum(this.wheel.options.length) - Math.floor(this.startAngle / this.wheel.unitAngle)
+            const target = Math.floor((this.yPos + 150) / 32) % this.wheel.sumOptions()
+            let output = 0
             for (let i = 0; i < this.wheel.options.length; i++) {
-                if (target > this.wheel.sum(i)) {
-                    output = this.wheel.options[i].key
-                }
+                if (target >= this.wheel.sumOptions(i)) output += 1
             }
-            return output
+            return this.wheel.options[output - 1].key
         },
         showResult() {
-            return this.state === this.states.result
+            return this.state === states.result
         },
         showButton() {
-            return this.state !== this.states.stopping && this.wheel.options.length > 0
+            return this.state !== states.stopping && this.wheel.options.length > 0
         }
     },
     methods: {
         // properties
         sectorConfig(index: number, item: GoldenKey) {
             return {
-                x: 320,
-                y: 320,
-                radius: 240,
-                angle: item.count * this.wheel.unitAngle,
+                x: 20,
+                y: 32 * this.wheel.sumWheel(index),
+                width: 300,
+                height: 32 * item.count,
                 fill: item.color,
                 stroke: 'black',
-                rotation: this.startAngle + this.wheel.sum(index) * this.wheel.unitAngle
             }
         },
         textConfig(index: number, item: GoldenKey) {
             return {
+                x: 20,
+                y: 32 * this.wheel.sumWheel(index),
+                width: 300,
+                height: 32 * item.count,
                 text: item.key,
-                fontSize: 16,
+                fontSize: 20,
                 fontStyle: 'bold',
-                x: 320,
-                y: 320,
-                offsetX: -60,
-                offsetY: 8,
-                rotation: this.startAngle + this.wheel.sum(index) * this.wheel.unitAngle + item.count * this.wheel.unitAngle / 2
+                align: 'center',
+                verticalAlign: 'middle'
             }
         },
 
         // wheel functions
-        rotate() {
-            this.startAngle += this.speed
-            if (this.startAngle >= 360) {
-                this.startAngle -= 360
-            }
-        },
         spin() {
-            switch (this.state) {
-                case this.states.idle:
-                    this.speed = 50
-                    break
-                case this.states.spinning:
-                    this.rotate()
-                    break
-                case this.states.stopping:
-                    this.rotate()
-                    this.speed -= 1 / Math.PI
-                    if (this.speed <= 0) {
-                        this.state = this.states.result
-                    }
-            }
-            window.requestAnimationFrame(this.spin)
+            anim = new Konva.Animation(_ => {
+                this.yPos += this.state === states.idle ? 1 : this.speed
+                if (this.yPos > this.wheel.sumOptions() * 32) this.yPos = 0
+                if (this.state === 2) this.speed -= 1 / Math.PI
+                if (this.speed < 0) {
+                    this.state = 3
+                    this.speed = 0
+                }
+                group.y(this.yPos * -1)
+            }, layer)
         },
         click() {
             this.state = remainder(this.state + 1, 4)
-            if (this.state === this.states.idle) {
+            if (this.state === states.idle) {
                 this.inventory.addItem(this.result)
                 this.wheel.subOption(this.result)
+                this.connection.roulette_idle = true;
                 this.connection.roulette_temp.forEach(x => this.wheel.addOption(x))
                 this.connection.roulette_temp.splice(0, this.connection.roulette_temp.length)
-                this.connection.roulette_idle = true;
+                this.speed = Math.floor(Math.random() * 21) + 40 
             } else {
                 this.connection.roulette_idle = false;
             }
         },
     },
     mounted() {
+        // @ts-ignore
+        group = this.$refs.group.getNode()
+        // @ts-ignore
+        layer = this.$refs.layer.getNode()
+
         this.spin()
+        anim.start()
     }
 }
 </script>

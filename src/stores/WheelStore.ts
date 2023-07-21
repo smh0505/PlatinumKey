@@ -11,21 +11,37 @@ export const useWheelStore = defineStore('wheel', {
             options: [] as GoldenKey[],
             history: {} as { [key: string]: GoldenKeyDefinition[] },
 
-            colorIndex: 0
-        }
-    },
-    getters: {
-        unitAngle(state) {
-            return 360 / sum(state.options.length, state.options)
+            colorIndex: 0,
+            wheel: [] as GoldenKey[]
         }
     },
     actions: {
+        // preparation
         fill(list: GoldenKeyDefinition[]) {
             this.options = list.map((item, index) => ({ ...item, color: COLORS[index % COLORS.length] }))
             this.colorIndex = this.options.length
+            this.generateWheel()
         },
-        sum(index: number) {
+        generateWheel() {
+            const total = sum(null, this.options)
+
+            this.wheel = []
+            if (total > 0) {
+                if (total < 19) {
+                    for (let _ = 0; _ < Math.ceil(19 / total); _++)
+                        this.options.forEach((x: GoldenKey) => this.wheel.push(x))
+                } else {
+                    this.options.forEach((x: GoldenKey) => this.wheel.push(x))
+                    this.options.forEach((x: GoldenKey) => this.wheel.push(x))
+                }
+            }
+        },
+
+        sumOptions(index: number | null = null) {
             return sum(index, this.options)
+        },
+        sumWheel(index: number | null = null) {
+            return sum(index, this.wheel)
         },
         addOption(name: string) {
             const idx = this.options.findIndex(x => x.key === name)
@@ -34,6 +50,7 @@ export const useWheelStore = defineStore('wheel', {
             } else {
                 this.options.push({ key: name, count: 1, color: COLORS[this.colorIndex++ % COLORS.length] })
             }
+            this.generateWheel()
         },
         subOption(name: string) {
             const idx = this.options.findIndex(x => x.key === name)
@@ -41,6 +58,7 @@ export const useWheelStore = defineStore('wheel', {
             if (this.options[idx].count === 0) {
                 this.options.splice(idx, 1)
             }
+            this.generateWheel()
         },
         async loadHistory() {
             const history = (await LocalForage.getItem('wheels') || {}) as typeof this.history
@@ -99,10 +117,9 @@ const COLORS = [
     "#72bde5", "#ed6a91", "#8cf7a5", "#f187ff", "#b381e8"
 ]
 
-function sum(index: number, options: GoldenKey[]) {
-    let x = 0
-    for (let i = 0; i < index; i++) {
-        x += options[i].count
-    }
-    return x
+function sum(index: number | null, options: GoldenKey[]) {
+    let sum = 0
+    const counts = options.map((x: GoldenKey) => x.count).slice(0, index ?? options.length)
+    counts.forEach((x: number) => sum += x)
+    return sum
 }
