@@ -52,7 +52,7 @@ export default {
                 "background-color": this.doubleCount < 3
                     ? "rgba(128, 128, 128, 0.5)"
                     : "rgba(255, 0, 0, 0.5)",
-                "font-size": this.tempIdx === 5 || this.tempIdx === 8 ? "92pt" : "120pt"
+                "font-size": [3, 5, 8].includes(this.tempIdx) ? "92pt" : "120pt"
             }
         },
         returnValue() {
@@ -71,7 +71,7 @@ export default {
                 const rollCanvas = this.$refs.rollCanvas as HTMLCanvasElement
                 setDPI(rollCanvas, this.deviceScaleFactor)
                 diceBox = new DiceBox("#dice-box", {
-                    assetPath: "/assets/",
+                    assetPath: location.pathname + "/assets/",
                     mass: 0.8,
                     scale: 9,
                     startingHeight: 3,
