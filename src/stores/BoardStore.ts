@@ -5,8 +5,9 @@ import * as LocalForage from 'localforage'
 import type { ParsedIRCMessage } from "./ConnectStore";
 import type { ThemeDefinition } from './OptionsStore';
 
-const STEP_PRIZES = [35, 25, 15]
-const MONOPOLY_PRIZE = 30
+const STEP_PRIZES = [100, 200, 300]
+const MONOPOLY_PRIZE = 500
+const LIMITS = [5000, 10000, 20000]
 
 export const useBoardStore = defineStore('board', {
     state() {
@@ -28,16 +29,15 @@ export const useBoardStore = defineStore('board', {
 
             // money
             money: 0,
-            limit: 1000,
-            laps: 1,
+            limit: 5000,
+            laps: 0,
             songs: 1,
             limitless: false
         }
     },
     actions: {
         async begin(themes: ThemeDefinition[]) {
-            if(this.started)
-                return
+            if(this.started) return
 
             await this.setupThemes(themes)
             this.buildBoard()
@@ -51,8 +51,7 @@ export const useBoardStore = defineStore('board', {
         },
         async restore() {
             const snapshot = await LocalForage.getItem('board-snapshot')
-            if(!snapshot)
-                return
+            if(!snapshot) return
 
             this.$patch(snapshot)
         },
@@ -192,8 +191,7 @@ export const useBoardStore = defineStore('board', {
             const name = tags.display_name ?? source.nick
             const uid = source.nick ?? source.full // i don't think this parse shall fail
 
-            if (!match)
-                return { name, status: 'failed' }
+            if (!match) return { name, status: 'failed' }
 
             const index = Number(match.index)
             const excluded = [0, 13].concat(this.goldenKeys)
@@ -202,9 +200,7 @@ export const useBoardStore = defineStore('board', {
             if (map.includes(index)) {
                 const status = this.insert(uid, name, Number(match.index), match.song)
                 return { name, status }
-            } else {
-                return { name, status: 'failed' }
-            }
+            } else return { name, status: 'failed' }
         },
         insert(uid: string, name: string, index: number, song: string) {
             const newVote = {
@@ -214,86 +210,69 @@ export const useBoardStore = defineStore('board', {
                 song,
                 timestamp: Date.now()
             }
+            const isIsland = [7, 20].includes(index)
 
-            // already picked
-            if (this.usedList.find(x => x.uid === newVote.uid)) return 'rejected'
+            if (this.usedList.find(x => x.uid === newVote.uid)) return 'rejected'    // already picked
+            if (!this.checkTime(uid, newVote.timestamp, isIsland)) return 'cooldown' // cooldown
 
-            if ([7, 20].includes(index)) {  // island
-                // cooldown
-                if (!this.checkTimeIsland(uid, newVote.timestamp)) return 'cooldown'
-
-                // accepted
+            // accepted
+            if (isIsland) {  // island
                 const idx = this.islandPool.findIndex(x => x.uid === uid)
                 if (idx !== -1) this.islandPool.splice(idx, 1)
                 this.islandPool.push(newVote)
-                return 'accepted'
             } else {    // normal
-                // cooldown
-                if (!this.checkTime(uid, newVote.timestamp)) return 'cooldown'
-
-                // accepted
                 const group = this.pool.filter(x => x.uid === uid)
                 if (group.length === 3) this.pool.splice(this.pool.indexOf(group[0]), 1)
                 this.pool.push(newVote)
-                return 'accepted'
             }
+            return 'accepted'
         },
-        checkTime(uid: string, time: number) {
-            const group = this.pool.filter(x => x.uid === uid)
-            if (group.length > 0) {
-                const last = group.slice(-1)[0]
-                return (time - last.timestamp) > 30_000
-            } else return true
-        },
-        checkTimeIsland(uid: string, time: number) {
-            const last = this.islandPool.find(x => x.uid === uid)
-            if (last) {
-                return (time - last.timestamp) > 30_000
-            } else return true
+        checkTime(uid: string, time: number, isIsland: boolean) {
+            const group = isIsland
+                ? this.islandPool.filter(x => x.uid === uid)
+                : this.pool.filter(x => x.uid === uid)
+            const last = group.at(-1)
+            if (last) return (time - last.timestamp) > 30_000
+            else return true
         },
 
         // manage votes
         selectAll(index: number) {
-            if ([7, 20].includes(index)) {
-                return this.islandPool.filter(x => x.theme === this.board[index])
-            } else {
-                return this.pool.filter(x => x.theme === this.board[index])
-            }
+            return [7, 20].includes(index)
+                ? this.islandPool.filter(x => x.theme === this.board[index])
+                : this.pool.filter(x => x.theme === this.board[index])
         },
         remove(target: Vote) {
             this.usedList.push(target)
-            this.pool.filter(x => x.uid === target.uid).forEach(x => {
-                this.pool.splice(this.pool.indexOf(x), 1)
-            })
-            this.islandPool.filter(x => x.uid === target.uid).forEach(x => {
-                this.islandPool.splice(this.islandPool.indexOf(x), 1)
-            })
+            this.pool = this.pool.filter(x => x.uid != target.uid)
+            this.islandPool = this.islandPool.filter(x => x.uid != target.uid)
         },
 
         // control money
         addMoney(index: number) {
-            const theme = this.themes.find(x => x.theme === this.board[index])
+            const prize = this.getPrizeByIndex(index)
+            if (prize) this.updateMoney(prize)
 
-            if (this.isMonopoly(index))
-                this.money += MONOPOLY_PRIZE
-            else if (theme)
-                this.money += STEP_PRIZES[theme.stepped++] ?? STEP_PRIZES.at(-1)
+            const theme = this.themes.find(x => x.theme === this.board[index])
+            if (theme) theme.stepped += 1
         },
         getPrizeByIndex(index: number) {
             const theme = this.themes.find(x => x.theme === this.board[index])
-            if(!theme)
-                return
-            else if (this.isMonopoly(index))
-                return MONOPOLY_PRIZE
-            else
-                return STEP_PRIZES[theme.stepped] ?? STEP_PRIZES.at(-1)
+            if (theme) {
+                return this.isMonopoly(index)
+                    ? MONOPOLY_PRIZE
+                    : (STEP_PRIZES[theme.stepped] ?? STEP_PRIZES.at(-1))
+            }
         },
         updateMoney(amount: number) {
             this.money += amount
         },
+        updateLimit() {
+            this.laps += 1
+            this.limit = LIMITS[this.laps] ?? LIMITS.at(-1)
+        },
         getSalary() {
-            this.updateMoney(100)
-            this.laps++
+            this.updateLimit()
             this.shuffleBoard()
         }
     }

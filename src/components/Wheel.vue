@@ -1,5 +1,15 @@
 <template>
     <div class="wheelContainer">
+        <div class="wheelList">
+            <Scroll :list="wheel.options.map(x => ({
+                text: `${x.count} × ${x.key}`,
+                class: { 'iidx-title-inline': true }
+            }))"></Scroll>
+        </div>
+        <span class="wheelCount">
+            현재 {{ wheel.sumOptions() }}칸 
+            <small>/{{ wheel.options.length }}항목</small>
+        </span>
         <v-stage :config="{ width: 340, height: 300 }">
             <v-layer ref="layer">
                 <v-group ref="group">
@@ -26,6 +36,7 @@ import { useConnectStore } from '../stores/ConnectStore'
 import { remainder } from '../scripts/Calculate';
 import type { GoldenKey } from '../stores/WheelStore';
 import Konva from 'konva';
+import Scroll from './Scroll.vue';
 
 let anim: any
 let group: any
@@ -74,6 +85,7 @@ export default {
             inventory: useItemStore()
         }
     },
+    components: { Scroll },
     computed: {
         result() {
             const target = Math.floor((this.yPos + 150) / 32) % this.wheel.sumOptions()
@@ -120,7 +132,7 @@ export default {
         spin() {
             anim = new Konva.Animation(_ => {
                 this.yPos += this.state === states.idle ? 1 : this.speed
-                if (this.yPos > this.wheel.sumOptions() * 32) this.yPos = 0
+                if (this.yPos > this.wheel.sumOptions() * 32) this.yPos -= this.wheel.sumOptions() * 32
                 if (this.state === 2) this.speed -= 1 / Math.PI
                 if (this.speed < 0) {
                     this.state = 3
@@ -164,11 +176,43 @@ export default {
 
     > div:not([class]) {
         display: flex;
-        align-items: center;
-        justify-content: center;
+        justify-content: right;
+        align-items: top;
         height: 100%;
     }
+
+    .wheelList {
+        display: flex;
+        position: absolute;
+        width: 334px;
+        height: 356px;
+        padding-inline: 4px;
+        background-color: rgba(black, 0.8);
+
+        font-size: 16pt;
+        font-weight: bold;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .wheelCount {
+        display: flex;
+        position: absolute;
+        top: 308px;
+        right: 0px;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 24pt;
+        font-style: italic;
+        background-color: rgba(black, 0.8);
+        color: white;
+
+        width: 340px;
+        height: 48px;
+    }
 }
+
 .wheelButton {
     position: absolute;
     bottom: 0;

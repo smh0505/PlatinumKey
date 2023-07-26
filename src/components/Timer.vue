@@ -17,7 +17,7 @@
                 <span class="material-icons-outlined">remove</span>
             </button>
             <span class="moneyAmount">
-                {{ board.money }}<small>$ vs {{ board.limit }}<template v-if="board.limitless">+</template></small>
+                {{ board.money }}<small>명 vs {{ board.limit }}<template v-if="board.limitless">+</template></small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, +1)">
                 <span class="material-icons-outlined">add</span>

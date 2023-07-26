@@ -2,7 +2,7 @@
     <ul :class="['goldenkey-list', { 'goldenkey-list-editable': editable }]">
         <li v-for="(key, index) in list" :key="index">
             <input type="text" v-model="key.key" :disabled="!editable" ref="fields" @keypress.enter="e => enter(e, index)" />
-            <input type="number" v-model="key.count" :disabled="!editable" @keypress.enter="e => enter(e, index)" />
+            <input type="number" v-model="key.count" min="1" :disabled="!editable" @keypress.enter="e => enter(e, index)" />
             <button @click="$emit('remove', index)" v-if="editable">
                 <span class="material-icons-outlined">close</span>
             </button>

@@ -8,7 +8,7 @@
             <div class="block-number">{{ index }}</div>
         </header>
 
-        <div class="block-prize">{{ board.getPrizeByIndex(index) }}<small>$</small></div>
+        <div class="block-prize">{{ board.getPrizeByIndex(index) }}<small>명</small></div>
 
         <!--start-->
         <div
