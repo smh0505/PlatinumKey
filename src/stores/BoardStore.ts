@@ -32,7 +32,11 @@ export const useBoardStore = defineStore('board', {
             limit: 5000,
             laps: 0,
             songs: 1,
-            limitless: false
+            limitless: false,
+
+            // dice
+            isDouble: false,
+            doubleCount: 0
         }
     },
     actions: {
@@ -43,7 +47,6 @@ export const useBoardStore = defineStore('board', {
             this.buildBoard()
 
             this.initialBoard = this.board
-
             this.started = true
         },
         async snapshot() {
@@ -251,7 +254,8 @@ export const useBoardStore = defineStore('board', {
         // control money
         addMoney(index: number) {
             const prize = this.getPrizeByIndex(index)
-            if (prize) this.updateMoney(prize)
+            if (prize) this.updateMoney(this.isDouble ? prize * 2 : prize)
+            this.isDouble = false
 
             const theme = this.themes.find(x => x.theme === this.board[index])
             if (theme) theme.stepped += 1

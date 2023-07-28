@@ -13,6 +13,8 @@
                 <Raffle
                     v-show="ui.page === 'raffle'"
                     :index="ui.param" />
+                <Laps
+                    v-show="ui.page === 'laps'" />
                 <div
                     class="setup-standalone"
                     v-if="ui.page === 'setup'">
@@ -32,7 +34,7 @@
             <!--right-bottom buttons-->
             <div class="static-menu" v-show="ui.page">
                 <button @keydown.prevent v-if="!board.started" @click="beginGame">게임 시작</button>
-                <button @keydown.prevent @click="board.getSalary()">월급 받기</button>
+                <button @keydown.prevent @click="ui.navigate('laps')">페이즈 도전</button>
                 <button @keydown.prevent @click="ui.navigate('setup')">기본 설정</button>
                 <button @keydown.prevent @click="board.shuffleBoard()">판 섞기</button>
                 <button @keydown.prevent @click="board.shuffleBoard(true)">황금열쇠 추가</button>
@@ -53,6 +55,7 @@ import Wheel from './components/Wheel.vue'
 import Timer from './components/Timer.vue'
 import Items from './components/Items.vue'
 import LogList from './components/LogList.vue'
+import Laps from './components/Laps.vue'
 
 import Raffle from './components/Raffle.vue'
 
@@ -76,7 +79,7 @@ export default {
         }
     },
     components: {
-        Start, Setup, Board, Dice, Timer, Wheel, Items, LogList, Raffle
+        Start, Setup, Board, Dice, Timer, Wheel, Items, LogList, Raffle, Laps
     },
     methods: {
         // game setup

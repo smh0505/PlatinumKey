@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 import { useOptionsStore } from './OptionsStore'
 
-export type UIPageState = 'dice' | 'wheel' | 'raffle' | 'setup' | 'start' | ''
+export type UIPageState = 'dice' | 'wheel' | 'raffle' | 'setup' | 'start' | 'laps' | ''
 
 export const useUIStore = defineStore('ui', {
     state: () => ({
@@ -69,4 +69,3 @@ export const useUIStore = defineStore('ui', {
 
     }
 })
-

@@ -1,0 +1,15 @@
+{
+    "name": "secondary",
+    "systemName": "secondary",
+    "author": "Bloppy",
+    "version": 0.1,
+    "material": {
+        "type": "standard",
+        "diffuseTexture": "diffuse.png",
+        "bumpTexture": "normal.png",
+        "specularTexture": "specular.png",
+        "diffuseLevel": 1,
+        "bumpLevel": 0.2
+    },
+    "diceAvailable": ["d6", "d10"]
+}

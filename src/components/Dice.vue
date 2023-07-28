@@ -3,6 +3,9 @@
         <div class="diceResult" :style="config">
             <div v-for="r in result" @click="roll(buttonIdx)">{{ dices[tempIdx].faces[r] }}</div>
             <div class="doubleCount" @click="roll(buttonIdx)">{{ returnValue }}</div>
+            <Transition name="diceFade">
+                <div v-show="!isBegun" class="diceInit" @click="roll(buttonIdx)">클릭하여 시작!</div>
+            </Transition>
         </div>
         <canvas id="dice-box" ref="rollCanvas" @click="roll(buttonIdx)"></canvas>
         <div class="diceButtonGroup">
@@ -19,8 +22,9 @@
 // @ts-ignore
 import DiceBox from '@3d-dice/dice-box'
 import { dices } from '../scripts/Dice'
+import { useBoardStore } from '../stores/BoardStore';
 
-let diceBox: any;
+let diceBox: any
 
 function setDPI(canvas: HTMLCanvasElement, scaleFactor: number) {
     const rect = canvas.getBoundingClientRect()
@@ -33,7 +37,8 @@ function setDPI(canvas: HTMLCanvasElement, scaleFactor: number) {
 export default {
     data: () => ({
         result: [] as number[],
-        doubleCount: 0,
+        board: useBoardStore(),
+        isBegun: false,
 
         buttonTypes: [
             '일반',   '저속', '후진', '열쇠',   '조커',
@@ -49,47 +54,55 @@ export default {
         },
         config() {
             return {
-                "background-color": this.doubleCount < 3
+                "background-color": this.board.doubleCount < 3
                     ? "rgba(128, 128, 128, 0.5)"
                     : "rgba(255, 0, 0, 0.5)",
                 "font-size": [3, 5, 8].includes(this.tempIdx) ? "92pt" : "120pt"
             }
         },
         returnValue() {
-            if (this.buttonIdx === 0) return this.doubleCount.toString() + "회"
+            if (this.buttonIdx === 0) return this.board.doubleCount.toString() + "회"
             if (this.buttonIdx === 9) return this.dices[this.tempIdx].name
             return this.dices[this.buttonIdx].name
         }
     },
     methods: {
+        init() {
+            const rollCanvas = this.$refs.rollCanvas as HTMLCanvasElement
+            setDPI(rollCanvas, this.deviceScaleFactor)
+            diceBox = new DiceBox("#dice-box", {
+                assetPath: location.pathname + "/assets/",
+                mass: 0.8,
+                scale: 9,
+                startingHeight: 5,
+                spinForce: 7,
+                throwForce: 8,
+                lightIntensity: 2,
+                friction: 0.5,
+                onRollComplete: (r: any[]) => this.check(r),
+            })
+
+            diceBox.init()
+                .then(() => diceBox.updateConfig({ theme: 'normal' }))
+                .then(() => diceBox.updateConfig({ theme: 'primary' }))
+                .then(() => diceBox.updateConfig({ theme: 'secondary' }))
+                .then(() => diceBox.updateConfig({ theme: 'finally' }))
+            this.isBegun = true
+            console.log(diceBox)
+        },
         roll(index: number) {
             this.result = [] as number[]
             this.tempIdx = index < 9 ? index : Math.floor(Math.random() * 7) + 1
-            if (this.doubleCount === 3) this.doubleCount = 0
+            if (this.board.doubleCount === 3) this.board.doubleCount = 0
 
-            if (!diceBox) {
-                const rollCanvas = this.$refs.rollCanvas as HTMLCanvasElement
-                setDPI(rollCanvas, this.deviceScaleFactor)
-                diceBox = new DiceBox("#dice-box", {
-                    assetPath: location.pathname + "/assets/",
-                    mass: 0.8,
-                    scale: 9,
-                    startingHeight: 3,
-                    spinForce: 7,
-                    throwForce: 8,
-                    lightIntensity: 2,
-                    friction: 0.5,
-                    onRollComplete: (r: any[]) => this.check(r)
-                })
-                diceBox.init().then(() => diceBox.roll(this.dices[this.tempIdx].type))
-            }
-            else diceBox.roll(this.dices[this.tempIdx].type)
+            if (!diceBox) this.init()
+            else diceBox.roll(this.dices[this.tempIdx].type, { theme: this.dices[this.tempIdx].theme })
         },
         check(r: any[]) {
             this.result = r[0].rolls.map((x: any) => x.value - 1)
             if (this.buttonIdx === 0) {
-                if (r[0].rolls[0].value === r[0].rolls[1].value) this.doubleCount += 1
-                else this.doubleCount = 0
+                this.board.isDouble = r[0].rolls[0].value === r[0].rolls[1].value
+                this.board.doubleCount = this.board.isDouble ? this.board.doubleCount + 1 : 0
             }
         }
     }
@@ -127,9 +140,21 @@ export default {
             font-size: 48pt;
             font-weight: normal;
             font-style: italic;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.9);
 
             -webkit-text-stroke-width: 0px;
+        }
+
+        .diceInit {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 500px;
+            height: 500px;
+
+            font-size: 48pt;
+            -webkit-text-stroke-width: 1px;
+            background-color: rgba(black, 0.5);
         }
     }
 
@@ -156,16 +181,21 @@ export default {
             color: white;
             transition: all 0.2s ease-out;
 
-            &.isSelected {
-                background-color: white;
-                color: black;
-            }
-
-            &:hover {
+            &.isSelected, &:hover {
                 background-color: white;
                 color: black;
             }
         }
     }
+}
+
+.diceFade-enter-active,
+.diceFade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.diceFade-enter-from,
+.diceFade-leave-to {
+    opacity: 0;
 }
 </style>
