@@ -104,6 +104,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import './styles/mixin';
+
 .board {
 
     .center {
@@ -114,10 +116,6 @@ export default {
         gap: 24px;
 
         box-shadow: 0 0 0 1px black inset;
-
-        // background-image: url('./assets/RM2023SM.png');
-        background-position: center;
-        background-size: cover;
 
         > .left-panel, > .right-panel {
             padding: 8px;
@@ -161,92 +159,39 @@ export default {
     }
 
     .go {
-        background-color: white;
-        background-image: url('./assets/start.png');
-        background-position: center;
-        background-size: cover;
-        background-clip: border-box;
+        @include wallpaper('./assets/start.png', cover, white);
     }
 
     .free {
-        background-color: black;
-        background-image: url('./assets/free.png');
-        background-position: center;
-        background-size: cover;
-        background-clip: border-box;
+        @include wallpaper('./assets/free.png', cover);
     }
 
     .golden {
-        background-color: yellow;
-        background-image: url('./assets/keys.png');
-        background-position: center;
-        background-repeat: no-repeat;
-        background-clip: border-box;
+        @include wallpaper('./assets/keys.png', auto, yellow);
     }
 
     .djmax {
-        background-color: transparent;
-        background-image: url('./assets/djmax.png');
-        background-position: center;
-        background-size: cover;
-        background-clip: border-box;
+        @include wallpaper('./assets/djmax.png');
     }
 
     .ez2on {
-        background-color: transparent;
-        background-image: url('./assets/ez2on.png');
-        background-position: center;
-        background-size: cover;
-        background-clip: border-box;
+        @include wallpaper('./assets/ez2on.png');
     }
 
     .mars {
-        background-color: transparent;
-        background-image: url('./assets/mars.png');
-        background-position: center;
-        background-size: cover;
-        background-clip: border-box;
+        @include wallpaper('./assets/mars.png');
     }
 
     .circle {
-        background-color: transparent;
-        background-image: url('./assets/circle.png');
-        background-position: center;
-        background-size: cover;
-        background-clip: border-box;
+        @include wallpaper('./assets/circle.png');
     }
 
     .truck {
-        background-color: transparent;
-        background-image: url('./assets/truck.png');
-        background-position: center;
-        background-size: cover;
-        background-clip: border-box;
+        @include wallpaper('./assets/truck.png');
     }
 
     .testify {
-        background-color: transparent;
-        background-image: url('./assets/testify.png');
-        background-position: center;
-        background-size: cover;
-        background-clip: border-box;
+        @include wallpaper('./assets/testify.png');
     }
 }
-
-.modal-enter-from {
-    opacity: 0;
-
-    .setupContainer, .startContainer {
-        transform: scale(1.1);
-    }
-}
-
-.modal-leave-to {
-    opacity: 0;
-
-    .setupContainer, .startContainer {
-        transform: scale(1.1);
-    }
-}
-
 </style>

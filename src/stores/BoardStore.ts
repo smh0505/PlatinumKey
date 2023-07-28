@@ -9,6 +9,8 @@ const STEP_PRIZES = [100, 200, 300]
 const MONOPOLY_PRIZE = 500
 const LIMITS = [5000, 10000, 20000]
 
+const CORNERS = [0, 7, 13, 20]
+
 export const useBoardStore = defineStore('board', {
     state() {
         return {
@@ -119,23 +121,14 @@ export const useBoardStore = defineStore('board', {
             }
             const count = this.goldenKeys.length
             let newKeys = [] as number[]
-            let board = [
-                1, 2, 3, 4, 5, 6,
-                8, 9, 10, 11, 12,
-                14, 15, 16, 17, 18, 19,
-                21, 22, 23, 24, 25
-            ]
+            let board = [ ...Array(26).keys() ].filter(i => !CORNERS.includes(i))
 
             // initial key
-            if (this.clockwise) {
-                const k = Math.floor(Math.random() * 5)
-                newKeys.push(board.slice(-5)[k])
-                board.splice(k + 17, 1)
-            } else {
-                const k = Math.floor(Math.random() * 6)
-                newKeys.push(board.slice(0, 6)[k])
-                board.splice(k, 1)
-            }
+            const k = this.clockwise
+                ? board.length - Math.ceil(Math.random() * 5)
+                : Math.floor(Math.random() * 6)
+            newKeys.push(board[k])
+            board.splice(k, 1)
 
             // other keys
             while (newKeys.length < count) {
@@ -145,7 +138,6 @@ export const useBoardStore = defineStore('board', {
             }
 
             this.goldenKeys = newKeys
-
             this.buildBoard()
         },
         unshuffleBoard() {
@@ -178,11 +170,9 @@ export const useBoardStore = defineStore('board', {
 
             for (let i = 0; i < 4; i++) {
                 if (lines[i].includes(index)) {
-                    for (let j = 0; j < lines[i].length; j++) {
-                        const k = this.themes.find(x => x.theme === this.board[lines[i][j]])
-                        if (k && k.stepped === 0) return false
-                    }
-                    return true
+                    const line = lines[i].filter(x => !this.goldenKeys.includes(x)).map(x => this.board[x])
+                    const themes = this.themes.filter(x => line.includes(x.theme)).map(x => x.stepped)
+                    return !themes.includes(0)
                 }
             }
             return false

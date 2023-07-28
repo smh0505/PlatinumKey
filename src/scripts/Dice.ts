@@ -2,7 +2,7 @@ interface Dice {
     name: string // for labeling reason
     type: '1d4' | '2d4' | '1d6' | '1d8' | '1d10',
     faces: string[] | number[],
-    theme: 'normal' | 'primary' | 'secondary' | 'finally' | 'default'
+    theme: 'normal' | 'primary' | 'secondary' | 'finally'
 }
 
 export const dices: Dice[] = [
@@ -27,8 +27,7 @@ export const dices: Dice[] = [
     {
         name: "황금열쇠 주사위",
         type: '1d8',
-        faces: ['다음 열쇠', '이전 열쇠', '다음 열쇠', '이전 열쇠',
-            '다음 열쇠', '이전 열쇠', '다음 열쇠', '이전 열쇠'],
+        faces: ['다음 열쇠', '이전 열쇠', '다음 열쇠', '이전 열쇠', '다음 열쇠', '이전 열쇠', '다음 열쇠', '이전 열쇠'],
         theme: "normal"
     },
     {
@@ -58,8 +57,7 @@ export const dices: Dice[] = [
     {
         name: "막고라 주사위",
         type: '1d8',
-        faces: ['DJMAX', 'EZ2ON', 'SIXTAR', 'ARCAEA',
-            'DJMAX', 'EZ2ON', 'SIXTAR', 'ARCAEA'],
+        faces: ['DJMAX', 'EZ2ON', 'SIXTAR', 'ARCAEA', 'DJMAX', 'EZ2ON', 'SIXTAR', 'ARCAEA'],
         theme: 'primary'
     }
 ]

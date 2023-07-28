@@ -1,3 +1,13 @@
+@mixin wallpaper($background, $size: cover, $color: transparent) {
+    background: {
+        image: url($background);
+        color: $color;
+        position: center;
+        size: $size;
+        repeat: no-repeat;
+        clip: border-box;
+    }
+}
 
 @mixin button {
     background: #0013;

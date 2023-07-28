@@ -57,7 +57,6 @@ export default {
             this.state = remainder(this.state + 1, 3)
             if (this.state === 0) {
                 if (this.target >= this.board.limit - this.board.money) this.board.updateLimit()
-                else this.board.updateMoney(100)
                 this.target = 0
             }
             if (this.state === 1) this.randomize()
@@ -68,10 +67,13 @@ export default {
 </script>
 
 <style lang="scss">
-@mixin wallpaper {
-    background-position: center;
-    background-size: cover;
-    background-clip: border-box;
+@import '../styles/mixin';
+
+@mixin laps-text($size, $font) {
+    position: absolute;
+    color: white;
+    font: $size $font, sans-serif;
+    text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
 }
 
 .lapsContainer {
@@ -83,58 +85,39 @@ export default {
         height: 350px;
 
         &.livehouse {
-            background-image: url('../assets/livehouse.png');
-            @include wallpaper;
+            @include wallpaper('../assets/livehouse.png');
         }
 
         &.budokan {
-            background-image: url('../assets/budokan.jpg');
-            @include wallpaper;
+            @include wallpaper('../assets/budokan.jpg');
         }
 
         &.tokyo-dome {
-            background-image: url('../assets/tokyo-dome.jpg');
-            @include wallpaper;
+            @include wallpaper('../assets/tokyo-dome.jpg');
         }
 
         .lapsHeader {
-            position: absolute;
+            @include laps-text(20pt, 'Giants-Inline');
             top: 8px;
             left: 12px;
-
-            color: white;
-            font: 20pt 'Giants-Inline', sans-serif;
-            text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
         }
 
         .lapsStage {
-            position: absolute;
+            @include laps-text(36pt, 'Giants-Inline');
             top: 40px;
             left: 12px;
-
-            color: white;
-            font: 36pt 'Giants-Inline', sans-serif;
-            text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
         }
 
         .lapsFooter {
-            position: absolute;
+            @include laps-text(20pt, 'KBO-Dia-Gothic_bold');
             bottom: 8px;
             left: 8px;
-
-            color: white;
-            font: 20pt 'KBO-Dia-Gothic_bold', sans-serif;
-            text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
         }
 
         .lapsRandom {
-            position: absolute;
+            @include laps-text(44pt, 'KBO-Dia-Gothic_bold');
             bottom: 8px;
             right: 16px;
-
-            color: white;
-            font: 44pt 'KBO-Dia-Gothic_bold', sans-serif;
-            text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
 
             &.win {
                 color: rgb(55, 211, 41);

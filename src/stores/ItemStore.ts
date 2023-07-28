@@ -7,8 +7,6 @@ export const useItemStore = defineStore('items', {
             pageNum: 0
         }
     },
-    getters: {
-    },
     actions: {
         // insertion
         addItem(name: string) {

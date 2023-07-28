@@ -88,7 +88,6 @@ export default {
                 .then(() => diceBox.updateConfig({ theme: 'secondary' }))
                 .then(() => diceBox.updateConfig({ theme: 'finally' }))
             this.isBegun = true
-            console.log(diceBox)
         },
         roll(index: number) {
             this.result = [] as number[]
