@@ -24,9 +24,9 @@
                 <span class="material-icons-outlined">add</span>
             </button>
             <div class="seekHint">
-                CTRL … ×5
+                CTRL … ×10
                 <br />
-                SHIFT … ×50
+                SHIFT … ×100
             </div>
         </div>
         <!-- <div class="clockwise" @click="$emit('reverse')">
@@ -89,9 +89,9 @@ export default {
             let amount = direction
 
             if (e.ctrlKey || e.metaKey)
-                amount *= 5
+                amount *= 10
             if (e.shiftKey)
-                amount *= 50
+                amount *= 100
 
             this.board.updateMoney(amount)
         },
