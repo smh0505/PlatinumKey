@@ -34,6 +34,8 @@
             <button @keydown.prevent v-if="isEmpty" @click="click()">{{ buttonLabels[state] }}</button>
             <button @keydown.prevent v-if="state === 2" @click="retry()">재추첨</button>
             <button @keydown.prevent v-if="state === 2" @click="cancel()">추첨 취소</button>
+            <button @keydown.prevent v-if="hasPlayed" @click="rollback()"
+                    style="grid-column: 5;">직전 추첨 취소</button>
         </div>
     </div>
 </template>
@@ -84,6 +86,9 @@ export default {
         },
         isEmpty() {
             return this.state === 0 ? this.pool.length > 0 : this.temp.length > 0
+        },
+        hasPlayed() {
+            return this.state === 0 && this.board.usedList.length > 0
         }
     },
     methods: {
@@ -119,6 +124,13 @@ export default {
         cancel() {
             this.state = 0
             this.tempIdx = 0
+        },
+        rollback() {
+            const vote = this.board.usedList.pop()
+            if (vote) {
+                const theme = this.board.themes.find(x => x.theme === vote.theme)
+                if (theme) theme.stepped -= 1
+            }
         },
         isRelativelyNew(timestamp: number) {
             return (this.now - timestamp) < 10 * 60 * 1000
