@@ -151,6 +151,7 @@ export default {
         padding: 0.25rem 0.75rem;
 
         font-family: var(--font-numeric);
+        font-variant-numeric: tabular-nums;
         font-weight: 500;
         background-color: white;
         border-top: 0.5rem solid var(--color);

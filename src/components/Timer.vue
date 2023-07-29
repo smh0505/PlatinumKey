@@ -6,7 +6,8 @@
             </button>
             <span class="lapsCount" @click="board.clockwise = !board.clockwise">
                 <span class="material-icons-outlined" v-if="!board.clockwise">undo</span>
-                <mark>{{ board.songs }}<small>{{ ordinalSuffix(board.songs) }}</small></mark><small> ROUND</small>
+                {{ board.songs }}<small>곡째</small>
+                <small v-if="!board.clockwise"> 반시계</small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="seekSongs(+1)">
                 <span class="material-icons-outlined">add</span>
@@ -23,9 +24,9 @@
                 <span class="material-icons-outlined">add</span>
             </button>
             <div class="seekHint">
-                CTRL … ×5
+                CTRL … ×10
                 <br />
-                SHIFT … ×50
+                SHIFT … ×100
             </div>
         </div>
         <!-- <div class="clockwise" @click="$emit('reverse')">
@@ -88,9 +89,9 @@ export default {
             let amount = direction
 
             if (e.ctrlKey || e.metaKey)
-                amount *= 5
+                amount *= 10
             if (e.shiftKey)
-                amount *= 50
+                amount *= 100
 
             this.board.updateMoney(amount)
         },
@@ -121,19 +122,6 @@ export default {
                 this.paused = true
                 this.elapsed = DateTime.now().diff(this.start)
                 window.clearInterval(this.intervalId)
-            }
-        },
-        ordinalSuffix(number: number) {
-            const _ = number % 10
-            const __ = number % 100
-            if (_ === 1 && __ !== 11) {
-                return 'ST'
-            } else if  (_ === 2 && __ !== 12) {
-                return 'ND'
-            } else if  (_ === 3 && __ !== 13) {
-                return 'RD'
-            } else {
-                return 'TH'
             }
         },
         updateNotice() {
@@ -168,19 +156,18 @@ export default {
 
     background-color: #222e;
     color: #fff;
-    // text-shadow: 0 0 0.25em #000, 0 0 0.5em #000;
+    text-shadow: 0 0 0.25em #000, 0 0 0.5em #000;
     @include borderless;
 }
 
 .clockFrame {
+    height: 48px;
+
     // decoration
     font-family: var(--font-numeric);
-    // font-variant-numeric: tabular-nums;
-    font-weight: 300;
-    letter-spacing: 0.05ex;
-
-    font-size: 1.625rem;
-    line-height: 2.5rem;
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    line-height: 36px;
 
     user-select: none;
 
@@ -194,11 +181,6 @@ export default {
         display: flex;
         justify-content: space-around;
         text-align: center;
-
-        mark {
-            background: none;
-            color: #fce;
-        }
 
         .seekButton {
             position: absolute;
