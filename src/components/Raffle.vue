@@ -128,6 +128,7 @@ export default {
         rollback() {
             const vote = this.board.usedList.pop()
             if (vote) {
+                this.board.songs--
                 const theme = this.board.themes.find(x => x.theme === vote.theme)
                 if (theme) theme.stepped -= 1
             }
