@@ -27,7 +27,7 @@ export const useBoardStore = defineStore('board', {
             // raffle pools
             pool: [] as Vote[],
             islandPool: [] as Vote[],
-            usedList: [] as Vote[],
+            usedList: [] as VoteLog[],
 
             // money
             money: 0,
@@ -236,7 +236,9 @@ export const useBoardStore = defineStore('board', {
                 : this.pool.filter(x => x.theme === this.board[index])
         },
         remove(target: Vote) {
-            this.usedList.push(target)
+            let prize = this.getPrizeByTheme(target.theme) ?? 0
+            if (this.isDouble) prize *= 2
+            this.usedList.push({ ...target, prize })
             this.pool = this.pool.filter(x => x.uid != target.uid)
             this.islandPool = this.islandPool.filter(x => x.uid != target.uid)
         },
@@ -249,6 +251,10 @@ export const useBoardStore = defineStore('board', {
 
             const theme = this.themes.find(x => x.theme === this.board[index])
             if (theme) theme.stepped += 1
+        },
+        getPrizeByTheme(theme: string) {
+            const index = this.board.indexOf(theme)
+            if (index > -1) return this.getPrizeByIndex(index)
         },
         getPrizeByIndex(index: number) {
             const theme = this.themes.find(x => x.theme === this.board[index])
@@ -278,12 +284,15 @@ interface Theme {
     color: string,
     stepped: number
 }
-export interface Vote {
+export type Vote = {
     uid: string,
     name: string,
     theme: string,
     song: string,
     timestamp: number
+}
+type VoteLog = Vote & {
+    prize: number
 }
 
 // constants
