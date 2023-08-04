@@ -125,9 +125,9 @@ export default {
     }
 
     &-target {
-        font-size: 1.5em;
+        font-size: 1.75em;
         font-family: 'KBO-Dia-Gothic_bold';
-        margin-bottom: 3rem;
+        margin-bottom: 2.5rem;
     }
 
     &-random {
