@@ -239,7 +239,8 @@ export default {
 
         white-space: pre-wrap;
         text-align: center;
-        font: 24px 'KBO-Dia-Gothic_bold', sans-serif;
+        font: 24px 'KBO-Dia-Gothic', sans-serif;
+        font-weight: 500;
     }
 
     .block-button {

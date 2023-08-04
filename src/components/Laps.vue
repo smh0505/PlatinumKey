@@ -126,13 +126,13 @@ export default {
 
     &-target {
         font-size: 1.75em;
-        font-family: 'KBO-Dia-Gothic_bold';
+        font-family: 'KBO-Dia-Gothic';
         margin-bottom: 2.5rem;
     }
 
     &-random {
         font-size: 4rem;
-        font-family: 'KBO-Dia-Gothic_bold';
+        font-family: 'KBO-Dia-Gothic';
 
         &.win {
             color: rgb(55, 211, 41);
