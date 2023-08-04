@@ -6,13 +6,15 @@
         </div>
         <div class="laps-challenge-content">
             <div class="laps-challenge-target">
-                {{ board.limit }}명의 관객을 채워 다음 무대로 향하자!
+                <b>{{ board.limit }}석</b>의 좌석을 채워 다음 무대로 향하자!
                 <template v-if="board.money < board.limit">
                     <br />
-                    {{ board.limit - board.money }}명만 더 모으면 성공!
+                    <b>{{ board.limit - board.money }}명</b>만 더 모으면 성공!
                 </template>
             </div>
-            <div class="laps-challenge-random" :class="result">{{ state === 0 ? '---' : target }}</div>
+            <div class="laps-challenge-random" :class="result">
+                <b>{{ state === 0 ? '???' : target }}</b>명
+            </div>
         </div>
         <div class="laps-challenge-buttons">
             <button @keydown.prevent @mousedown.left="click">{{ labels[state] }}</button>
@@ -47,20 +49,20 @@ export default {
         },
         result() {
             return {
-                win: this.state === 2 && this.target >= this.board.limit - this.board.money,
-                lose: this.state === 2 && this.target < this.board.limit - this.board.money
+                win: this.state === 2 && this.target >= this.board.limit,
+                lose: this.state === 2 && this.target < this.board.limit
             }
         }
     },
     methods: {
         randomize() {
-            this.target = Math.floor(Math.random() * this.board.limit)
+            this.target = Math.floor(Math.random() * this.board.limit) + this.board.money
             this.timer = window.requestAnimationFrame(this.randomize)
         },
         click() {
             this.state = remainder(this.state + 1, 3)
             if (this.state === 0) {
-                if (this.target >= this.board.limit - this.board.money) this.board.updateLimit()
+                if (this.target >= this.board.limit) this.board.updateLimit()
                 this.target = 0
             }
             if (this.state === 1) this.randomize()
@@ -131,15 +133,19 @@ export default {
     }
 
     &-random {
-        font-size: 4rem;
+        font-size: 2rem;
         font-family: 'KBO-Dia-Gothic';
+
+        > b {
+            font-size: 4rem;
+        }
 
         &.win {
             color: rgb(55, 211, 41);
         }
 
         &.lose {
-            color: rgb(216, 20, 20);
+            color: rgb(255, 108, 108);
         }
     }
 
