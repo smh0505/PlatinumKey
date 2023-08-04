@@ -24,7 +24,12 @@
                     'iidx-title large',
                     { new: isRelativelyNew(temp[tempIdx].timestamp) }
                 ]"><span>{{ temp[tempIdx].song }}</span></div>
-                <div class="artist">{{ temp[tempIdx].name }}</div>
+                <div class="artist">
+                    {{ temp[tempIdx].name }}
+
+                    <br />
+                    <small> ({{ board.pickedCounts[temp[tempIdx].uid] ?? '??' }}트) </small>
+                </div>
             </div>
         </div>
         <div class="usedList">
@@ -136,6 +141,12 @@ export default {
         },
         isRelativelyNew(timestamp: number) {
             return (this.now - timestamp) < 10 * 60 * 1000
+        },
+        countTries(uid: Vote['uid']) {
+            let count = 0
+            count += this.board.pool.filter(_ => _.uid === uid).length
+            count += this.board.islandPool.filter(_ => _.uid === uid).length
+            return count
         }
     },
     mounted() {
@@ -237,6 +248,9 @@ export default {
             }
             > .artist {
                 font-weight: 600;
+                small {
+                    font-variant-numeric: tabular-nums;
+                }
             }
             > .iidx-title {
                 min-height: 50%;

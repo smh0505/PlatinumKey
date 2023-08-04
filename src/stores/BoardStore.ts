@@ -29,6 +29,8 @@ export const useBoardStore = defineStore('board', {
             islandPool: [] as Vote[],
             usedList: [] as VoteLog[],
 
+            pickedCounts: {} as { [ K: Vote['uid'] ]: number },
+
             // money
             money: 0,
             limit: 5000,
@@ -209,6 +211,10 @@ export const useBoardStore = defineStore('board', {
             if (!this.checkTime(uid, newVote.timestamp, isIsland)) return 'cooldown' // cooldown
 
             // accepted
+
+            this.pickedCounts[uid] ||= 0
+            this.pickedCounts[uid]++
+
             if (isIsland) {  // island
                 const idx = this.islandPool.findIndex(x => x.uid === uid)
                 if (idx !== -1) this.islandPool.splice(idx, 1)

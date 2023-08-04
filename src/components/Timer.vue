@@ -5,7 +5,6 @@
                 <span class="material-icons-outlined">remove</span>
             </button>
             <span class="lapsCount" @click="board.clockwise = !board.clockwise">
-                <span class="material-icons-outlined" v-if="!board.clockwise">undo</span>
                 {{ board.songs }}<small>곡째</small>
                 <small v-if="!board.clockwise"> 반시계</small>
             </span>
@@ -18,7 +17,7 @@
                 <span class="material-icons-outlined">remove</span>
             </button>
             <span class="moneyAmount">
-                {{ board.money }}<small>명 vs {{ board.limit }}<template v-if="board.limitless">+</template></small>
+                {{ board.money }}<small>명　목표: {{ board.limit }}<template v-if="board.limitless">+</template></small>
             </span>
             <button @keydown.prevent class="seekButton centered" @click="e => seekMoney(e, +1)">
                 <span class="material-icons-outlined">add</span>

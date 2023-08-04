@@ -1,12 +1,22 @@
 <template>
-    <div class="lapsContainer">
-        <div class="lapsBackground" :class="config">
-            <div class="lapsHeader">이번 스테이지는...</div>
-            <div class="lapsStage">{{ stages[board.laps] ?? stages.at(-1) }}</div>
-            <div class="lapsFooter">{{ alert }}</div>
-            <div class="lapsRandom" :class="result">{{ state === 0 ? '???' : target }}</div>
+    <div class="laps-challenge">
+        <div class="laps-challenge-header" :class="config">
+            <p>이번 스테이지는...</p>
+            <h3>{{ stages[board.laps] ?? stages.at(-1) }}</h3>
         </div>
-        <button class="lapsButton" @keydown.prevent @mousedown.left="click">{{ labels[state] }}</button>
+        <div class="laps-challenge-content">
+            <div class="laps-challenge-target">
+                <b>{{ board.limit }}석</b>의 좌석을 채워 다음 무대로 향하자!
+                <br />
+                <small> <b>{{ (board.money / board.limit * 100).toFixed(0) }}%</b> 예매 확정! </small>
+            </div>
+            <div class="laps-challenge-random" :class="result">
+                <b>{{ state === 0 ? '???' : target }}</b>명
+            </div>
+        </div>
+        <div class="laps-challenge-buttons">
+            <button @keydown.prevent @mousedown.left="click">{{ labels[state] }}</button>
+        </div>
     </div>
 </template>
 
@@ -14,18 +24,17 @@
 import { useBoardStore } from '../stores/BoardStore';
 import { remainder } from '../scripts/Calculate';
 
-let temp: number
-
 export default {
     data() {
         return {
             board: useBoardStore(),
-            stages: ['라이브 하우스', '일본 무도관', '도쿄 돔'],
+            stages: ['라이브 하우스', '부도칸', '도쿄 돔'],
 
             target: 0,
 
             state: 0,
-            labels: ['도전', '멈추기', '다음']
+            labels: ['도전', '멈추기', '다음'],
+            timer: 0
         }
     },
     computed: {
@@ -36,31 +45,26 @@ export default {
                 'tokyo-dome': this.board.laps >= 2
             }
         },
-        alert() {
-            if (this.board.money >= this.board.limit)
-                return `${this.board.limit}명을 채워 통과!`
-            else return `${this.board.limit - this.board.money}명 이상 모으면 성공!`
-        },
         result() {
             return {
-                win: this.state === 2 && this.target >= this.board.limit - this.board.money,
-                lose: this.state === 2 && this.target < this.board.limit - this.board.money
+                win: this.state === 2 && this.target >= this.board.limit,
+                lose: this.state === 2 && this.target < this.board.limit
             }
         }
     },
     methods: {
         randomize() {
-            this.target = Math.floor(Math.random() * this.board.limit)
-            temp = window.requestAnimationFrame(this.randomize)
+            this.target = Math.floor(Math.random() * this.board.limit) + this.board.money
+            this.timer = window.requestAnimationFrame(this.randomize)
         },
         click() {
             this.state = remainder(this.state + 1, 3)
             if (this.state === 0) {
-                if (this.target >= this.board.limit - this.board.money) this.board.updateLimit()
+                if (this.target >= this.board.limit) this.board.updateLimit()
                 this.target = 0
             }
             if (this.state === 1) this.randomize()
-            if (this.state === 2) window.cancelAnimationFrame(temp)
+            if (this.state === 2) window.cancelAnimationFrame(this.timer)
         }
     }
 }
@@ -69,20 +73,35 @@ export default {
 <style lang="scss">
 @import '../styles/mixin';
 
-@mixin laps-text($size, $font) {
-    position: absolute;
+.laps-challenge {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 2.5rem;
+    gap: 8px;
+
+    width: 100%;
+    height: 100%;
+
     color: white;
-    font: $size $font, sans-serif;
-    text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
-}
+    text-shadow: 0 0 0.5em #000;
 
-.lapsContainer {
-    .lapsBackground {
+    &-header {
         display: flex;
-        position: relative;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-end;
 
-        width: 100%;
-        height: 350px;
+        font-size: 1.5rem;
+        font-family: 'Giants-Inline';
+
+        padding: 0.5rem 1rem;
+
+        > p, > h3 {
+            margin: 0;
+        }
+        > h3 {
+            font-size: 3rem;
+        }
 
         &.livehouse {
             @include wallpaper('../assets/livehouse.png');
@@ -95,55 +114,55 @@ export default {
         &.tokyo-dome {
             @include wallpaper('../assets/tokyo-dome.jpg');
         }
+    }
+    &-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.8);
+    }
 
-        .lapsHeader {
-            @include laps-text(20pt, 'Giants-Inline');
-            top: 8px;
-            left: 12px;
+    &-target {
+        font-size: 1.75em;
+        font-family: 'KBO-Dia-Gothic';
+        margin-bottom: 2.5rem;
+    }
+
+    &-random {
+        font-size: 2rem;
+        font-family: 'KBO-Dia-Gothic';
+
+        > b {
+            font-size: 4rem;
         }
 
-        .lapsStage {
-            @include laps-text(36pt, 'Giants-Inline');
-            top: 40px;
-            left: 12px;
+        &.win {
+            color: rgb(55, 211, 41);
         }
 
-        .lapsFooter {
-            @include laps-text(20pt, 'KBO-Dia-Gothic_bold');
-            bottom: 8px;
-            left: 8px;
-        }
-
-        .lapsRandom {
-            @include laps-text(44pt, 'KBO-Dia-Gothic_bold');
-            bottom: 8px;
-            right: 16px;
-
-            &.win {
-                color: rgb(55, 211, 41);
-            }
-
-            &.lose {
-                color: rgb(216, 20, 20);
-            }
+        &.lose {
+            color: rgb(255, 108, 108);
         }
     }
-    
-    .lapsButton {
-        position: absolute;
-        bottom: 8px;
 
-        width: 120px;
-        height: 40px;
+    .laps-challenge-buttons {
+        display: flex;
 
-        font-size: 20pt;
-        background-color: rgba(black, 0.8);
-        color: white;
-        transition: all 0.2s ease-out;
+        > button {
+            width: 120px;
+            height: 40px;
 
-        &:hover {
-            background-color: white;
-            color: black;
+            font-size: 1.25rem;
+            background-color: rgba(black, 0.8);
+            color: white;
+            transition: all 0.2s ease-out;
+
+            &:hover {
+                background-color: white;
+                color: black;
+            }
         }
     }
 }

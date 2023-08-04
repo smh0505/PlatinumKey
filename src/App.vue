@@ -160,6 +160,15 @@ export default {
 
     .go {
         @include wallpaper('./assets/start.png', cover, white);
+        &.phase-0 {
+            @include wallpaper('./assets/livehouse.png', cover, white);
+        }
+        &.phase-1 {
+            @include wallpaper('./assets/budokan.jpg', cover, white);
+        }
+        &.phase-2, &.phase-3 {
+            @include wallpaper('./assets/tokyo-dome.jpg', cover, white);
+        }
     }
 
     .free {
