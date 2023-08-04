@@ -18,7 +18,7 @@
             @click="ui.navigate(''); ui.switchScene(true)"
             @contextmenu.prevent="ui.navigate('raffle')">
             <template v-if="board.started && 0 <= board.laps && board.laps <= 2">
-                <p>다음 목표는…</p>
+                <p>{{ ui.page === 'laps'? '이번 스테이지는…' : '다음 목표는…' }}</p>
                 <h4>{{ ['라이브 하우스', '부도칸', '도쿄 돔'][board.laps] }}</h4>
             </template>
             <p v-else-if="board.started && 2 < board.laps">
