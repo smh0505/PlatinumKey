@@ -14,8 +14,16 @@
         <div
             v-if="index === 0"
             style="width: 100%; height: 100%;"
+            class="block-start"
             @click="ui.navigate(''); ui.switchScene(true)"
             @contextmenu.prevent="ui.navigate('raffle')">
+            <template v-if="board.started && 0 <= board.laps && board.laps <= 2">
+                <p>다음 목표는…</p>
+                <h4>{{ ['라이브 하우스', '부도칸', '도쿄 돔'][board.laps] }}</h4>
+            </template>
+            <p v-else-if="board.started && 2 < board.laps">
+                <b>페이즈 완료</b>
+            </p>
         </div>
 
         <!--free-->
@@ -78,6 +86,7 @@ export default {
         blockTypes() {
             return {
                 [ISLAND_LABELS[this.board.board[this.index]] ?? '']: true,
+                ['phase-' + this.board.laps]: true,
 
                 top: 13 < this.index && this.index < 20,
                 right: 20 < this.index && this.index < 26,
@@ -161,6 +170,28 @@ export default {
         background-color: #ff6;
         > .block-header {
             background-color: transparent !important;
+        }
+    }
+    &-start {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-end;
+        text-align: right;
+        padding: 0.5rem 1rem;
+
+        color: white;
+        text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
+
+        // mix-blend-mode: exclusion;
+
+        > p {
+            margin: 0;
+            font-size: 1.25em;
+        }
+        > h4 {
+            margin: 0;
+            font-size: 3em;
         }
     }
 

@@ -20,7 +20,7 @@ export default {
     data() {
         return {
             board: useBoardStore(),
-            stages: ['라이브 하우스', '일본 무도관', '도쿄 돔'],
+            stages: ['라이브 하우스', '부도칸', '도쿄 돔'],
 
             target: 0,
 
@@ -39,7 +39,7 @@ export default {
         alert() {
             if (this.board.money >= this.board.limit)
                 return `${this.board.limit}명을 채워 통과!`
-            else return `${this.board.limit - this.board.money}명 이상 모으면 성공!`
+            else return `${this.board.limit - this.board.money}명만 더 모으면 성공!`
         },
         result() {
             return {
@@ -128,7 +128,7 @@ export default {
             }
         }
     }
-    
+
     .lapsButton {
         position: absolute;
         bottom: 8px;
