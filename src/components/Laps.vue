@@ -7,10 +7,8 @@
         <div class="laps-challenge-content">
             <div class="laps-challenge-target">
                 <b>{{ board.limit }}석</b>의 좌석을 채워 다음 무대로 향하자!
-                <template v-if="board.money < board.limit">
-                    <br />
-                    <b>{{ board.limit - board.money }}명</b>만 더 모으면 성공!
-                </template>
+                <br />
+                <small> <b>{{ (board.money / board.limit * 100).toFixed(0) }}%</b> 예매 확정! </small>
             </div>
             <div class="laps-challenge-random" :class="result">
                 <b>{{ state === 0 ? '???' : target }}</b>명
