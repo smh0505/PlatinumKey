@@ -1,20 +1,28 @@
 <template>
-    <div class="lapsContainer">
-        <div class="lapsBackground" :class="config">
-            <div class="lapsHeader">이번 스테이지는...</div>
-            <div class="lapsStage">{{ stages[board.laps] ?? stages.at(-1) }}</div>
-            <div class="lapsFooter">{{ alert }}</div>
-            <div class="lapsRandom" :class="result">{{ state === 0 ? '???' : target }}</div>
+    <div class="laps-challenge">
+        <div class="laps-challenge-header" :class="config">
+            <p>이번 스테이지는...</p>
+            <h3>{{ stages[board.laps] ?? stages.at(-1) }}</h3>
         </div>
-        <button class="lapsButton" @keydown.prevent @mousedown.left="click">{{ labels[state] }}</button>
+        <div class="laps-challenge-content">
+            <div class="laps-challenge-target">
+                {{ board.limit }}명의 관객을 채워 다음 무대로 향하자!
+                <template v-if="board.money < board.limit">
+                    <br />
+                    {{ board.limit - board.money }}명만 더 모으면 성공!
+                </template>
+            </div>
+            <div class="laps-challenge-random" :class="result">{{ state === 0 ? '---' : target }}</div>
+        </div>
+        <div class="laps-challenge-buttons">
+            <button @keydown.prevent @mousedown.left="click">{{ labels[state] }}</button>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import { useBoardStore } from '../stores/BoardStore';
 import { remainder } from '../scripts/Calculate';
-
-let temp: number
 
 export default {
     data() {
@@ -25,7 +33,8 @@ export default {
             target: 0,
 
             state: 0,
-            labels: ['도전', '멈추기', '다음']
+            labels: ['도전', '멈추기', '다음'],
+            timer: 0
         }
     },
     computed: {
@@ -35,11 +44,6 @@ export default {
                 budokan: this.board.laps === 1,
                 'tokyo-dome': this.board.laps >= 2
             }
-        },
-        alert() {
-            if (this.board.money >= this.board.limit)
-                return `${this.board.limit}명을 채워 통과!`
-            else return `${this.board.limit - this.board.money}명만 더 모으면 성공!`
         },
         result() {
             return {
@@ -51,7 +55,7 @@ export default {
     methods: {
         randomize() {
             this.target = Math.floor(Math.random() * this.board.limit)
-            temp = window.requestAnimationFrame(this.randomize)
+            this.timer = window.requestAnimationFrame(this.randomize)
         },
         click() {
             this.state = remainder(this.state + 1, 3)
@@ -60,7 +64,7 @@ export default {
                 this.target = 0
             }
             if (this.state === 1) this.randomize()
-            if (this.state === 2) window.cancelAnimationFrame(temp)
+            if (this.state === 2) window.cancelAnimationFrame(this.timer)
         }
     }
 }
@@ -69,20 +73,35 @@ export default {
 <style lang="scss">
 @import '../styles/mixin';
 
-@mixin laps-text($size, $font) {
-    position: absolute;
+.laps-challenge {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 2.5rem;
+    gap: 8px;
+
+    width: 100%;
+    height: 100%;
+
     color: white;
-    font: $size $font, sans-serif;
-    text-shadow: 0 0 0.5em #000, 0 0 0.5em #000, 0 0 0.5em #000;
-}
+    text-shadow: 0 0 0.5em #000;
 
-.lapsContainer {
-    .lapsBackground {
+    &-header {
         display: flex;
-        position: relative;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-end;
 
-        width: 100%;
-        height: 350px;
+        font-size: 1.5rem;
+        font-family: 'Giants-Inline';
+
+        padding: 0.5rem 1rem;
+
+        > p, > h3 {
+            margin: 0;
+        }
+        > h3 {
+            font-size: 3rem;
+        }
 
         &.livehouse {
             @include wallpaper('../assets/livehouse.png');
@@ -95,55 +114,51 @@ export default {
         &.tokyo-dome {
             @include wallpaper('../assets/tokyo-dome.jpg');
         }
+    }
+    &-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.8);
+    }
 
-        .lapsHeader {
-            @include laps-text(20pt, 'Giants-Inline');
-            top: 8px;
-            left: 12px;
+    &-target {
+        font-size: 1.5em;
+        font-family: 'KBO-Dia-Gothic_bold';
+        margin-bottom: 3rem;
+    }
+
+    &-random {
+        font-size: 4rem;
+        font-family: 'KBO-Dia-Gothic_bold';
+
+        &.win {
+            color: rgb(55, 211, 41);
         }
 
-        .lapsStage {
-            @include laps-text(36pt, 'Giants-Inline');
-            top: 40px;
-            left: 12px;
-        }
-
-        .lapsFooter {
-            @include laps-text(20pt, 'KBO-Dia-Gothic_bold');
-            bottom: 8px;
-            left: 8px;
-        }
-
-        .lapsRandom {
-            @include laps-text(44pt, 'KBO-Dia-Gothic_bold');
-            bottom: 8px;
-            right: 16px;
-
-            &.win {
-                color: rgb(55, 211, 41);
-            }
-
-            &.lose {
-                color: rgb(216, 20, 20);
-            }
+        &.lose {
+            color: rgb(216, 20, 20);
         }
     }
 
-    .lapsButton {
-        position: absolute;
-        bottom: 8px;
+    .laps-challenge-buttons {
+        display: flex;
 
-        width: 120px;
-        height: 40px;
+        > button {
+            width: 120px;
+            height: 40px;
 
-        font-size: 20pt;
-        background-color: rgba(black, 0.8);
-        color: white;
-        transition: all 0.2s ease-out;
+            font-size: 1.25rem;
+            background-color: rgba(black, 0.8);
+            color: white;
+            transition: all 0.2s ease-out;
 
-        &:hover {
-            background-color: white;
-            color: black;
+            &:hover {
+                background-color: white;
+                color: black;
+            }
         }
     }
 }
