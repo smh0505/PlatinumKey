@@ -8,7 +8,7 @@
             <div class="block-number">{{ index }}</div>
         </header>
 
-        <div class="block-prize">{{ board.getPrizeByIndex(index) }}<small>명</small></div>
+        <div class="block-prize">{{ board.getPrizeByIndex(index) }}<small>석</small></div>
 
         <!--start-->
         <div
@@ -215,7 +215,7 @@ export default {
         position: absolute;
         padding: 0.5rem;
 
-        font-size: 4em;
+        font-size: 3.5em;
         font-weight: 200;
         line-height: 0.75em;
 
